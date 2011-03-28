@@ -1,7 +1,7 @@
 <?php
 	echo '<pre>';
 	
-	include('../connection.class.php');										//STEP 1
+	include('../tivoka.php');										//STEP 1
 	
 	$jsonrpc = new Tivoka_jsonRpcConnection('http://localhost/dev/jsonrpc/tivoka/sample/jsonrpcserver.php');//STEP 2
 	
