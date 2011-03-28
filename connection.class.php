@@ -148,9 +148,6 @@ class Tivoka_jsonRpcConnection
 	
 	public function & _request(&$json,&$id='')
 	{
-		//load on demand
-		if(!class_exists('Tivoka_jsonRpcResponse')) require_once('response.class.php');
-		
 		//preparing...
 		$request = "GET ".$this->target['path']." HTTP/1.1\r\n"
 			. "Host: ".$this->target['host']."\r\n"

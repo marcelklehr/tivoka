@@ -25,6 +25,3 @@ $server = array(
 new Tivoka_jsonRpcServer(new Tivoka_jsonRpcArrayHost($server));		//STEP 3
 
 ?>
-
-
-

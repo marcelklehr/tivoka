@@ -1,21 +1,5 @@
 <?php
 /*
- *	Tivoka - a JSON-RPC implementation for PHP
- *	Copyright (C) 2011  Marcel Klehr (marcel.klehr@gmx.de)
- *
- *	This program is free software; you can redistribute it and/or modify it under the 
- *	terms of the GNU General Public License as published by the Free Software Foundation;
- *	either version 3 of the License, or (at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- *	without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *	See the GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License along with this program;
- *	if not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
  * Tivoka_jsonRpcArrayHost
  * Helper class for registering anonymous function at the server on the fly
  *
@@ -123,17 +107,17 @@ class Tivoka_jsonRpcServer
 		}
 		
 		//process batch...
-		if($this->_is('batch',$this->input))
+		if(self::_is('batch',$this->input))
 		{
 			foreach($this->input as $request)
 			{
-				new jsonRPC_processor($request,$this);
+				new Tivoka_jsonRpcProcessor($request,$this);
 			}
 			$this->respond();
 		}
 		
 		//process request
-		new jsonRPC_processor($this->input,$this);
+		new Tivoka_jsonRpcProcessor($this->input,$this);
 		$this->respond();
 	}
 	
@@ -160,7 +144,7 @@ class Tivoka_jsonRpcServer
 		}
 	}
 	
-	public function _is($type,$assoc)
+	public static function _is($type,$assoc)
 	{
 		switch($type)
 		{
@@ -185,8 +169,8 @@ class Tivoka_jsonRpcServer
 			case 'batch':
 				if(	is_array($assoc) &&
 					count($assoc) > 1 &&
-					!$this->_is('request',$assoc) &&
-					!$this->_is('notification',$assoc)
+					!self::_is('request',$assoc) &&
+					!self::_is('notification',$assoc)
 				)
 				return TRUE;
 				break;
@@ -224,8 +208,9 @@ class Tivoka_jsonRpcServer
 		));
 	}
 }
+
 /*
- * jsonRPC_processor
+ * Tivoka_jsonRpcProcessor
  * Validates the request and interacts between the server and the called method
  *
  * @method public __construct($request,&$server)
@@ -237,7 +222,7 @@ class Tivoka_jsonRpcServer
  *		@param integer $code The code of the error which occured processing the request given with __construct
  *		@param mixed $data The more information about the error
  */
-class jsonRPC_processor
+class Tivoka_jsonRpcProcessor
 {
 	protected $server;
 	protected $request;
@@ -250,7 +235,7 @@ class jsonRPC_processor
 		$this->params = (isset($this->request['params'])) ? $this->request['params'] : null;
 		
 		//validate...
-		if(!$this->server->_is('request',$this->request) && !$this->server->_is('notification',$this->request))
+		if(!Tivoka_jsonRpcServer::_is('request',$this->request) && !Tivoka_jsonRpcServer::_is('notification',$this->request))
 		{
 			$this->error(-32600);
 			return;
@@ -271,7 +256,7 @@ class jsonRPC_processor
 	
 	public function error($code,$data=null)
 	{
-		if(!$this->server->_is('request',$this->request)) return;
+		if(!Tivoka_jsonRpcServer::_is('request',$this->request)) return;
 		
 		$id = (!isset($this->request['id'])) ? null : $this->request['id'];
 		$this->server->error($id,$code,$data);
@@ -279,7 +264,7 @@ class jsonRPC_processor
 	
 	public function result($result)
 	{
-		if(!$this->server->_is('request',$this->request)) return;
+		if(!Tivoka_jsonRpcServer::_is('request',$this->request)) return;
 		$this->server->result($this->request['id'],$result);
 	}
 }
