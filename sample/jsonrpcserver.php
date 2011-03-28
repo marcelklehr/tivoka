@@ -1,5 +1,5 @@
 <?php
-include('../server.class.php');	//STEP 1
+include('../tivoka.php');	//STEP 1
 
 $server = array(
 	"demo.sayHello" => function($request)

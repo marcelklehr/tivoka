@@ -1,4 +1,4 @@
-﻿<?
+<?php
 /*
  * Tivoka_jsonRpcResponse
  * Processes the response an acts as an interface for dealing with it
