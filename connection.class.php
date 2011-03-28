@@ -68,7 +68,7 @@ class Tivoka_Connection
 		
 		//send request
 		$response = $this->_request($json);
-		if($response->error()) return $response;
+		if($response->isError()) return $response;
 		$response = $response->response;
 		
 		//decode...

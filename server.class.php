@@ -8,7 +8,7 @@
  * @method public __construct($host,$errors=FALSE)
  *		@param object $host An object whose methods will be provided for invokation
  *		@param bool $errors Display Errors (Optional)
- * @method private _is($type,$assoc)
+ * @method public _is($type,$assoc)
  *		@param string $type The request type to detect
  *		@param array $assoc The decoded JSON-RPC request to examine
  * @method public result($id,$result)
@@ -30,8 +30,7 @@ class Tivoka_Server
 		//define some things...
 		if($errors != FALSE)error_reporting(0);//avoids messing up the response
 		$this->host = &$host;
-		$this->input = FALSE;
-		$input = file_get_contents('php://input');
+		$this->input = file_get_contents('php://input');
 		$json_errors = array(
 		    JSON_ERROR_NONE => '',
 		    JSON_ERROR_DEPTH => 'The maximum stack depth has been exceeded',
@@ -48,17 +47,17 @@ class Tivoka_Server
 		//validate input...
 		
 		//check existence...
-		if(trim($input) == '')
+		if(trim($this->input) == '')
 		{
-			$this->error(null,-32600);
+			$this->returnError(null,-32600);
 			$this->respond();
 		}
 		
 		//decode request...
-		$this->input = json_decode($input,true);
+		$this->input = json_decode($this->input,true);
 		if($this->input === NULL)
 		{
-			$this->error(null,-32700, 'JSON: '.$json_errors[json_last_error()] );
+			$this->returnError(null,-32700, 'JSON: '.$json_errors[json_last_error()] );
 			$this->respond();
 		}
 		
@@ -100,7 +99,7 @@ class Tivoka_Server
 		}
 	}
 	
-	private static function _is($type,$assoc)
+	public static function _is($type,$assoc)
 	{
 		switch($type)
 		{

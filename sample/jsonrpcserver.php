@@ -15,7 +15,7 @@ $server = array(							//STEP 2
 			!is_numeric($request->params[array_pop($tmp)]) ||
 			!is_numeric($request->params[array_pop($tmp)]) )
 		{
-			$request->return Error(-32602);
+			$request->returnError(-32602);
 		}
 		$request->returnResult($request->params[0] - $request->params[1]);
 		return TRUE;
