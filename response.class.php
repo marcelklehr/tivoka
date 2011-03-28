@@ -59,7 +59,7 @@ class Tivoka_jsonRpcResponse
 		
 		if($respassoc == NULL)
 		{
-			$this->_processerror = 'Syntax Error: the received response could not be recognized as valid JSON (JSON: '.$this->json_errors[json_last_error()].')'.'Response:<br/><pre>'.htmlspecialchars($response).'</pre>';
+			$this->_processerror = 'Syntax Error: the received response could not be verified as valid JSON (JSON: '.$this->json_errors[json_last_error()].')'.'Response:<br/><pre>'.htmlspecialchars($response).'</pre>';
 			return;
 		}
 		

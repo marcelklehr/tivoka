@@ -21,12 +21,26 @@
  */
 class Tivoka_jsonRpcConnection
 {
-
+	public $connection;
 	public $target;
 	
 	public function __construct($server_addr)
 	{
-		$this->target = filter_var($server_addr, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) ? $server_addr : '';
+		//validate url...
+		if(!filter_var($server_addr, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)){ throw new InvalidArgumentException('Valid URL (scheme,domain[,path][,file]) required.'); return; }
+		$this->target = parse_url($server_addr);
+		
+		if($this->target['scheme'] !== 'http'){ throw new InvalidArgumentException('Unknown or unsupported scheme given: \''.htmlspecialchars($this->target['url']).'\''); return; }
+		
+		//connecting...
+		$this->connection = fsockopen($this->target['host'], 80, $errno, $errstr);
+		if(!$this->connection)	throw new InvalidArgumentException('Cannot connect to the given URL (\'fsockopen\' failed)');
+		
+	}
+	
+	public function __destruct()
+	{
+		fclose($this->connection);
 	}
 	
 	public function batch(array $batch)
@@ -63,7 +77,7 @@ class Tivoka_jsonRpcConnection
 		if($respassoc === NULL)
 		{
 			$resp = new Tivoka_jsonRpcResponse(FALSE);
-			$resp->_processerror = 'Syntax Error: the received response could not be verified as valid JSON (JSON Error: '.$resp->json_errors[json_last_error()].')' .'Response:<br/><pre>'.htmlspecialchars($response).'</pre>';
+			$resp->_processerror = 'Syntax Error: The received response could not be verified as valid JSON (JSON Error: '.$resp->json_errors[json_last_error()].')' .' Response:<br/><pre>'.htmlspecialchars($response).'</pre>';
 			return $resp;
 		}
 		
@@ -134,67 +148,48 @@ class Tivoka_jsonRpcConnection
 	
 	public function & _request(&$json,&$id='')
 	{
-		$url = parse_url($this->target);
-		switch($url['scheme'])
+		//load on demand
+		if(!class_exists('Tivoka_jsonRpcResponse')) require_once('response.class.php');
+		
+		//preparing...
+		$request = "GET ".$this->target['path']." HTTP/1.1\r\n"
+			. "Host: ".$this->target['host']."\r\n"
+			. "Content-Type: application/json\r\n"
+			. "Content-Length: ".strlen($json)."\r\n"
+			. "Connection: Close\r\n\r\n"
+			. $json;
+		
+		//sending...
+		if(fwrite($this->connection, $request, strlen($request)) === 0)
 		{
-			case 'http':
-				$resp['response'] = false;
-				
-				//preparing...
-				$request = "GET ".$url['path']." HTTP/1.1\r\n"
-					. "Host: ".$url['host']."\r\n"
-					. "Content-Type: application/json\r\n"
-					. "Content-Length: ".strlen($json)."\r\n"
-					. "Connection: Close\r\n\r\n"
-					. $json;
-					
-				//connecting...
-				$socket = fsockopen($url['host'], 80, $errno, $errstr);
-				if (!$socket)
-				{
-					$resp = new Tivoka_jsonRpcResponse(FALSE,$id);
-					$resp->_processerror = 'Connect error (\'fsockopen\' failed): '.$errstr;
-					return $resp;
-				}
-				
-				//sending...
-				if(fwrite($socket, $request,strlen($request)) === 0)
-				{
-					$resp = new Tivoka_jsonRpcResponse(FALSE,$id);
-					$resp->_processerror = 'Connection error (\'fputs\' failed): Could not deliver data';
-					return $resp;
-				}
-				
-				//receiving response...
-				stream_set_timeout ($socket, 10);
-				$httpresp = stream_get_contents($socket);
-				if($httpresp === FALSE)
-				{
-					$resp = new Tivoka_jsonRpcResponse(FALSE,$id);
-					$resp->_processerror = 'Connection error (\'stream_get_contents\' failed): Ressource probably does not exist';
-					return $resp;
-				}
-				
-				if(strpos(substr($httpresp,0,50),'404 Not Found') !== FALSE)
-				{
-					$resp = new Tivoka_jsonRpcResponse(FALSE,$id);
-					$resp->_processerror = 'HTTP error: Target not found (404)';
-					return $resp;
-				}
-				
-				$response = '';
-				if(strpos($httpresp,"\r\n\r\n") !== FALSE)
-				{
-					list(,$response) = explode("\r\n\r\n",$httpresp,2);
-				}
-				break;
-				
-			default:
-				$resp = new Tivoka_jsonRpcResponse(FALSE);
-				$resp->_processerror = 'Connection error: No (valid) scheme given for server URL.';
-				return $resp;
+			$resp = new Tivoka_jsonRpcResponse(FALSE,$id);
+			$resp->_processerror = 'Connection error (\'fputs\' failed): Could not deliver data';
+			return $resp;
 		}
-		fclose($socket);
+		
+		//receiving response...
+		stream_set_timeout ($this->connection, 10);
+		$httpresp = stream_get_contents($this->connection);
+		if($httpresp === FALSE)
+		{
+			$resp = new Tivoka_jsonRpcResponse(FALSE,$id);
+			$resp->_processerror = 'Connection error (\'stream_get_contents\' failed): Ressource probably does not exist';
+			return $resp;
+		}
+		
+		if(strpos(substr($httpresp,0,50),'404 Not Found') !== FALSE)
+		{
+			$resp = new Tivoka_jsonRpcResponse(FALSE,$id);
+			$resp->_processerror = 'HTTP error: Target not found (404)';
+			return $resp;
+		}
+		
+		$response = '';
+		if(strpos($httpresp,"\r\n\r\n") !== FALSE)
+		{
+			list(,$response) = explode("\r\n\r\n",$httpresp,2);
+		}
+		
 		$resp = new Tivoka_jsonRpcResponse($response,$id);
 		return $resp;
 	}
