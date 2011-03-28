@@ -5,7 +5,7 @@ include('../tivoka.php');	//STEP 1
 $server = array(							//STEP 2
 	'demo.sayHello' => function($request)
 	{
-		$request->result('Hello World!');
+		$request->returnResult('Hello World!');
 	},
 	'demo.substract' => function($request)
 	{
@@ -15,9 +15,9 @@ $server = array(							//STEP 2
 			!is_numeric($request->params[array_pop($tmp)]) ||
 			!is_numeric($request->params[array_pop($tmp)]) )
 		{
-			$request->error(-32602);
+			$request->return Error(-32602);
 		}
-		$request->result($request->params[0] - $request->params[1]);
+		$request->returnResult($request->params[0] - $request->params[1]);
 		return TRUE;
 	}
 );

@@ -136,7 +136,7 @@ class Tivoka_Server
 	
 	//callbacks
 	
-	public function result(&$id,&$result)
+	public function returnResult(&$id,&$result)
 	{
 		$this->response[] = array(
 				'jsonrpc'=>'2.0',
@@ -145,7 +145,7 @@ class Tivoka_Server
 		);
 	}
 	
-	public function error($id,$code,$data='')
+	public function returnError($id,$code,$data='')
 	{
 		$msg = array(
 			-32700 => 'Parse error',

@@ -44,18 +44,18 @@ class Tivoka_Processor
 	
 	//callbacks...
 	
-	public function error($code,$data=null)
+	public function returnError($code,$data=null)
 	{
 		if(!Tivoka_Server::_is('request',$this->request)) return;
 		
 		$id = (!isset($this->request['id'])) ? null : $this->request['id'];
-		$this->server->error($id,$code,$data);
+		$this->server->returnError($id,$code,$data);
 	}
 	
-	public function result($result)
+	public function returnResult($result)
 	{
 		if(!Tivoka_Server::_is('request',$this->request)) return;
-		$this->server->result($this->request['id'],$result);
+		$this->server->returnResult($this->request['id'],$result);
 	}
 }
 ?>
