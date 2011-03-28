@@ -2,11 +2,11 @@
 include('../server.class.php');	//STEP 1
 
 $server = array(
-	"demo.sayHello" => function(&$request)
+	"demo.sayHello" => function($request)
 	{
 		$request->result("Hello World!");
 	},
-	"demo.substract" => function(&$request)
+	"demo.substract" => function($request)
 	{
 		$tmp = array_keys($request->params);
 		if(	!is_array($request->params) ||
@@ -22,7 +22,7 @@ $server = array(
 );
 
 
-new Tivoka_jsonRpcServer(new Tivoka_jsonRpcMethodHost($server));		//STEP 3
+new Tivoka_jsonRpcServer(new Tivoka_jsonRpcArrayHost($server));		//STEP 3
 
 ?>
 

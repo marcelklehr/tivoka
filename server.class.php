@@ -16,7 +16,7 @@
  */
 
 /*
- * Tivoka_jsonRpcMethodHost
+ * Tivoka_jsonRpcArrayHost
  * Helper class for registering anonymous function at the server on the fly
  *
  * @method public __construct($methods)
@@ -27,20 +27,21 @@
  * @method public exist($name) 
  *		@param string $name The name of the method to check for existence
  */
-class Tivoka_jsonRpcMethodHost
+class Tivoka_jsonRpcArrayHost
 {
-	public $result;
-	public $params;
-	public $methods;
+	protected $methods;
 	
 	public function __construct(array $methods)
 	{
-		$this->methods = &$methods;		
+		foreach($methods as $name=>$method)
+		{
+			$this->register($name,$method);
+		}
 	}
 	
 	public function register($name,$method)
 	{
-		if(!is_callable($method))return FALSE;
+		if(!is_callable($method)){ throw new BadFunctionCallException('Valid Callback reqired, uncallable function given for \''.htmlspecialchars($name).'\''); return FALSE;}
 		
 		$this->methods[$name] = $method;
 		return TRUE;
@@ -54,9 +55,9 @@ class Tivoka_jsonRpcMethodHost
 	
 	public function __call($method,$args)
 	{
-		if(!$this->exist($method))
-			{$args[1]->error(-32601); return;}
-		$this->methods[$method]($args[0]);
+		if(!$this->exist($method)){$args[0]->error(-32601); return;}
+		$prc = $args[0];
+		call_user_func_array($this->methods[$method],array($prc));
 	}
 }
 
