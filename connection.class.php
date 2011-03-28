@@ -1,6 +1,6 @@
 <?php
 /*
- * Tivoka_jsonRpcConnection
+ * Tivoka_Connection
  * Opens a connection to the given JSONJ-RPC server for invoking the provided remote procedures
  *
  * @method public __construct($server_addr)
@@ -19,7 +19,7 @@
  *		@param string $json The plain json encoded request to send to the server
  *		@param mixed $id The id of the request (Omit this for notifications!)
  */
-class Tivoka_jsonRpcConnection
+class Tivoka_Connection
 {
 	public $connection;
 	public $target;
@@ -35,7 +35,6 @@ class Tivoka_jsonRpcConnection
 		//connecting...
 		$this->connection = fsockopen($this->target['host'], 80, $errno, $errstr);
 		if(!$this->connection)	throw new InvalidArgumentException('Cannot connect to the given URL (\'fsockopen\' failed)');
-		
 	}
 	
 	public function __destruct()
@@ -43,7 +42,7 @@ class Tivoka_jsonRpcConnection
 		fclose($this->connection);
 	}
 	
-	public function batch(array $batch)
+	public function sendBatch(array $batch)
 	{
 		//prepare requests...
 		$ids = array();
@@ -76,7 +75,7 @@ class Tivoka_jsonRpcConnection
 		$respassoc = json_decode($response,true);
 		if($respassoc === NULL)
 		{
-			$resp = new Tivoka_jsonRpcResponse(FALSE);
+			$resp = new Tivoka_Response(FALSE);
 			$resp->_processerror = 'Syntax Error: The received response could not be verified as valid JSON (JSON Error: '.$resp->json_errors[json_last_error()].')' .' Response:<br/><pre>'.htmlspecialchars($response).'</pre>';
 			return $resp;
 		}
@@ -84,7 +83,7 @@ class Tivoka_jsonRpcConnection
 		//validate...
 		if(count($respassoc) <= 1 || !is_array($respassoc))
 		{
-			$resp = new Tivoka_jsonRpcResponse(FALSE);
+			$resp = new Tivoka_Response(FALSE);
 			$resp->_processerror = 'Error: Batch response expected. Single or empty response array received.' .'Response:<br/><pre>'.htmlspecialchars($response).'</pre>';
 			return $resp;
 		}
@@ -102,7 +101,7 @@ class Tivoka_jsonRpcConnection
 				continue;
 			}
 			//normal request...
-			$responses[$resp['id']] = new Tivoka_jsonRpcResponse(json_encode($resp),$resp['id']);
+			$responses[$resp['id']] = new Tivoka_Response(json_encode($resp),$resp['id']);
 			unset( $ids[	array_search($resp['id'],$ids, TRUE) ] );
 		}
 		
@@ -110,15 +109,15 @@ class Tivoka_jsonRpcConnection
 		foreach($ids as $id)
 		{
 			$resp = array_shift($nullresps);
-			$responses[$id] = new Tivoka_jsonRpcResponse( json_encode($resp), $id);
+			$responses[$id] = new Tivoka_Response( json_encode($resp), $id);
 		}
-		$resp = new Tivoka_jsonRpcResponse(FALSE);
+		$resp = new Tivoka_Response(FALSE);
 		$resp->result = $responses;
 		return $resp;
 	}
 
 	
-	public function request($id,$method,$params='')
+	public function sendRequest($id,$method,$params='')
 	{
 		//prepare...
 		$json = array(
@@ -133,7 +132,7 @@ class Tivoka_jsonRpcConnection
 		return $this->_request($json,$id);
 	}
 
-	public function notification($method,$params='')
+	public function sendNotification($method,$params='')
 	{
 		//prepare...
 		$json = array(
@@ -146,7 +145,7 @@ class Tivoka_jsonRpcConnection
 		return $this->_request(json_encode($json));
 	}
 	
-	public function & _request(&$json,&$id='')
+	private function & _request($json,&$id='')
 	{
 		//preparing...
 		$request = "GET ".$this->target['path']." HTTP/1.1\r\n"
@@ -159,7 +158,7 @@ class Tivoka_jsonRpcConnection
 		//sending...
 		if(fwrite($this->connection, $request, strlen($request)) === 0)
 		{
-			$resp = new Tivoka_jsonRpcResponse(FALSE,$id);
+			$resp = new Tivoka_Response(FALSE,$id);
 			$resp->_processerror = 'Connection error (\'fputs\' failed): Could not deliver data';
 			return $resp;
 		}
@@ -169,14 +168,14 @@ class Tivoka_jsonRpcConnection
 		$httpresp = stream_get_contents($this->connection);
 		if($httpresp === FALSE)
 		{
-			$resp = new Tivoka_jsonRpcResponse(FALSE,$id);
+			$resp = new Tivoka_Response(FALSE,$id);
 			$resp->_processerror = 'Connection error (\'stream_get_contents\' failed): Ressource probably does not exist';
 			return $resp;
 		}
 		
 		if(strpos(substr($httpresp,0,50),'404 Not Found') !== FALSE)
 		{
-			$resp = new Tivoka_jsonRpcResponse(FALSE,$id);
+			$resp = new Tivoka_Response(FALSE,$id);
 			$resp->_processerror = 'HTTP error: Target not found (404)';
 			return $resp;
 		}
@@ -187,9 +186,8 @@ class Tivoka_jsonRpcConnection
 			list(,$response) = explode("\r\n\r\n",$httpresp,2);
 		}
 		
-		$resp = new Tivoka_jsonRpcResponse($response,$id);
+		$resp = new Tivoka_Response($response,$id);
 		return $resp;
 	}
-
 }
 ?>

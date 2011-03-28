@@ -1,6 +1,6 @@
 <?php
 /*
- * Tivoka_jsonRpcServer
+ * Tivoka_Server
  * Provides the methods of the given host object for invokation through the JSON-RPC protocol
  *
  * Notice: Instanciating this class will stop further script execution, so place this command at the end of your script!
@@ -8,7 +8,7 @@
  * @method public __construct($host,$errors=FALSE)
  *		@param object $host An object whose methods will be provided for invokation
  *		@param bool $errors Display Errors (Optional)
- * @method public _is($type,$assoc)
+ * @method private _is($type,$assoc)
  *		@param string $type The request type to detect
  *		@param array $assoc The decoded JSON-RPC request to examine
  * @method public result($id,$result)
@@ -19,16 +19,16 @@
  *		@param integer $code The code of the error which occured processing the request given by $id
  *		@param mixed $data The more information about the error
  */
-class Tivoka_jsonRpcServer
+class Tivoka_Server
 {
 	public $host;
 	public $input;
 	public $response;
 
-	public function __construct($host,$errors=FALSE)
+	public function __construct($host, $errors=FALSE)
 	{
 		//define some things...
-		if((bool)$errors)error_reporting(0);//avoids messing up the response
+		if($errors != FALSE)error_reporting(0);//avoids messing up the response
 		$this->host = &$host;
 		$this->input = FALSE;
 		$input = file_get_contents('php://input');
@@ -38,7 +38,10 @@ class Tivoka_jsonRpcServer
 		    JSON_ERROR_CTRL_CHAR => 'Control character error, possibly incorrectly encoded',
 		    JSON_ERROR_SYNTAX => 'Syntax error'
 		);
-		
+	}
+	
+	public function process()
+	{
 		//set header if not already sent...
 		if(!headers_sent()) header('Content-type: application/json');
 		
@@ -64,13 +67,13 @@ class Tivoka_jsonRpcServer
 		{
 			foreach($this->input as $request)
 			{
-				new Tivoka_jsonRpcProcessor($request,$this);
+				new Tivoka_Processor($request,$this);
 			}
 			$this->respond();
 		}
 		
 		//process request
-		new Tivoka_jsonRpcProcessor($this->input,$this);
+		new Tivoka_Processor($this->input,$this);
 		$this->respond();
 	}
 	
@@ -97,7 +100,7 @@ class Tivoka_jsonRpcServer
 		}
 	}
 	
-	public static function _is($type,$assoc)
+	private static function _is($type,$assoc)
 	{
 		switch($type)
 		{

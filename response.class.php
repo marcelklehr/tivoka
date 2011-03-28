@@ -1,6 +1,6 @@
 <?php
 /*
- * Tivoka_jsonRpcResponse
+ * Tivoka_Response
  * Processes the response an acts as an interface for dealing with it
  *
  * @property string $response The original received response.
@@ -12,7 +12,7 @@
  *		@param mixed $id The id of the associated request
  * @method public error() Returns a boolean TRUE if an error occured
  */
-class Tivoka_jsonRpcResponse
+class Tivoka_Response
 {
 	public $response;
 	
@@ -81,13 +81,13 @@ class Tivoka_jsonRpcResponse
 		return;
 	}
 	
-	public function error()
+	public function isError()
 	{
 		if($this->_processerror != NULL || $this->error != NULL)return TRUE;
 		return FALSE;
 	}
 	
-	public static function _is($type,$assoc,&$id)
+	private static function _is($type,$assoc,&$id)
 	{
 		switch($type)
 		{

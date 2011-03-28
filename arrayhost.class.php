@@ -1,6 +1,6 @@
 <?php
 /*
- * Tivoka_jsonRpcArrayHost
+ * Tivoka_ArrayHost
  * Helper class for registering anonymous function at the server on the fly
  *
  * @method public __construct($methods)
@@ -11,7 +11,7 @@
  * @method public exist($name) 
  *		@param string $name The name of the method to check for existence
  */
-class Tivoka_jsonRpcArrayHost
+class Tivoka_ArrayHost
 {
 	protected $methods;
 	
