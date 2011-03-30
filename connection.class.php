@@ -31,7 +31,7 @@ class Tivoka_Connection
 		//validate url...
 		if(!filter_var($target, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED))
 			{ throw new InvalidArgumentException('Valid URL (scheme,domain[,path][,file]) required.'); return; }
-		$this->target = parse_url($server_addr);
+		$this->target = parse_url($target);
 		
 		if($this->target['scheme'] !== 'http')
 			{ throw new InvalidArgumentException('Unknown or unsupported scheme given: \''.htmlspecialchars($this->target['url']).'\''); return; }
@@ -47,14 +47,18 @@ class Tivoka_Connection
 	}
 	
 	/**
-	 * Sends a JSON-RPC batch request to the defined target
+	 * Sends a JSON-RPC request to the defined target
 	 *
 	 * @param array $batch A list of request arrays, each containing 'method', 'params' (optional) and 'id' (optional)
 	 * @see Tivoka_Response
 	 * @return Tivoka_Response
 	 */
-	public function sendBatch(array $batch)
+	public function send(Tivoka_Request $request)
 	{
+	
+	}
+	
+	function sendBatch() {
 		//prepare requests...
 		$ids = array();
 		$requests = array();
