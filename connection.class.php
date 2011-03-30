@@ -1,36 +1,40 @@
 <?php
-/*
- * Tivoka_Connection
+/**
+ * @package Tivoka
+ * @author Marcel Klehr <marcel.klehr@gmx.de>
+ * @copyright (c) 2011, Marcel Klehr
+ */
+/**
  * Opens a connection to the given JSONJ-RPC server for invoking the provided remote procedures
  *
- * @method public __construct($server_addr)
- *		@param string $server_addr The http address of the server to connect to
- * @method public batch($batch)
- *		@param array $batch An array of request items which must contain the keys: "method", "id"(optional), "params"(optional)
- *		Notice: Only omit "id" if you want the request to be treated as a notification and thus don't expect to get a response. See the JSON-RPC specification for more details.
- * @method public request($id,$method,$params="")
- *		@param mixed $id A unique value to associate the request with its response
- *		@param string $method The method to invoke
- *		@param mixed $params Additional parameters for the method
- * @method public notification($method,$params="")
- *		@param string $method The method to invoke
- *		@param mixed $params Additional parameters for the method
- * @method public _request($json,$id="")
- *		@param string $json The plain json encoded request to send to the server
- *		@param mixed $id The id of the request (Omit this for notifications!)
+ * @package Tivoka
  */
 class Tivoka_Connection
 {
+	/**
+	 * @var ressource The ressource returned by fsockopen()
+	 */
 	public $connection;
+	
+	/**
+	 * @var array The target, parsed by parse_url()
+	 */
 	public $target;
 	
-	public function __construct($server_addr)
+	/**
+	 * Initializes a Tivoka_Connection object
+	 *
+	 * @param string $target the URL of the target server (MUST include http scheme)
+	 */
+	public function __construct($target)
 	{
 		//validate url...
-		if(!filter_var($server_addr, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)){ throw new InvalidArgumentException('Valid URL (scheme,domain[,path][,file]) required.'); return; }
+		if(!filter_var($target, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED))
+			{ throw new InvalidArgumentException('Valid URL (scheme,domain[,path][,file]) required.'); return; }
 		$this->target = parse_url($server_addr);
 		
-		if($this->target['scheme'] !== 'http'){ throw new InvalidArgumentException('Unknown or unsupported scheme given: \''.htmlspecialchars($this->target['url']).'\''); return; }
+		if($this->target['scheme'] !== 'http')
+			{ throw new InvalidArgumentException('Unknown or unsupported scheme given: \''.htmlspecialchars($this->target['url']).'\''); return; }
 		
 		//connecting...
 		$this->connection = fsockopen($this->target['host'], 80, $errno, $errstr);
@@ -42,6 +46,13 @@ class Tivoka_Connection
 		fclose($this->connection);
 	}
 	
+	/**
+	 * Sends a JSON-RPC batch request to the defined target
+	 *
+	 * @param array $batch A list of request arrays, each containing 'method', 'params' (optional) and 'id' (optional)
+	 * @see Tivoka_Response
+	 * @return Tivoka_Response
+	 */
 	public function sendBatch(array $batch)
 	{
 		//prepare requests...
@@ -116,7 +127,15 @@ class Tivoka_Connection
 		return $resp;
 	}
 
-	
+	/**
+	 * Sends a JSON-RPC request to the defined target
+	 *
+	 * @param mixed $id A unique request identifier
+	 * @param string $method The method to invoke
+	 * @param mixed $params The parameters for the method to invoke
+	 * @see Tivoka_Response
+	 * @return Tivoka_Response
+	 */
 	public function sendRequest($id,$method,$params='')
 	{
 		//prepare...
@@ -131,7 +150,15 @@ class Tivoka_Connection
 		$json = json_encode($json);
 		return $this->_request($json,$id);
 	}
-
+	
+	/**
+	 * Sends a JSON-RPC notification to the defined target
+	 *
+	 * @param string $method The method to invoke
+	 * @param mixed $params The parameters for the method to invoke
+	 * @see Tivoka_Response
+	 * @return Tivoka_Response
+	 */
 	public function sendNotification($method,$params='')
 	{
 		//prepare...
@@ -145,6 +172,14 @@ class Tivoka_Connection
 		return $this->_request(json_encode($json));
 	}
 	
+	/**
+	 * Sends the JSON data to the defined target
+	 *
+	 * @param string $json The json_encoded request
+	 * @param mixed $id The request id (optional for notifications)
+	 * @see Tivoka_Response
+	 * @return Tivoka_Response
+	 */
 	private function & _request($json,&$id='')
 	{
 		//preparing...

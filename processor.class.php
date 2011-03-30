@@ -1,24 +1,42 @@
 <?php
-/*
- * Tivoka_Processor
+/**
+ * @package Tivoka
+ * @author Marcel Klehr <marcel.klehr@gmx.de>
+ * @copyright (c) 2011, Marcel Klehr
+ */
+/**
  * Validates the request and interacts between the server and the called method
  *
- * @method public __construct($request,&$server)
- *		@param string $request The plain json encoded request
- *		@param Tivoka_Server $server Reference to the server for returning the result/error
- * @method public result($result)
- *		@param mixed $result The result of the request given with __construct
- * @method public error($code,$data='')
- *		@param integer $code The code of the error which occured processing the request given with __construct
- *		@param mixed $data The more information about the error
+ * @package Tivoka
  */
 class Tivoka_Processor
 {
+	/**
+	 * @var Tivoka_Server Reference to the parent server object for returning the result/error
+	 * @access private
+	 */
 	protected $server;
+	
+	/**
+	 * @var array The parsed JSON-RPC request
+	 * @see Tivoka_Processor::__construct()
+	 * @access private
+	 */
 	protected $request;
+	
+	/**
+	 * @var mixed The params as received through the JSON-RPC request
+	 */
 	public $params;
 	
-	public function __construct($request,Tivoka_Server &$server)
+	/**
+	 * Initializes a Tivoka_Processor object
+	 *
+	 * @param array $request The parsed JSON-RPC request
+	 * @param Tivoka_Server $server The parent server object
+	 * @access private
+	 */
+	public function __construct(array $request,Tivoka_Server &$server)
 	{
 		$this->server = &$server;
 		$this->request = &$request;
@@ -42,8 +60,23 @@ class Tivoka_Processor
 		$this->server->host->{$this->request['method']}($this);
 	}
 	
-	//callbacks...
+	/**
+	 * Receives the computed result
+	 *
+	 * @param mixed $result The computed result
+	 */
+	public function returnResult($result)
+	{
+		if(!Tivoka_Server::_is('request',$this->request)) return;
+		$this->server->returnResult($this->request['id'],$result);
+	}
 	
+	/**
+	 * Receives the error from computing the result
+	 *
+	 * @param int $code The specified JSON-RPC error code
+	 * @param mixed $data Additional data
+	 */
 	public function returnError($code,$data=null)
 	{
 		if(!Tivoka_Server::_is('request',$this->request)) return;
@@ -52,10 +85,6 @@ class Tivoka_Processor
 		$this->server->returnError($id,$code,$data);
 	}
 	
-	public function returnResult($result)
-	{
-		if(!Tivoka_Server::_is('request',$this->request)) return;
-		$this->server->returnResult($this->request['id'],$result);
-	}
+
 }
 ?>

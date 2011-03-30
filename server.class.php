@@ -1,34 +1,45 @@
 <?php
-/*
- * Tivoka_Server
+/**
+ * @package Tivoka
+ * @author Marcel Klehr <marcel.klehr@gmx.de>
+ * @copyright (c) 2011, Marcel Klehr
+ */
+/**
  * Provides the methods of the given host object for invokation through the JSON-RPC protocol
  *
- * Notice: Instanciating this class will stop further script execution, so place this command at the end of your script!
- *
- * @method public __construct($host,$errors=FALSE)
- *		@param object $host An object whose methods will be provided for invokation
- *		@param bool $errors Display Errors (Optional)
- * @method public _is($type,$assoc)
- *		@param string $type The request type to detect
- *		@param array $assoc The decoded JSON-RPC request to examine
- * @method public result($id,$result)
- *		@param mixed $id The id of the associated request
- *		@param mixed $result The result of the request given by $id
- * @method public error($id,$code,$data)
- *		@param mixed $id The id of the associated request
- *		@param integer $code The code of the error which occured processing the request given by $id
- *		@param mixed $data The more information about the error
+ * @package Tivoka
  */
 class Tivoka_Server
 {
+	/**
+	 * @var object The object given to __construct()
+	 * @see Tivoka_Server::__construct()
+	 * @access private
+	 */
 	public $host;
-	public $input;
-	public $response;
-
-	public function __construct($host, $errors=FALSE)
+	
+	/**
+	 * @var array The parsed json input as an associative array
+	 * @access private
+	 */
+	private $input;
+	
+	/**
+	 * @var array A list of associative response arrays to json_encode
+	 * @access private
+	 */
+	private $response;
+	
+	/**
+	 * Initializes a Tivoka_Server object
+	 *
+	 * @param object $host An object whose methods will be provided for invokation
+	 * @param bool $hide_errors Pass TRUE for hiding all eventual erros to avoid messing up the response
+	 */
+	public function __construct($host, $hide_errors=FALSE)
 	{
 		//define some things...
-		if($errors != FALSE)error_reporting(0);//avoids messing up the response
+		if($hide_errors != FALSE) error_reporting(0);//avoids messing up the response
 		$this->host = &$host;
 		$this->input = file_get_contents('php://input');
 		$json_errors = array(
@@ -39,6 +50,11 @@ class Tivoka_Server
 		);
 	}
 	
+	/**
+	 * Processes the HTTP input
+	 *
+	 * Notice: Calling this method will stop further execution of the script!
+	 */
 	public function process()
 	{
 		//set header if not already sent...
@@ -76,6 +92,11 @@ class Tivoka_Server
 		$this->respond();
 	}
 	
+	/**
+	 * Outputs the processed response
+	 *
+	 * @access private
+	 */
 	protected function respond()
 	{
 		if(!is_array($this->response))//no array
@@ -99,7 +120,16 @@ class Tivoka_Server
 		}
 	}
 	
-	public static function _is($type,$assoc)
+	/**
+	 * Determines the type of a request
+	 *
+	 * @param string $type Either 'request', 'notification' or 'batch'
+	 * @param array $assoc The parsed JSON-RPC request
+	 * @static
+	 * @return bool
+	 * @access private
+	 */
+	public static function _is($type,array $assoc)
 	{
 		switch($type)
 		{
@@ -133,8 +163,13 @@ class Tivoka_Server
 		return FALSE;		
 	}
 	
-	//callbacks
-	
+	/**
+	 * Receives the computed result
+	 *
+	 * @param mixed $id The id of the original request
+	 * @param mixed $result The computed result
+	 * @access private
+	 */
 	public function returnResult(&$id,&$result)
 	{
 		$this->response[] = array(
@@ -144,7 +179,15 @@ class Tivoka_Server
 		);
 	}
 	
-	public function returnError($id,$code,$data='')
+	/**
+	 * Receives the error from computing the result
+	 *
+	 * @param mixed $id The id of the original request
+	 * @param int $code The specified JSON-RPC error code
+	 * @param mixed $data Additional data
+	 * @access private
+	 */
+	public function returnError(&$id,&$code,&$data=null)
 	{
 		$msg = array(
 			-32700 => 'Parse error',

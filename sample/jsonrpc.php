@@ -12,13 +12,13 @@
 	
 	if($response->isError()) //an error occured for the whole request
 	{
-		var_dump($response->_processerror);
+		var_dump($response->process_error);
 		var_dump($response->error);
 	}else					//no error so far
 	{
 		if($response->result['65499']->isError()) //an error for request 65499?
 		{
-			var_dump($response->result['65499']->_processerror);
+			var_dump($response->result['65499']->process_error);
 			var_dump($response->result['65499']->error);
 		}else
 		{
@@ -26,7 +26,7 @@
 		}
 		if($response->result['65498']->isError()) //an error for request 65499?
 		{
-			var_dump($response->result['65498']->_processerror);
+			var_dump($response->result['65498']->process_error);
 			var_dump($response->result['65498']->error);
 		}else
 		{

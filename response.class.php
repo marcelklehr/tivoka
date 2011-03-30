@@ -1,33 +1,56 @@
 <?php
+/**
+ * @package Tivoka
+ * @author Marcel Klehr <marcel.klehr@gmx.de>
+ * @copyright (c) 2011, Marcel Klehr
+ */
 /*
- * Tivoka_Response
  * Processes the response an acts as an interface for dealing with it
  *
- * @property string $response The original received response.
- * @property mixed $result The extracted, decoded and sanitized result.
- * @property array $error The extracted, decoded and sanitized error. Contains three items: 'msg' (Error message), 'code'(The defined error code), 'data'(More information about the error)
- * @property string $_processerror Contains the error message of an error that occured while connecting th server.
- * @method public __construct($response,$id='')
- *		@param string $param The original received response
- *		@param mixed $id The id of the associated request
- * @method public error() Returns a boolean TRUE if an error occured
+ * @package Tivoka
  */
 class Tivoka_Response
 {
+	/**
+	 * @var mixed The received response in various forms, normally as an array
+	 * @access private
+	 */
 	public $response;
 	
+	/**
+	 * @var mixed The result as received from the target (NULL if an error occured)
+	 */
 	public $result;
+	
+	/**
+	 * @var array The error as received from the target: $error["msg"] => the Error message, $error["code"] => the JSON-RPC error code, $error["data"] => Additional information (NULL if no error occured)
+	 */
 	public $error;
-	public $_processerror;
 	
-	public $json_errors;
+	/**
+	 * @var string Contains information about an occured error while sending/processing the request (NULL if no process error occured)
+	 */
+	public $process_error; 
 	
+	/**
+	 * @var array Contains error messages for json_decode error codes
+	 * @access private
+	 */
+	private $json_errors;
+	
+	/**
+	 * Initializes a Tivoka_Response object
+	 *
+	 * @param string $response The plain JSON-RPC response as received from the target
+	 * @param mixed $id The id of the originally sent request
+	 * @access private
+	 */
 	public function __construct($response,&$id='')
 	{
 		$this->result = NULL;
 		$this->error = NULL;
 		$this->_processerror = NULL;
-		$this->response = $response;
+		$this->response = &$response;
 		
 		$this->json_errors = array(
 		    JSON_ERROR_NONE => 'No error',
@@ -81,12 +104,27 @@ class Tivoka_Response
 		return;
 	}
 	
+	/**
+	 * Determines whether an error occured
+	 *
+	 * @return bool
+	 */
 	public function isError()
 	{
 		if($this->_processerror != NULL || $this->error != NULL)return TRUE;
 		return FALSE;
 	}
 	
+	/**
+	 * Determines whether the response is an error or a result
+	 *
+	 * @param string $type Either 'result' or 'error'
+	 * @param array $assoc The parsed JSON-RPC response
+	 * @param mixed $id The id of the originally sent request
+	 * @static
+	 * @return bool
+	 * @access private
+	 */
 	private static function _is($type,$assoc,&$id)
 	{
 		switch($type)
