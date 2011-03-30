@@ -36,7 +36,7 @@ class Tivoka_Response
 	 * @var array Contains error messages for json_decode error codes
 	 * @access private
 	 */
-	private $json_errors;
+	public $json_errors;
 	
 	/**
 	 * Initializes a Tivoka_Response object
@@ -111,7 +111,7 @@ class Tivoka_Response
 	 */
 	public function isError()
 	{
-		if($this->_processerror != NULL || $this->error != NULL)return TRUE;
+		if($this->process_error != NULL || $this->error != NULL)return TRUE;
 		return FALSE;
 	}
 	

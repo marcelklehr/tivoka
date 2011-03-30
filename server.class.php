@@ -187,7 +187,7 @@ class Tivoka_Server
 	 * @param mixed $data Additional data
 	 * @access private
 	 */
-	public function returnError(&$id,&$code,&$data=null)
+	public function returnError($id,$code,$data=null)
 	{
 		$msg = array(
 			-32700 => 'Parse error',

@@ -31,7 +31,7 @@ class Tivoka_Connection
 		//validate url...
 		if(!filter_var($target, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED))
 			{ throw new InvalidArgumentException('Valid URL (scheme,domain[,path][,file]) required.'); return; }
-		$this->target = parse_url($server_addr);
+		$this->target = parse_url($target);
 		
 		if($this->target['scheme'] !== 'http')
 			{ throw new InvalidArgumentException('Unknown or unsupported scheme given: \''.htmlspecialchars($this->target['url']).'\''); return; }
@@ -87,7 +87,7 @@ class Tivoka_Connection
 		if($respassoc === NULL)
 		{
 			$resp = new Tivoka_Response(FALSE);
-			$resp->_processerror = 'Syntax Error: The received response could not be verified as valid JSON (JSON Error: '.$resp->json_errors[json_last_error()].')' .' Response:<br/><pre>'.htmlspecialchars($response).'</pre>';
+			$resp->process_error = 'Syntax Error: The received response could not be verified as valid JSON (JSON Error: '.$resp->json_errors[json_last_error()].')' .' Response:<br/><pre>'.htmlspecialchars($response).'</pre>';
 			return $resp;
 		}
 		
@@ -95,7 +95,7 @@ class Tivoka_Connection
 		if(count($respassoc) <= 1 || !is_array($respassoc))
 		{
 			$resp = new Tivoka_Response(FALSE);
-			$resp->_processerror = 'Error: Batch response expected. Single or empty response array received.' .'Response:<br/><pre>'.htmlspecialchars($response).'</pre>';
+			$resp->process_error = 'Error: Batch response expected. Single or empty response array received.' .'Response:<br/><pre>'.htmlspecialchars($response).'</pre>';
 			return $resp;
 		}
 		
