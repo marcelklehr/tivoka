@@ -9,7 +9,7 @@
  *
  * @package Tivoka
  */
-class Tivoka_Response
+class Tivoka_ClientResponse
 {
 	const ERROR_NO_RESPONSE = 1;
 	const ERROR_INVALID_JSON = 2;
@@ -38,7 +38,7 @@ class Tivoka_Response
 	public $process_error; 
 	
 	/**
-	 * Initializes a Tivoka_Response object
+	 * Initializes a Tivoka_ClientResponse object
 	 *
 	 * @param string $response The plain JSON-RPC response as received from the target
 	 * @access private

@@ -9,7 +9,7 @@
  *
  * @package Tivoka
  */
-class Tivoka_Connection
+class Tivoka_ClientConnection
 {
 	/**
 	 * @var ressource The ressource returned by fsockopen()
@@ -22,7 +22,7 @@ class Tivoka_Connection
 	public $target;
 	
 	/**
-	 * Initializes a Tivoka_Connection object
+	 * Initializes a Tivoka_ClientConnection object
 	 *
 	 * @param string $target the URL of the target server (MUST include http scheme)
 	 */
@@ -50,10 +50,10 @@ class Tivoka_Connection
 	 * Sends a JSON-RPC request to the defined target
 	 *
 	 * @param array $batch A list of request arrays, each containing 'method', 'params' (optional) and 'id' (optional)
-	 * @see Tivoka_Response
-	 * @return Tivoka_Response
+	 * @see Tivoka_ClientResponse
+	 * @return Tivoka_ClientResponse
 	 */
-	public function send(Tivoka_Request $request)
+	public function send(Tivoka_ClientRequest $request)
 	{
 		$json = $request->getRequest();
 		//preparing...
@@ -67,7 +67,7 @@ class Tivoka_Connection
 		//sending...
 		if(fwrite($this->connection, $get, strlen($get)) === 0)
 		{
-			return $request->processError(Tivoka_Response::ERROR_CONNECTION_FAILED);
+			return $request->processError(Tivoka_ClientResponse::ERROR_CONNECTION_FAILED);
 		}
 		
 		//receiving response...
@@ -75,12 +75,12 @@ class Tivoka_Connection
 		$httpresp = stream_get_contents($this->connection);
 		if($httpresp === FALSE)
 		{
-			return $request->processError(Tivoka_Response::ERROR_CONNECTION_FAILED);
+			return $request->processError(Tivoka_ClientResponse::ERROR_CONNECTION_FAILED);
 		}
 		
 		if(strpos(substr($httpresp,0,50),'404 Not Found') !== FALSE)
 		{
-			return $request->processError(Tivoka_Response::ERROR_HTTP_NOT_FOUND);
+			return $request->processError(Tivoka_ClientResponse::ERROR_HTTP_NOT_FOUND);
 		}
 		
 		$response = '';
