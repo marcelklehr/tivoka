@@ -1,0 +1,24 @@
+#
+#	Tivoka
+#	A leightweight JSON-RPC client and server implementation for PHP
+#	Copyright (C) 2011  Marcel Klehr <marcel.klehr@gmx.de>
+#
+#	This program is free software; you can redistribute it and/or modify it under the 
+#	terms of the GNU General Public License as published by the Free Software Foundation;
+#	either version 3 of the License, or (at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+#	without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#	See the GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License along with this program;
+#	if not, see <http://www.gnu.org/licenses/>.
+#
+
+Tivoka
+A leightweight JSON-RPC client and server implementation for PHP
+
+The goal of this project is to provide an easy to use and specification compatible JSON-RPC implementation for PHP.
+This version is based on the JSON-RPC 2.0 specification proposal.
+If you are about to use it in your project you will simply have to include 'tivoka.php' in the root directory of Tivoka.
+For a quick introduction how to use Tivoka have a look at the 'sample/' directory and explore the samples.
