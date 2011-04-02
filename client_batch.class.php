@@ -1,9 +1,46 @@
 <?php
+/**
+ *	Tivoka - a JSON-RPC implementation for PHP
+ *	Copyright (C) 2011  Marcel Klehr <marcel.klehr@gmx.de>
+ *
+ *	This program is free software; you can redistribute it and/or modify it under the 
+ *	terms of the GNU General Public License as published by the Free Software Foundation;
+ *	either version 3 of the License, or (at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *	without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License along with this program;
+ *	if not, see <http://www.gnu.org/licenses/>.
+ *
+ * @package Tivoka
+ * @author Marcel Klehr <marcel.klehr@gmx.de>
+ * @copyright (c) 2011, Marcel Klehr
+ */
+ /**
+ * A JSON-RPC batch request
+ * @package Tivoka
+ */
 class Tivoka_ClientRequestBatch extends Tivoka_ClientRequest
 {
+	/**
+	 * @var array $id A list of the request objects to send as values and the ids as keys
+	 * @access private
+	 */
 	public $id;
+	
+	/**
+	 * @var array A list of the uparsed requests as an associative array
+	 * @access private
+	 */
 	private $json;
 	
+	/**
+	 * Initializes a new JSON-RPC batch request
+	 * @see Tivoka_ClientConnection::send()
+	 * @param array $batch A list of requests to include, each a Tivoka_ClientRequest
+	 */
 	public function __construct(array $batch)
 	{
 		$this->id = array();
@@ -103,6 +140,10 @@ class Tivoka_ClientRequestBatch extends Tivoka_ClientRequest
 		return $responses;
 	}
 	
+	/**
+	 * Maps the error on each child request object, so the response can be returned as an array
+	 * @return array An array of with Tivoka_ClientResponse objects as values and their ids as keys
+	 */
 	private function mapProcessError($error,$response=null)
 	{
 		$responses = array();

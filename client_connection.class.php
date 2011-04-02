@@ -1,12 +1,25 @@
 <?php
 /**
+ *	Tivoka - a JSON-RPC implementation for PHP
+ *	Copyright (C) 2011  Marcel Klehr <marcel.klehr@gmx.de>
+ *
+ *	This program is free software; you can redistribute it and/or modify it under the 
+ *	terms of the GNU General Public License as published by the Free Software Foundation;
+ *	either version 3 of the License, or (at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *	without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License along with this program;
+ *	if not, see <http://www.gnu.org/licenses/>.
+ *
  * @package Tivoka
  * @author Marcel Klehr <marcel.klehr@gmx.de>
  * @copyright (c) 2011, Marcel Klehr
  */
 /**
  * Opens a connection to the given JSONJ-RPC server for invoking the provided remote procedures
- *
  * @package Tivoka
  */
 class Tivoka_ClientConnection
@@ -23,7 +36,6 @@ class Tivoka_ClientConnection
 	
 	/**
 	 * Initializes a Tivoka_ClientConnection object
-	 *
 	 * @param string $target the URL of the target server (MUST include http scheme)
 	 */
 	public function __construct($target)
@@ -48,10 +60,9 @@ class Tivoka_ClientConnection
 	
 	/**
 	 * Sends a JSON-RPC request to the defined target
-	 *
-	 * @param array $batch A list of request arrays, each containing 'method', 'params' (optional) and 'id' (optional)
+	 * @param Tivoka_ClientRequest $request A Tivoka request
 	 * @see Tivoka_ClientResponse
-	 * @return Tivoka_ClientResponse
+	 * @return mixed Depends on the given request object
 	 */
 	public function send(Tivoka_ClientRequest $request)
 	{

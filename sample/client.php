@@ -3,7 +3,7 @@
 	
 	include('../tivoka.php');																			//STEP 1
 	
-	$jsonrpc = new Tivoka_ClientConnection('http://'.$_SERVER['SERVER_NAME'].dirname($_SERVER['SCRIPT_NAME']).'/jsonrpcserver.php');	//STEP 2
+	$jsonrpc = new Tivoka_ClientConnection('http://'.$_SERVER['SERVER_NAME'].dirname($_SERVER['SCRIPT_NAME']).'/server.php');	//STEP 2
 	
 	$response = $jsonrpc->send(new Tivoka_ClientRequestBatch(array(								//STEP 3
 		new Tivoka_ClientRequestRequest('65498','demo.substract',array(43,1)),

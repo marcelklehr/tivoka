@@ -1,5 +1,19 @@
 <?php
 /**
+ *	Tivoka - a JSON-RPC implementation for PHP
+ *	Copyright (C) 2011  Marcel Klehr <marcel.klehr@gmx.de>
+ *
+ *	This program is free software; you can redistribute it and/or modify it under the 
+ *	terms of the GNU General Public License as published by the Free Software Foundation;
+ *	either version 3 of the License, or (at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *	without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License along with this program;
+ *	if not, see <http://www.gnu.org/licenses/>.
+ *
  * @package Tivoka
  * @author Marcel Klehr <marcel.klehr@gmx.de>
  * @copyright (c) 2011, Marcel Klehr
@@ -16,9 +30,9 @@ class Tivoka_ClientResponse
 	const ERROR_INVALID_RESPONSE = 3;
 	const ERROR_CONNECTION_FAILED = 4;
 	const ERROR_HTTP_NOT_FOUND = 5;
+	
 	/**
 	 * @var mixed The received response as received from the target server
-	 * @access private
 	 */
 	public $response;
 	

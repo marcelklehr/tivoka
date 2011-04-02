@@ -1,17 +1,19 @@
 <?php
-/*
- * Tivoka_ServerArrayHost
- * Helper class for registering anonymous function at the server on the fly
+/**
+ *	Tivoka - a JSON-RPC implementation for PHP
+ *	Copyright (C) 2011  Marcel Klehr <marcel.klehr@gmx.de>
  *
- * @method public __construct($methods)
- *		@param array $methods An array with the names of the methods as keys and anonymous functions as their values
- * @method public register($name,$method)
- *		@param string $name The name of the method to register
- *		@param function $method An anonymous function to execute
- * @method public exist($name) 
- *		@param string $name The name of the method to check for existence
- */
- /**
+ *	This program is free software; you can redistribute it and/or modify it under the 
+ *	terms of the GNU General Public License as published by the Free Software Foundation;
+ *	either version 3 of the License, or (at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *	without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *	See the GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License along with this program;
+ *	if not, see <http://www.gnu.org/licenses/>.
+ *
  * @package Tivoka
  * @author Marcel Klehr <marcel.klehr@gmx.de>
  * @copyright (c) 2011, Marcel Klehr
