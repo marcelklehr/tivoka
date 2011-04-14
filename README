@@ -24,10 +24,10 @@ send a request, a notification or even a batch and get the result immediately.
 
 Using Tivoka
 ------------
-If you are about to use it in your project you will simply have toinclude 'tivoka.php'
+If you are about to use it in your project you will simply have toinclude 'include.php'
 in the root directory of Tivoka.
-For a quick introduction how to use Tivoka check out the 'sample/' directory
-and explore the samples.
+Check out the 'sample/' directory and explore the samples for a quick introduction
+how to use Tivoka.
 
 It's free
 ---------
