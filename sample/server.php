@@ -1,5 +1,5 @@
 <?php
-include('../tivoka.php');	//STEP 1
+include('../include.php');	//STEP 1
 
 //define the remote procedures in an array
 $server = array(							//STEP 2
