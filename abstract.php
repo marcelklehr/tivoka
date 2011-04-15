@@ -83,4 +83,26 @@ abstract class Tivoka_ClientRequest
 		return FALSE;		
 	}
 }
+
+class TivokaException extends Exception
+{
+	public function __construct($message = '', $code = 0, Exception $previous = NULL)
+	{
+		parent::__construct($message, $code, $previous);
+	}
+}
+class Tivoka_InvalidTargetException extends TivokaException
+{
+	public function __construct($message = '', $code = 0, Exception $previous = NULL)
+	{
+		parent::__construct($message, $code, $previous);
+	}
+}
+class Tivoka_ConnectionFailedException extends TivokaException
+{
+	public function __construct($message = '', $code = 0, Exception $previous = NULL)
+	{
+		parent::__construct($message, $code, $previous);
+	}
+}
 ?>

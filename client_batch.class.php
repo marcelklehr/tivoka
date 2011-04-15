@@ -38,6 +38,8 @@ class Tivoka_ClientRequestBatch extends Tivoka_ClientRequest
 	
 	/**
 	 * Initializes a new JSON-RPC batch request
+	 *
+	 * All values other than Tivoka_ClientRequest will be ignored
 	 * @see Tivoka_ClientConnection::send()
 	 * @param array $batch A list of requests to include, each a Tivoka_ClientRequest
 	 */
@@ -69,7 +71,6 @@ class Tivoka_ClientRequestBatch extends Tivoka_ClientRequest
 				$this->json[] = $assoc;
 				continue;
 			}
-			if(($request instanceof Tivoka_ClientRequest) == FALSE) throw new InvalidArgumentException('Expected parameter 1 to be list of Tivoka_ClientRequest objects');
 		}
 	}
 	

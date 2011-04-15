@@ -37,20 +37,23 @@ class Tivoka_ClientConnection
 	/**
 	 * Initializes a Tivoka_ClientConnection object
 	 * @param string $target the URL of the target server (MUST include http scheme)
+	 * @throws Tivoka_InvalidTargetException
+	 * @throws Tivoka_ConnectionFailedException
 	 */
 	public function __construct($target)
 	{
 		//validate url...
 		if(!filter_var($target, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED))
-			{ throw new InvalidArgumentException('Valid URL (scheme,domain[,path][,file]) required.'); return; }
+			throw new Tivoka_InvalidTargetException('Valid URL (scheme,domain[,path][,file]) required.', 1);
 		$this->target = parse_url($target);
 		
 		if($this->target['scheme'] !== 'http')
-			{ throw new InvalidArgumentException('Unknown or unsupported scheme given: \''.htmlspecialchars($this->target['url']).'\''); return; }
+			throw new Tivoka_InvalidTargetException('Unknown or unsupported scheme given.', 2);
 		
 		//connecting...
 		$this->connection = fsockopen($this->target['host'], 80, $errno, $errstr);
-		if(!$this->connection)	throw new InvalidArgumentException('Cannot connect to the given URL (\'fsockopen\' failed)');
+		if(!$this->connection)
+			throw new Tivoka_ConnectionFailedException($errstr, 3);
 	}
 	
 	public function __destruct()

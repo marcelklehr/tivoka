@@ -46,13 +46,14 @@ class Tivoka_ServerArrayHost
 	/**
 	 * Registers a server method
 	 *
+	 * Returns FALSE if no valid callback has been given
 	 * @param string $name The name of the method to provide (already existing methods with the same name will be overridden)
 	 * @param callback $method The callback
 	 * @returns bool
 	 */
 	public function register($name,$method)
 	{
-		if(!is_callable($method)){ throw new BadFunctionCallException('Valid Callback reqired, uncallable function given for \''.htmlspecialchars($name).'\''); return FALSE;}
+		if(!is_callable($method)) return FALSE;
 		
 		$this->methods[$name] = $method;
 		return TRUE;
