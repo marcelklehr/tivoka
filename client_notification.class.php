@@ -67,7 +67,7 @@ class Tivoka_ClientRequestNotification extends Tivoka_ClientRequest
 		return json_encode($this->json);
 	}
 	
-	public function getResponse($response)
+	public function processResponse($response)
 	{
 		return Tivoka_ClientResponse('');
 	}

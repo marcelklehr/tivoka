@@ -67,7 +67,7 @@ class Tivoka_ClientRequestRequest extends Tivoka_ClientRequest
 		return json_encode($this->json);
 	}
 	
-	public function getResponse($response)
+	public function processResponse($response)
 	{
 		//process error?
 		if($response === FALSE)

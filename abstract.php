@@ -41,7 +41,7 @@ abstract class Tivoka_ClientRequest
 	 * @param string $response The plain json data
 	 * @return mixed Usually this method returns a Tivoka_ClientResponse object
 	 */
-	abstract public function getResponse($response);
+	abstract public function processResponse($response);
 	
 	/**
 	 * Gets called on a process error

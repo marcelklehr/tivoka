@@ -84,7 +84,7 @@ class Tivoka_ClientRequestBatch extends Tivoka_ClientRequest
 		return json_encode($this->json);
 	}
 	
-	public function getResponse($response)
+	public function processResponse($response)
 	{
 		//process error?
 		if($response === FALSE)
@@ -128,7 +128,7 @@ class Tivoka_ClientRequestBatch extends Tivoka_ClientRequest
 			}
 			
 			//normal response...
-			$responses[ $resp['id'] ] = $ids[ $resp['id'] ]->getResponse(json_encode($resp));
+			$responses[ $resp['id'] ] = $ids[ $resp['id'] ]->processResponse(json_encode($resp));
 			unset($ids[ $resp['id'] ]);
 		}
 		
@@ -136,7 +136,7 @@ class Tivoka_ClientRequestBatch extends Tivoka_ClientRequest
 		foreach($ids as $req)
 		{
 			$resp = array_shift($nullresps);
-			$responses[ $req->id ] = $ids[ $req->id ]->getResponse(json_encode($resp));
+			$responses[ $req->id ] = $ids[ $req->id ]->processResponse(json_encode($resp));
 		}
 		return $responses;
 	}

@@ -103,7 +103,7 @@ class Tivoka_ClientConnection
 			list(,$response) = explode("\r\n\r\n",$httpresp,2);
 		}
 		
-		return $request->getResponse($response);
+		return $request->processResponse($response);
 	}
 }
 ?>
