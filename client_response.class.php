@@ -29,7 +29,6 @@ class Tivoka_ClientResponse
 	const ERROR_INVALID_JSON = 2;
 	const ERROR_INVALID_RESPONSE = 3;
 	const ERROR_CONNECTION_FAILED = 4;
-	const ERROR_HTTP_NOT_FOUND = 5;
 	
 	/**
 	 * @var mixed The received response as received from the target server
@@ -47,7 +46,7 @@ class Tivoka_ClientResponse
 	public $error;
 	
 	/**
-	 * @var string Contains information about an occured error while sending/processing the request (NULL if no process error occured)
+	 * @var int May be one of the defined ERROR constants (NULL if no process error occured)
 	 */
 	public $process_error; 
 	
