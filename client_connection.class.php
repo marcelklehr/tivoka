@@ -33,7 +33,6 @@ class Tivoka_ClientConnection
 	 * Initializes a Tivoka_ClientConnection object
 	 * @param string $target the URL of the target server (MUST include http scheme)
 	 * @throws Tivoka_InvalidTargetException
-	 * @throws Tivoka_ConnectionFailedException
 	 */
 	public function __construct($target)
 	{
