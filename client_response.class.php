@@ -57,7 +57,7 @@ class Tivoka_ClientResponse
 	 * @param string $response The plain JSON-RPC response as received from the target
 	 * @access private
 	 */
-	public function __construct($response)
+	public function __construct($response=FALSE)
 	{
 		$this->result = NULL;
 		$this->error = NULL;
