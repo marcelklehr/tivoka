@@ -50,48 +50,17 @@ abstract class Tivoka_ClientRequest
 	 * @return mixed Usually returns a Tivoka_ClientResponse object
 	 */
 	abstract public function processError($error);
-	
-	/**
-	 * Checks whether the given response is a valid result
-	 * @param array $assoc The parsed JSON-RPC response as an associative array
-	 * @param mixed $id The id of the original request
-	 * @return bool
-	 */
-	protected static function _isResult(array $assoc,$id)
-	{
-		if(	$assoc['jsonrpc'] == '2.0'	&&
-			isset($assoc['result'])	)
-		{
-			if($assoc['id'] == $id || !isset($assoc['id'])) return TRUE;
-		}
-		return FALSE;	
-	}
-	
-	/**
-	 * Checks whether the given response is a valid error
-	 * @param array $assoc The parsed JSON-RPC response as an associative array
-	 * @param mixed $id The id of the original request
-	 * @return bool
-	 */
-	protected static function _isError(array $assoc,$id)
-	{
-		if(	$assoc['jsonrpc'] == '2.0'	&&
-			isset($assoc['error'])	)
-		{
-			if($assoc['id'] == $id || $assoc['id'] == null) return TRUE;
-		}
-		return FALSE;		
-	}
 }
 
-class TivokaException extends Exception
+class Tivoka_Exception extends Exception
 {
 	public function __construct($message = '', $code = 0, Exception $previous = NULL)
 	{
 		parent::__construct($message, $code, $previous);
 	}
 }
-class Tivoka_InvalidTargetException extends TivokaException
+
+class Tivoka_InvalidTargetException extends Tivoka_Exception
 {
 	public function __construct($message = '', $code = 0, Exception $previous = NULL)
 	{

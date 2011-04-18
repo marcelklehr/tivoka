@@ -115,5 +115,31 @@ class Tivoka_ClientRequestRequest extends Tivoka_ClientRequest
 		$resp->process_error = Tivoka_ClientResponse::ERROR_INVALID_RESPONSE;
 		return $resp;
 	}
+	
+	/**
+	 * Checks whether the given response is a valid result
+	 * @param array $assoc The parsed JSON-RPC response as an associative array
+	 * @param mixed $id The id of the original request
+	 * @return bool
+	 */
+	protected static function _isResult(array $assoc,$id)
+	{
+		if(isset($assoc['jsonrpc'], $assoc['result']))
+			return ($assoc['id'] == $id || !isset($assoc['id']) AND $assoc['jsonrpc'] == '2.0');
+		return FALSE;
+	}
+	
+	/**
+	 * Checks whether the given response is a valid error
+	 * @param array $assoc The parsed JSON-RPC response as an associative array
+	 * @param mixed $id The id of the original request
+	 * @return bool
+	 */
+	protected static function _isError(array $assoc,$id)
+	{
+		if(isset($assoc['jsonrpc'], $assoc['error']))
+			return ($assoc['id'] == $id || !isset($assoc['id']) AND $assoc['jsonrpc'] == '2.0');
+		return FALSE;		
+	}
 }
 ?>
