@@ -49,11 +49,6 @@ class Tivoka_ClientConnection
 		
 		if($this->target['scheme'] !== 'http')
 			throw new Tivoka_InvalidTargetException('Unknown or unsupported scheme given.', 2);
-		
-		//connecting...
-		$this->connection = fsockopen($this->target['host'], 80, $errno, $errstr);
-		if(!$this->connection)
-			throw new Tivoka_ConnectionFailedException($errstr, 3);
 	}
 	
 	public function __destruct()
@@ -78,6 +73,11 @@ class Tivoka_ClientConnection
 			. "Connection: Close\r\n\r\n"
 			. $json;
 		
+		//connecting...
+		$this->connection = fsockopen($this->target['host'], 80, $errno, $errstr);
+		if(!$this->connection)
+			throw new Tivoka_ConnectionFailedException($errstr, 3);
+		
 		//sending...
 		if(fwrite($this->connection, $get, strlen($get)) === 0)
 		{
@@ -85,7 +85,7 @@ class Tivoka_ClientConnection
 		}
 		
 		//receiving response...
-		stream_set_timeout ($this->connection, 10);
+		stream_set_timeout($this->connection, 10);
 		$httpresp = stream_get_contents($this->connection);
 		if($httpresp === FALSE)
 		{
