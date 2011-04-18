@@ -1,12 +1,21 @@
 <?php
-include('../include.php');	//STEP 1
+/**
+ * STEP 1
+ * Load the Tivoka package
+ */
+include('../include.php');
 
-//define the remote procedures in an array
-$server = array(							//STEP 2
+/**
+ * STEP 2
+ * Define an array of remote methods
+ */
+$methods = array(
+
 	'demo.sayHello' => function($request)
 	{
 		$request->returnResult('Hello World!');
 	},
+	
 	'demo.substract' => function($request)
 	{
 		$tmp = array_keys($request->params);
@@ -22,8 +31,16 @@ $server = array(							//STEP 2
 	}
 );
 
-//convert the array and process the request
-$server = new Tivoka_ServerServer(new Tivoka_ServerArrayHost($server));		//STEP 3
-$server->process();
+/**
+ * STEP 3
+ * Implement the methods
+ */
+$proxy = new Tivoka_ServerArrayHost($method);
 
+/**
+ * STEP 4
+ * Init the server and process the request
+ */
+$server = new Tivoka_ServerServer($proxy);
+$server->process();
 ?>
