@@ -25,12 +25,7 @@
 class Tivoka_ClientConnection
 {
 	/**
-	 * @var ressource The ressource returned by fsockopen()
-	 */
-	public $connection;
-	
-	/**
-	 * @var array The target, parsed by parse_url()
+	 * @var array The target
 	 */
 	public $target;
 	
@@ -45,15 +40,13 @@ class Tivoka_ClientConnection
 		//validate url...
 		if(!filter_var($target, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED))
 			throw new Tivoka_InvalidTargetException('Valid URL (scheme,domain[,path][,file]) required.', 1);
-		$this->target = parse_url($target);
 		
-		if($this->target['scheme'] !== 'http')
+		//validate scheme...
+		$t = parse_url($target);
+		if($t['scheme'] !== 'http')
 			throw new Tivoka_InvalidTargetException('Unknown or unsupported scheme given.', 2);
-	}
-	
-	public function __destruct()
-	{
-		fclose($this->connection);
+
+		$this->target = $target;
 	}
 	
 	/**
@@ -65,42 +58,24 @@ class Tivoka_ClientConnection
 	public function send(Tivoka_ClientRequest $request)
 	{
 		$json = $request->getRequest();
-		//preparing...
-		$get = "GET ".$this->target['path']." HTTP/1.1\r\n"
-			. "Host: ".$this->target['host']."\r\n"
-			. "Content-Type: application/json\r\n"
-			. "Content-Length: ".strlen($json)."\r\n"
-			. "Connection: Close\r\n\r\n"
-			. $json;
 		
-		//connecting...
-		$this->connection = fsockopen($this->target['host'], 80, $errno, $errstr);
-		if(!$this->connection)
-			throw new Tivoka_ConnectionFailedException($errstr, 3);
+		//preparing...
+		$context = stream_context_create(array(
+			'http' => array(
+				'content' => $json,
+				'header' => "Content-Type: application/json\r\n".
+							"Connection: Close\r\n",
+				'method' => 'post',
+				'protocol_version' => 1.1,
+				'timeout' => 10.0
+			)
+		));
 		
 		//sending...
-		if(fwrite($this->connection, $get, strlen($get)) === 0)
+		$response = @file_get_contents($this->target,false,$context);
+		if($response === FALSE)
 		{
 			return $request->processError(Tivoka_ClientResponse::ERROR_CONNECTION_FAILED);
-		}
-		
-		//receiving response...
-		stream_set_timeout($this->connection, 10);
-		$httpresp = stream_get_contents($this->connection);
-		if($httpresp === FALSE)
-		{
-			return $request->processError(Tivoka_ClientResponse::ERROR_CONNECTION_FAILED);
-		}
-		
-		if(strpos(substr($httpresp,0,50),'404 Not Found') !== FALSE)
-		{
-			return $request->processError(Tivoka_ClientResponse::ERROR_HTTP_NOT_FOUND);
-		}
-		
-		$response = '';
-		if(strpos($httpresp,"\r\n\r\n") !== FALSE)
-		{
-			list(,$response) = explode("\r\n\r\n",$httpresp,2);
 		}
 		
 		return $request->processResponse($response);
