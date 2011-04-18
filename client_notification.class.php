@@ -69,7 +69,7 @@ class Tivoka_ClientRequestNotification extends Tivoka_ClientRequest
 	
 	public function processResponse($response)
 	{
-		return Tivoka_ClientResponse('');
+		return new Tivoka_ClientResponse('');
 	}
 }
 ?>
