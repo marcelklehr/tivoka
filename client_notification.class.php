@@ -48,11 +48,7 @@ class Tivoka_ClientRequestNotification extends Tivoka_ClientRequest
 		$this->id = null;
 		
 		//prepare...
-		$this->json = array(
-			'jsonrpc'=>'2.0',
-			'method'=>&$method
-		);
-		if($params !== null) $this->json['params'] = $params;
+		$this->json = self::_prepareRequest($method, $params);
 	}
 	
 	public function processError($error)
@@ -69,7 +65,24 @@ class Tivoka_ClientRequestNotification extends Tivoka_ClientRequest
 	
 	public function processResponse($response)
 	{
-		return new Tivoka_ClientResponse('');
+		return new Tivoka_ClientResponse($response);
 	}
+	
+	
+	/**
+	 * Prepares the request
+	 * @param string $method The method to be called
+	 * @param mixed $params Additional parameters
+	 * @return mixed Returns the prepared assotiative array to encode
+	 */
+	protected static function _prepareRequest($method,$params=null)
+	{
+		return array(
+			'jsonrpc'=>'2.0',
+			'method'=>&$method
+		);
+		if($params !== null) $this->json['params'] = $params;
+	}
+	
 }
 ?>

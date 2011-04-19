@@ -26,7 +26,7 @@ $methods = array(
 		{
 			$request->returnError(-32602);return False;
 		}
-		$request->returnResult($request->params[0] - $request->params[1]);
+		$request->returnResult(intval($request->params[0]) - intval($request->params[1]));
 		return TRUE;
 	}
 );
@@ -35,7 +35,7 @@ $methods = array(
  * STEP 3
  * Implement the methods
  */
-$proxy = new Tivoka_ServerArrayHost($method);
+$proxy = new Tivoka_ServerArrayHost($methods);
 
 /**
  * STEP 4

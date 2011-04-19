@@ -19,7 +19,8 @@
 	$request1	= new Tivoka_ClientRequestRequest('65498','demo.substract',array(43,1));
 	$request2	= new Tivoka_ClientRequestRequest('65499','demo.sayHello');
 	$batch		= new Tivoka_ClientRequestBatch(array($request1,$request2));
-	$response = $jsonrpc->send($batch);
+	$response	= $jsonrpc->send($batch);
+	
 	
 	/**
 	 * Display the Results...
@@ -34,6 +35,9 @@
 	
 	echo '<pre>';
 	
+	/**
+	 * Display reponse of request 65499
+	 */
 	if($response['65499']->isError())
 	{
 		//an error for request 65499
@@ -45,6 +49,10 @@
 		//the result for request 65499
 		var_dump($response['65499']->result);
 	}
+	
+	/**
+	 * Display reponse of request 65498
+	 */
 	if($response['65498']->isError())
 	{
 		//an error for request 65499

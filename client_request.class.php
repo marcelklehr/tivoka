@@ -47,12 +47,7 @@ class Tivoka_ClientRequestRequest extends Tivoka_ClientRequest
 		$this->id = $id;
 		
 		//prepare...
-		$this->json = array(
-			'jsonrpc'=>'2.0',
-			'method'=>&$method,
-			'id'=>&$id
-			);
-		if($params !== null) $this->json['params'] = &$params;
+		$this->json = self::_prepareRequest($id, $method, $params);
 	}
 	
 	public function processError($error)
@@ -94,21 +89,21 @@ class Tivoka_ClientRequestRequest extends Tivoka_ClientRequest
 		}
 		
 		//server error?
-		if(self::_isError($respassoc,$this->id))
+		if(($error = self::_parseError($respassoc,$this->id)) !== FALSE)
 		{
 			$resp = new Tivoka_ClientResponse($response);
-			$resp->error['msg'] = $respassoc['error']['message'];
-			$resp->error['code'] = $respassoc['error']['code'];
-			$resp->error['data'] = $respassoc['error']['data'];
+			$resp->error['msg'] = $error['message'];
+			$resp->error['code'] = $error['code'];
+			$resp->error['data'] = $error['data'];
 			return $resp;
 		}
 		
 		//valid result?
-		if(self::_isResult($respassoc,$this->id))
+		if(($result = self::_parseResult($respassoc,$this->id)) !== FALSE)
 		{
 			$resp = new Tivoka_ClientResponse($response);
-			$resp->result = $respassoc['result'];
-			return $resp;	
+			$resp->result = $result['result'];
+			return $resp;
 		}
 		
 		$resp = new Tivoka_ClientResponse($response);
@@ -116,30 +111,66 @@ class Tivoka_ClientRequestRequest extends Tivoka_ClientRequest
 		return $resp;
 	}
 	
+	
+	/**
+	 * Prepares the request
+	 * @param mixed $id The id of the original request
+	 * @param string $method The method to be called
+	 * @param mixed $params Additional parameters
+	 * @return mixed Returns the prepared assotiative array to encode
+	 */
+	protected static function _prepareRequest($id, $method, $params=null)
+	{
+		$request = array(
+			'jsonrpc' => '2.0',
+			'id' => $id,
+			'method' => $method,
+		);
+		
+		if($params !== null) $request['params'] = $params;
+		return $request;
+	}
+	
 	/**
 	 * Checks whether the given response is a valid result
 	 * @param array $assoc The parsed JSON-RPC response as an associative array
 	 * @param mixed $id The id of the original request
-	 * @return bool
+	 * @return mixed Returns the parsed JSON object
 	 */
-	protected static function _isResult(array $assoc,$id)
+	protected static function _parseResult(array $assoc,$id)
 	{
-		if(isset($assoc['jsonrpc'], $assoc['result']))
-			return ($assoc['id'] == $id || !isset($assoc['id']) AND $assoc['jsonrpc'] == '2.0');
-		return FALSE;
+		if(isset($assoc['jsonrpc'], $assoc['result']) === FALSE)
+			return FALSE;
+		if($assoc['id'] !== $id && isset($assoc['id']) OR $assoc['jsonrpc'] != '2.0')
+			return FALSE;
+		
+		return array(
+			'id' => $assoc['id'],
+			'result' => $assoc['result']
+		);	
 	}
 	
 	/**
-	 * Checks whether the given response is a valid error
+	 * Checks whether the given response is valid and an error
 	 * @param array $assoc The parsed JSON-RPC response as an associative array
 	 * @param mixed $id The id of the original request
-	 * @return bool
+	 * @return mixed Returns the parsed JSON object
 	 */
-	protected static function _isError(array $assoc,$id)
+	protected static function _parseError(array $assoc,$id)
 	{
-		if(isset($assoc['jsonrpc'], $assoc['error']))
-			return ($assoc['id'] == $id || !isset($assoc['id']) AND $assoc['jsonrpc'] == '2.0');
-		return FALSE;		
+		if(isset($assoc['jsonrpc'], $assoc['error']) == FALSE)
+			return FALSE;
+			
+		if($assoc['id'] != $id && isset($assoc['id']) OR $assoc['jsonrpc'] != '2.0')
+			return FALSE;
+		
+		if(isset($assoc['error']['message'], $assoc['error']['code']) === FALSE)
+			return FALSE;
+		
+		return array(
+			'id' => $assoc['id'],
+			'error' => $assoc['error']
+		);	
 	}
 }
 ?>
