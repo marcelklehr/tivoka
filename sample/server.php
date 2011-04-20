@@ -18,9 +18,9 @@ $methods = array(
 	
 	'demo.substract' => function($request)
 	{
+		if(!is_array($request->params)) { $request->returnError(-32602); return FALSE;}
 		$tmp = array_keys($request->params);
-		if(	!is_array($request->params) ||
-			!count($request->params) == 2 || 
+		if(	!count($request->params) == 2 || 
 			!is_numeric($request->params[array_pop($tmp)]) ||
 			!is_numeric($request->params[array_pop($tmp)]) )
 		{

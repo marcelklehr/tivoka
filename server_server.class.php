@@ -72,12 +72,12 @@ class Tivoka_ServerServer
 	public function process()
 	{
 		//set header if not already sent...
-		if(!headers_sent()) header('Content-type: application/json');
+		if(headers_sent() === FALSE) header('Content-type: application/json');
 		
 		//validate input...
 		
 		//check existence...
-		if(trim($this->input) == '')
+		if(trim($this->input) === '')
 		{
 			$this->returnError(null,-32600);
 			$this->respond();
@@ -92,9 +92,9 @@ class Tivoka_ServerServer
 		}
 		
 		//process batch...
-		if(self::_is('batch',$this->input))
+		if(($batch = self::_parseBatch($this->input)) !== FALSE)
 		{
-			foreach($this->input as $request)
+			foreach($batch as $request)
 			{
 				new Tivoka_ServerProcessor($request,$this);
 			}
@@ -117,17 +117,20 @@ class Tivoka_ServerServer
 		{
 			exit;
 		}
+		
 		$count = count($this->response);
 		if($count == 1)//single request
 		{
 			print json_encode($this->response[0]);
 			exit;
 		}
+		
 		if($count > 1)//batch request
 		{
 			print json_encode($this->response);
 			exit;
 		}
+		
 		if($count < 1)//no response
 		{
 			exit;
@@ -135,46 +138,78 @@ class Tivoka_ServerServer
 	}
 	
 	/**
-	 * Determines the type of a request
+	 * Validates and sanitizes a normal request
 	 *
-	 * @param string $type Either 'request', 'notification' or 'batch'
-	 * @param array $assoc The parsed JSON-RPC request
+	 * @param array $assoc The json-parsed JSON-RPC request
 	 * @static
-	 * @return bool
+	 * @return array Returns tghe sanitized request and if it was invalid, a boolean FALSE is returned
 	 * @access private
 	 */
-	public static function _is($type,array $assoc)
+	public static function _parseRequest(array $assoc)
 	{
-		switch($type)
+		if(isset($assoc['jsonrpc'], $assoc['id'], $assoc['method']) === FALSE)
+			return FALSE;
+		if($assoc['jsonrpc'] != '2.0')
+			return FALSE;
+		
+		$request = array(
+			'id' =>  &$assoc['id'],
+			'method' => &$assoc['method']
+		);
+		if(isset($assoc['params'])) $request['params'] = &$assoc['params'];
+		
+		return $request;
+	}
+	
+	/**
+	 * Validates and sanitizes a notification
+	 *
+	 * @param array $assoc The json-parsed JSON-RPC request
+	 * @static
+	 * @return array Returns the sanitized request and if it was invalid, a boolean FALSE is returned
+	 * @access private
+	 */
+	public static function _parseNotification(array $assoc)
+	{
+		if(isset($assoc['jsonrpc'], $assoc['method']) === FALSE || isset($assoc['id']) !== FALSE)
+			return FALSE;
+		if($assoc['jsonrpc'] != '2.0')
+			return FALSE;
+		
+		$request = array(
+			'method' => &$assoc['method']
+		);
+		if(isset($assoc['params'])) $request['params'] = &$assoc['params'];
+		
+		return $request;
+	}
+	
+	/**
+	 * Validates a batch request
+	 *
+	 * @param array $assoc The json-parsed JSON-RPC request
+	 * @static
+	 * @return array Returns the original request and if it was invalid, a boolean FALSE is returned
+	 * @access private
+	 */
+	public static function _parseBatch(array $assoc)
+	{
+		if($count = count($assoc) <= 1)
+			return FALSE;
+		/*
+		$invalid = 0;
+		foreach($assoc as $req)
 		{
-			case 'request':
-				if(	isset($assoc['jsonrpc'])	&&
-					isset($assoc['id'])		&&
-					isset($assoc['method'])
-				)
-				{
-				   if($assoc['jsonrpc'] == '2.0')return TRUE;
-				}
-				   break;
-			case 'notification':
-				if(	isset($assoc['jsonrpc'])	&&
-					!isset($assoc['id'])	&&
-					isset($assoc['method'])
-				)
-				{
-				   if($assoc['jsonrpc'] == '2.0')return TRUE;
-				}
-				break;
-			case 'batch':
-				if(	is_array($assoc) &&
-					count($assoc) > 1 &&
-					!self::_is('request',$assoc) &&
-					!self::_is('notification',$assoc)
-				)
-				return TRUE;
-				break;
+			if(self::_parseNotification($req) !== FALSE)
+				continue;
+			
+			if(self::_parseRequest($req) !== FALSE)
+				continue;
+			$invalid++;
 		}
-		return FALSE;		
+		
+		if($invalid >= $count) return FALSE;*/
+		return $assoc;
 	}
 	
 	/**
@@ -187,9 +222,9 @@ class Tivoka_ServerServer
 	public function returnResult(&$id,&$result)
 	{
 		$this->response[] = array(
-				'jsonrpc'=>'2.0',
-				'id'=>&$id,
-				'result'=>&$result
+				'jsonrpc' => '2.0',
+				'id' => &$id,
+				'result' => &$result
 		);
 	}
 	

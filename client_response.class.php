@@ -25,6 +25,7 @@
  */
 class Tivoka_ClientResponse
 {
+	const ERROR_NO_ERROR = 0;
 	const ERROR_NO_RESPONSE = 1;
 	const ERROR_INVALID_JSON = 2;
 	const ERROR_INVALID_RESPONSE = 3;
@@ -60,7 +61,7 @@ class Tivoka_ClientResponse
 	{
 		$this->result = NULL;
 		$this->error = NULL;
-		$this->process_error = NULL;
+		$this->process_error = 0;
 		$this->response = &$response;
 	}
 	
@@ -71,7 +72,7 @@ class Tivoka_ClientResponse
 	 */
 	public function isError()
 	{
-		if($this->process_error != NULL || $this->error != NULL)return TRUE;
+		if($this->process_error !== 0 || $this->error != NULL)return TRUE;
 		return FALSE;
 	}
 }

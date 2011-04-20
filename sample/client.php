@@ -27,6 +27,7 @@
 	 */
 	
 	$errors = array(
+				Tivoka_ClientResponse::ERROR_NO_ERROR => '',
 				Tivoka_ClientResponse::ERROR_NO_RESPONSE => 'No Response received!',
 				Tivoka_ClientResponse::ERROR_INVALID_JSON => 'Invalid json response',
 				Tivoka_ClientResponse::ERROR_INVALID_RESPONSE => 'Invalid JSON-RPC response',

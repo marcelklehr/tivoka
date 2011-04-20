@@ -92,9 +92,9 @@ class Tivoka_ClientRequestRequest extends Tivoka_ClientRequest
 		if(($error = self::_parseError($respassoc,$this->id)) !== FALSE)
 		{
 			$resp = new Tivoka_ClientResponse($response);
-			$resp->error['msg'] = $error['message'];
-			$resp->error['code'] = $error['code'];
-			$resp->error['data'] = $error['data'];
+			$resp->error['msg'] = $error['error']['message'];
+			$resp->error['code'] = $error['error']['code'];
+			$resp->error['data'] = $error['error']['data'];
 			return $resp;
 		}
 		
@@ -156,12 +156,12 @@ class Tivoka_ClientRequestRequest extends Tivoka_ClientRequest
 	 * @param mixed $id The id of the original request
 	 * @return mixed Returns the parsed JSON object
 	 */
-	protected static function _parseError(array $assoc,$id)
+	protected static function _parseError(array $assoc, $id)
 	{
 		if(isset($assoc['jsonrpc'], $assoc['error']) == FALSE)
 			return FALSE;
 			
-		if($assoc['id'] != $id && isset($assoc['id']) OR $assoc['jsonrpc'] != '2.0')
+		if($assoc['id'] != $id && $assoc['id'] != null AND isset($assoc['id']) OR $assoc['jsonrpc'] != '2.0')
 			return FALSE;
 		
 		if(isset($assoc['error']['message'], $assoc['error']['code']) === FALSE)

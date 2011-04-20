@@ -53,20 +53,30 @@ class Tivoka_ServerProcessor
 	public function __construct(array $request,Tivoka_ServerServer &$server)
 	{
 		$this->server = &$server;
-		$this->request = &$request;
-		$this->params = (isset($this->request['params'])) ? $this->request['params'] : null;
+		$this->request = array();
+		$this->params = (isset($request['params']) === FALSE) ? null : $request['params'];
 		
 		//validate...
-		if(!Tivoka_ServerServer::_is('request',$this->request) && !Tivoka_ServerServer::_is('notification',$this->request))
+		if(($req = Tivoka_ServerServer::_parseRequest($request)) !== FALSE)
 		{
-			$this->error(-32600);
+			$this->request = $req;
+		}
+		
+		if(($req = Tivoka_ServerServer::_parseNotification($request)) !== FALSE)
+		{
+			$this->request = $req;
+		}
+		
+		if($this->request === array())
+		{
+			$this->returnError(-32600);
 			return;
 		}
 		
 		//search method...
 		if(!is_callable(array($this->server->host,$this->request['method'])))
 		{
-			$this->error(-32601);
+			$this->returnError(-32601);
 			return;
 		}
 		
@@ -81,7 +91,7 @@ class Tivoka_ServerProcessor
 	 */
 	public function returnResult($result)
 	{
-		if(!Tivoka_ServerServer::_is('request',$this->request)) return;
+		if(Tivoka_ServerServer::_parseNotification($this->request) !== FALSE) return;
 		$this->server->returnResult($this->request['id'],$result);
 	}
 	
@@ -93,9 +103,9 @@ class Tivoka_ServerProcessor
 	 */
 	public function returnError($code,$data=null)
 	{
-		if(!Tivoka_ServerServer::_is('request',$this->request)) return;
+		if(Tivoka_ServerServer::_parseNotification($this->request) !== FALSE) return;
 		
-		$id = (!isset($this->request['id'])) ? null : $this->request['id'];
+		$id = (isset($this->request['id']) === FALSE) ? null : $this->request['id'];
 		$this->server->returnError($id,$code,$data);
 	}
 	
