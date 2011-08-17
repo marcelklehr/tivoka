@@ -7,10 +7,10 @@ Copyright (C) 2011  Marcel Klehr <marcel.klehr@gmx.de>
 
 The Goal
 --------
-JSON-RPC is the alternative for complicated data type handling and unintuitive
+JSON-RPC is the alternative for complicated data type handling and an unintuitive
 data structure in XML-RPC. Since JSON (JavaScript Object Notation) natively
 supports string, integer, float and array data types it's much more suitable
-for a remote procedure protocol.
+for a remote procedure protocol. The product of this idea is JSON-RPC.
 The goal of this project is to provide an easy to use and specification compatible
 JSON-RPC implementation for PHP.
 (This version is based on the JSON-RPC 2.0 specification proposal.)
@@ -24,14 +24,14 @@ send a request, a notification or even a batch and get the result immediately.
 
 Using Tivoka
 ------------
-If you are about to use it in your project you will simply have toinclude 'include.php'
-in the root directory of Tivoka.
+If you are about to use Tivoka in your project you will simply have toinclude 'include.php'
+in the 'tivoka' directory.
 Check out the 'sample/' directory and explore the samples for a quick introduction
 how to use Tivoka.
 
 It's free
 ---------
-This program is free software; you can redistribute it and/or modify it under the 
+Tivoka is free software; you can redistribute it and/or modify it under the 
 terms of the GNU General Public License as published by the Free Software Foundation;
 either version 3 of the License, or (at your option) any later version.
 
