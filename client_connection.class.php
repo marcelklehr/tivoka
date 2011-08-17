@@ -1,7 +1,7 @@
 <?php
 /**
  *	Tivoka - a JSON-RPC implementation for PHP
- *	Copyright (C) 2011  Marcel Klehr <marcel.klehr@gmx.de>
+ *	Copyright (C) 2011  Marcel Klehr
  *
  *	This program is free software; you can redistribute it and/or modify it under the 
  *	terms of the GNU General Public License as published by the Free Software Foundation;
@@ -15,7 +15,7 @@
  *	if not, see <http://www.gnu.org/licenses/>.
  *
  * @package Tivoka
- * @author Marcel Klehr <marcel.klehr@gmx.de>
+ * @author Marcel Klehr
  * @copyright (c) 2011, Marcel Klehr
  */
 /**
