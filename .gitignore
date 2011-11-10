@@ -1,0 +1,5 @@
+.gitignore
+.session
+.buildpath
+.project
+.settings/org.eclipse.php.core.prefs

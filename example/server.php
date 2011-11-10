@@ -3,7 +3,7 @@
  * STEP 1
  * Load the Tivoka package
  */
-include('../include.php');
+include('../server.inc.php');
 
 /**
  * STEP 2
@@ -35,12 +35,11 @@ $methods = array(
  * STEP 3
  * Implement the methods
  */
-$proxy = new Tivoka_ServerArrayHost($methods);
+$methodhost = new Tivoka_ArrayObject($methods);
 
 /**
  * STEP 4
  * Init the server and process the request
  */
-$server = new Tivoka_ServerServer($proxy);
-$server->process();
+Tivoka_Server::start($methodhost);
 ?>
