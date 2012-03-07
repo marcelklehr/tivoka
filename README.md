@@ -5,10 +5,10 @@ The goal of this project is to provide an easy-to-use, specification compatible 
 This version is based on the [JSON-RPC 2.0 specification proposal](https://groups.google.com/group/json-rpc/web/json-rpc-2-0).
 Support for the official JSON-RPC protocol version is planned in near future.
 
-- Learn more about JSON-RPC at <http://jsonrpc.org/>  
-- Download [latest version](https://github.com/marcelklehr/tivoka/tags)  
-- Submit any bugs or suggestions to the [Issue Tracker](http://github.com/marcelklehr/tivoka/issues)
-- Have a look at the [proposal for the 2.0.0 API](https://github.com/marcelklehr/tivoka/wiki/2.0.0-API-proposal)
+ - Learn more about JSON-RPC at <http://jsonrpc.org/>  
+ - Download [latest version](https://github.com/marcelklehr/tivoka/tags)  
+ - Submit any bugs or suggestions to the [Issue Tracker](http://github.com/marcelklehr/tivoka/issues)
+ - Have a look at the [proposal for the 2.0.0 API](https://github.com/marcelklehr/tivoka/wiki/2.0.0-API-proposal)
 
 ### Project status ###
 I hardly had time to work on this project during the last year, but got a brain wave just now and will try pushing it to 2.0.0.
