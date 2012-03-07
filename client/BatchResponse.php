@@ -25,20 +25,6 @@
 class Tivoka_BatchResponse extends Tivoka_Response
 {	
 	/**
-	 * Maps an internal error to all child requests
-	 * @param int $error
-	 * @return void
-	 */
-	public function setError($error)
-	{
-		parent::setError($error);
-		foreach($this->request as $request)
-		{
-			$request->response->setError($error);
-		}
-	}
-	
-	/**
 	 * Interprets the parsed response
 	 * @param string $response json data
 	 * @return void
@@ -47,13 +33,13 @@ class Tivoka_BatchResponse extends Tivoka_Response
 	{
 		if($resparr == NULL)
 		{
-			return $this->setError(Tivoka::ERR_INVALID_JSON);
+			throw new Tivoka_Exception('Received response couldn\'t be parsed as JSON.', Tivoka::ERR_INVALID_JSON);
 		}
 	
 		//validate
 		if(count($resparr) < 1 || !is_array($resparr))
 		{
-			return $this->setError(Tivoka::ERR_INVALID_RESPONSE);
+			throw new Tivoka_Exception('Expected batch response, but none was received', Tivoka::ERR_INVALID_RESPONSE);
 		}
 	
 		$requests = $this->request;
@@ -63,10 +49,10 @@ class Tivoka_BatchResponse extends Tivoka_Response
 		//split..
 		foreach($resparr as $resp)
 		{
-			if(!is_array($resp)) return $this->setError(Tivoka::ERR_INVALID_RESPONSE);
+			if(!is_array($resp)) throw new Tivoka_Exception('Expected batch response, but no array was received', Tivoka::ERR_INVALID_RESPONSE);
 			
 			//is jsonrpc prtocol?
-			if(!isset($resp['jsonrpc']) && !isset($resp['id'])) return $this->setError(Tivoka::ERR_INVALID_RESPONSE);
+			if(!isset($resp['jsonrpc']) && !isset($resp['id'])) throw new Tivoka_Exception('The received reponse doesn\'t implement the JSON-RPC prototcol.', Tivoka::ERR_INVALID_RESPONSE);
 			
 			//responds to an existing request?
 			if(!array_key_exists($resp['id'],$requests))

@@ -26,7 +26,8 @@ class Tivoka_Response
 {
 	public $result;
 	public $error;
-	public $internal_error = 0;
+	public $errorMessage;
+	public $errorData;
 	public $data;
 	
 	public $request;
@@ -36,22 +37,11 @@ class Tivoka_Response
 	}
 	
 	/**
-	 * Sets an internal error
-	 * @param int $error
-	 * @return void
-	 */
-	public function setError($error)
-	{
-		$this->internal_error = $error;
-	}
-	
-	/**
 	 * Interprets the response
 	 * @param string $response json data
 	 * @return void
 	 */
-	public function setResponse($response)
-	{
+	public function set($response) {
 		//process error?
 		if($response === FALSE)
 		{
@@ -61,10 +51,8 @@ class Tivoka_Response
 		$this->data = $response;
 	
 		//no response?
-		if(trim($response) == '')
-		{
-			$this->internal_error = Tivoka::ERR_NO_RESPONSE;
-			return;
+		if(trim($response) == '') {
+			throw new Tivoka_Exception('No response received', Tivoka::ERR_NO_RESPONSE);
 		}
 	
 		//decode
@@ -76,20 +64,16 @@ class Tivoka_Response
 	 * Interprets the parsed response
 	 * @param array $resparr
 	 */
-	protected function interpretResponse(array $resparr)
-	{
-		if($resparr == NULL)
-		{
-			$resp->internal_error = Tivoka::ERR_INVALID_JSON;
-			return;
+	protected function interpretResponse(array $resparr) {
+		if($resparr == NULL) {
+			throw new Tivoka_Exception('Inalid response encoding', Tivoka::ERR_INVALID_JSON);
 		}
 		
 		//server error?
-		if(($error = self::interpretError($resparr, $this->request->id)) !== FALSE)
-		{
-			$this->error['msg'] = $error['error']['message'];
-			$this->error['code'] = $error['error']['code'];
-			$this->error['data'] = $error['error']['data'];
+		if(($error = self::interpretError($resparr, $this->request->id)) !== FALSE) {
+			$this->error        = $error['error']['code'];
+			$this->errorMessage = $error['error']['message'];
+			$this->errorData    = $error['error']['data'];
 			return;
 		}
 		
@@ -99,8 +83,8 @@ class Tivoka_Response
 			$this->result = $result['result'];
 			return;
 		}
-	
-		$this->internal_error = Tivoka::ERR_INVALID_RESPONSE;;
+		
+		throw new Tivoka_Exception('Inalid response structure', Tivoka::ERR_INVALID_RESPONSE);
 	}
 	
 	/**
@@ -109,8 +93,7 @@ class Tivoka_Response
 	 */
 	public function isError()
 	{
-		if($this->internal_error !== 0 || $this->error != NULL) return TRUE;
-		return FALSE;
+		return ($this->error != NULL);
 	}
 	
 	/**

@@ -44,68 +44,65 @@ class Tivoka_Server
 	private $response;
 	
 	/**
-	 * Starts processing the HTTP input
-	 * Notice: Calling this method will stop further execution of the script!
+	 * Constructss a Server object
 	 * @param object $host An object whose methods will be provided for invokation
-	 * @param bool $hide_errors Pass TRUE for hiding all eventual php erros to avoid messing up the response
+	 * @param bool $hide_errors Pass TRUE for hiding all eventual erros to avoid messing up the response
+	 * @access private
 	 */
-	static function start($host, $hide_errors=FALSE)
+	private function __construct($host, $hide_errors=0)
 	{
-		if($hide_errors != FALSE) error_reporting(0);//avoids messing up the response
+		// disable error reporting?
+		if($hide_errors != Tivoka::HIDE_ERRORS) error_reporting(0);// avoids messing up the response
+		
+		if(is_array($host)) {
+			$host = new Tivoka_MethodWrapper($host);
+		}
+		
+		$this->host = $host;
+		$this->input = file_get_contents('php://input');
 		$json_errors = array(
 			JSON_ERROR_NONE => '',
 			JSON_ERROR_DEPTH => 'The maximum stack depth has been exceeded',
 			JSON_ERROR_CTRL_CHAR => 'Control character error, possibly incorrectly encoded',
 			JSON_ERROR_SYNTAX => 'Syntax error'
 		);
-		$server = new Tivoka_Server($host);
 		
-		//set header if not already sent...
+		// set header if not already sent...
 		if(headers_sent() === FALSE) header('Content-type: application/json');
 		
-		//validate input...
 		
-		//check existence...
-		if(trim($server->input) === '')
+		// any request at all?
+		if(trim($this->input) === '')
 		{
-			$server->returnError(null,-32600);
-			$server->respond();
+			$this->returnError(null,-32600);
+			$this->respond();
 		}
 		
-		//decode request...
-		$server->input = json_decode($server->input,true);
-		if($server->input === NULL)
+		// decode request...
+		$this->input = json_decode($this->input,true);
+		if($this->input === NULL)
 		{
-			$server->returnError(null,-32700, 'JSON error: '.$json_errors[json_last_error()] );
-			$server->respond();
+			$this->returnError(null,-32700, 'JSON parse error: '.$json_errors[json_last_error()] );
+			$this->respond();
 		}
 		
-		//batch?
+		// batch?
 		if(($batch = self::interpretBatch($server->input)) !== FALSE)
 		{
 			foreach($batch as $request)
 			{
-				new Tivoka_Processor($request,$server);
+				$this->process($request);
 			}
-			$server->respond();
+			$this->respond();
 		}
 		
 		//process request
-		new Tivoka_Processor($server->input,$server);
-		$server->respond();
+		$this->process($server->input);
+		$this->respond();
 	}
 	
-	/**
-	 * Constructss a Server object
-	 * @param object $host An object whose methods will be provided for invokation
-	 * @param bool $hide_errors Pass TRUE for hiding all eventual erros to avoid messing up the response
-	 * @access private
-	 */
-	private function __construct($host)
-	{
-		//define some things...
-		$this->host = $host;
-		$this->input = file_get_contents('php://input');
+	public function process($request) {
+		new Tivoka_Processor($request, $this);
 	}
 	
 	/**

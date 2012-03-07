@@ -44,12 +44,12 @@ class Tivoka_Processor
 	public $params;
 	
 	/**
-	* Initializes a Tivoka_ServerProcessor object
-	*
-	* @param array $request The parsed JSON-RPC request
-	* @param Tivoka_ServerServer $server The parent server object
-	* @access private
-	*/
+	 * Initializes a Tivoka_ServerProcessor object
+	 *
+	 * @param array $request The parsed JSON-RPC request
+	 * @param Tivoka_ServerServer $server The parent server object
+	 * @access private
+	 */
 	public function __construct(array $request,Tivoka_Server $server)
 	{
 		$this->server = $server;
@@ -110,13 +110,13 @@ class Tivoka_Processor
 	}
 	
 	/**
-	* Validates and sanitizes a normal request
-	*
-	* @param array $assoc The json-parsed JSON-RPC request
-	* @static
-	* @return array Returns tghe sanitized request and if it was invalid, a boolean FALSE is returned
-	* @access private
-	*/
+	 * Validates and sanitizes a normal request
+	 *
+	 * @param array $assoc The json-parsed JSON-RPC request
+	 * @static
+	 * @return array Returns tghe sanitized request and if it was invalid, a boolean FALSE is returned
+	 * @access private
+	 */
 	public static function interpretRequest(array $assoc)
 	{
 		if(isset($assoc['jsonrpc'], $assoc['id'], $assoc['method']) === FALSE)

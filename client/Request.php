@@ -29,14 +29,13 @@ class Tivoka_Request
 	public $response;
 	
 	/**
-	* Constructs a new JSON-RPC request object
-	* @param mixed $id The id of the request
-	* @param string $method The remote procedure to invoke
-	* @param mixed $params Additional params for the remote procedure
-	* @see Tivoka_Connection::send()
-	*/
-	public function __construct($id,$method,$params=null)
-	{
+	 * Constructs a new JSON-RPC request object
+	 * @param mixed $id The id of the request
+	 * @param string $method The remote procedure to invoke
+	 * @param mixed $params Additional params for the remote procedure (optional)
+	 * @see Tivoka_Connection::send()
+	 */
+	public function __construct($id,$method,$params=null) {
 		$this->id = $id;
 		$this->response = new Tivoka_Response($this);
 	
@@ -45,12 +44,18 @@ class Tivoka_Request
 	}
 	
 	/**
-	 * 
-	 * Get the json encoded request data
-	 * @return void
+	 * Send this request to a remote server 
+	 * @param string $target The URL of the remote server
 	 */
-	public function getData()
-	{
+	public function send($target) {
+		Tivoka::connect($target)->send($this);
+	}
+	
+	/**
+	 * Pack the request data with json encoding
+	 * @return string the json encoded request
+	 */
+	public function __toString() {
 		return json_encode($this->data);
 	}
 	
@@ -61,8 +66,7 @@ class Tivoka_Request
 	 * @param mixed $params Additional parameters
 	 * @return mixed Returns the prepared assotiative array to encode
 	 */
-	protected static function prepareRequest($id, $method, $params=null)
-	{
+	protected static function prepareRequest($id, $method, $params=null) {
 		$request = array(
 				'jsonrpc' => '2.0',
 				'method' => $method,

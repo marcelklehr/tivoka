@@ -20,10 +20,10 @@
 */
 
 /**
-* ArrayObject for implementing anonymous function on the fly
+* MethodWrapper for implementing anonymous objects on the fly
 * @package Tivoka
 */
-class Tivoka_ArrayObject
+class Tivoka_MethodWrapper
 {
 	/**
 	 * @var array The list of callbacks
