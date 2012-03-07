@@ -64,7 +64,7 @@ class Tivoka_Response
 	 * Interprets the parsed response
 	 * @param array $resparr
 	 */
-	protected function interpretResponse(array $resparr) {
+	protected function interpretResponse($resparr) {
 		if($resparr == NULL) {
 			throw new Tivoka_Exception('Inalid response encoding', Tivoka::ERR_INVALID_JSON);
 		}

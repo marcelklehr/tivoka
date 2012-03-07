@@ -22,5 +22,5 @@ $methods = array(
 	}
 );
 
-Tivoka_Server::start($methods);
+Tivoka::createServer($methods);
 ?>

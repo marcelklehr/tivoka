@@ -63,7 +63,7 @@ class Tivoka_Connection {
 			throw new Tivoka_Exception('Connection Failed', Tivoka::ERR_CONNECTION_FAILED);
 		}
 		
-		$request->response->setResponse($response);
+		$request->response->set($response);
 	}
 	
 	public function sendRequest($id, $method, $params=null) {

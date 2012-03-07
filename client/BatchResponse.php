@@ -29,8 +29,7 @@ class Tivoka_BatchResponse extends Tivoka_Response
 	 * @param string $response json data
 	 * @return void
 	 */
-	protected function interpretResponse(array $resparr)
-	{
+	protected function interpretResponse($resparr) {
 		if($resparr == NULL)
 		{
 			throw new Tivoka_Exception('Received response couldn\'t be parsed as JSON.', Tivoka::ERR_INVALID_JSON);

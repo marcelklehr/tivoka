@@ -49,8 +49,7 @@ class Tivoka_Server
 	 * @param bool $hide_errors Pass TRUE for hiding all eventual erros to avoid messing up the response
 	 * @access private
 	 */
-	private function __construct($host, $hide_errors=0)
-	{
+	public function __construct($host, $hide_errors=0) {
 		// disable error reporting?
 		if($hide_errors != Tivoka::HIDE_ERRORS) error_reporting(0);// avoids messing up the response
 		
