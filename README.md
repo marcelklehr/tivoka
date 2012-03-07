@@ -1,17 +1,21 @@
-# Tivoka #
-A leightweight JSON-RPC client and server implementation for PHP.
-(c) 2011, Marcel Klehr
-
-
-## The Goal ##
-**JSON-RPC** is the alternative of complicated and unintuitive data type handling in XML-RPC.
-JSON-RPC uses the JavaScript Object Notation (JSON) and therefore natively supports string, integer, float and array data types!
+# JSON-RPC done right #
+a leightweight JSON-RPC client and server implementation for PHP 5
 
 The goal of this project is to provide an easy-to-use, specification compatible and object-oriented JSON-RPC implementation for PHP.  
 This version is based on the [JSON-RPC 2.0 specification proposal](https://groups.google.com/group/json-rpc/web/json-rpc-2-0).
-Support for the official JSON-RPC protocol is planned in near future.
+Support for the official JSON-RPC protocol version is planned in near future.
+
+Download [latest version](https://github.com/marcelklehr/tivoka/tags)  
+Learn more about JSON-RPC at <http://jsonrpc.org/>
+Submit any bugs or suggestions to the [Issue Tracker](http://github.com/marcelklehr/tivoka/issues)
+
+## Project status ##
+I hardly had time to work on this project during the last year, but got a brain wave just now and will try pushing it to 2.0.0.
+The thing that troubled me the most was that the current API is not very usable (<ou will agree, i think, especially when looking at the examples below).  
+I am trying to solve this with a new API, which is already committed but still leaves some work to be done. Stay tuned!
 
 ## Using Tivoka ##
+*This is an example of the 'old' v2.0.0b API.*
 Here's an example for you to quickly get the clue (can be found in the `/example` directory):
 
 ### Client ###
@@ -76,18 +80,7 @@ Tivoka_Server::start($methodhost);
 ```
 Of course you can also use your own Object instead of using Tivoka_ArrayObject, but it's very useful for testing purposes.
 
-## It's free ##
-**Tivoka is free software**; you can redistribute it and/or modify it under the 
-terms of the **GNU General Public License** as published by the Free Software Foundation;
-either version 3 of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with this program;
-if not, see <http://www.gnu.org/licenses/>.
-
-## See also ##
-* Submit any bug or suggestion to the [Issue Tracker](http://github.com/marcelklehr/tivoka/issues)
-* Download the latest version [here](https://github.com/marcelklehr/tivoka/tags)
+## License ##
+**GNU General Public License** as published by the Free Software Foundation;
+either version 3 of the License, or (at your option) any later version.  
+See the LICENSE file.
