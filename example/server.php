@@ -1,16 +1,7 @@
 <?php
-/**
- * STEP 1
- * Load the Tivoka package
- */
-include('../server.inc.php');
+include('../include.php');
 
-/**
- * STEP 2
- * Define an array of remote methods
- */
 $methods = array(
-
 	'demo.sayHello' => function($request)
 	{
 		$request->returnResult('Hello World!');
@@ -31,15 +22,5 @@ $methods = array(
 	}
 );
 
-/**
- * STEP 3
- * Implement the methods
- */
-$methodhost = new Tivoka_ArrayObject($methods);
-
-/**
- * STEP 4
- * Init the server and process the request
- */
-Tivoka_Server::start($methodhost);
+Tivoka_Server::start($methods);
 ?>
