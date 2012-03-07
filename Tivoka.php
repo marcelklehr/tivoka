@@ -82,7 +82,7 @@ abstract class Tivoka
 	public static function createBatch($request) {
 		if(func_num_args() > 1 ) $request = func_get_args();
 		if(is_array($request)) {
-			return Tivoka_BatchRequest($request);
+			return new Tivoka_BatchRequest($request);
 		}
 		throw new Tivoka_Exception('Object of invalid data type passed to Tivoka::createBatch.');
 	}

@@ -51,7 +51,7 @@ class Tivoka_Server
 	 */
 	public function __construct($host, $hide_errors=0) {
 		// disable error reporting?
-		if($hide_errors != Tivoka::HIDE_ERRORS) error_reporting(0);// avoids messing up the response
+		if($hide_errors == Tivoka::HIDE_ERRORS) error_reporting(0);// avoids messing up the response
 		
 		if(is_array($host)) {
 			$host = new Tivoka_MethodWrapper($host);
@@ -86,7 +86,7 @@ class Tivoka_Server
 		}
 		
 		// batch?
-		if(($batch = self::interpretBatch($server->input)) !== FALSE)
+		if(($batch = self::interpretBatch($this->input)) !== FALSE)
 		{
 			foreach($batch as $request)
 			{
@@ -96,7 +96,7 @@ class Tivoka_Server
 		}
 		
 		//process request
-		$this->process($server->input);
+		$this->process($this->input);
 		$this->respond();
 	}
 	
@@ -178,7 +178,7 @@ class Tivoka_Server
 	*/
 	public static function interpretBatch(array $assoc)
 	{
-		if($count = count($assoc) <= 1)
+		if(count($assoc) <= 1)
 		return FALSE;
 	
 		foreach($assoc as $req)

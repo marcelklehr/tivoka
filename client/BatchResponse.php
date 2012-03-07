@@ -63,7 +63,7 @@ class Tivoka_BatchResponse extends Tivoka_Response
 			}
 				
 			//normal response...
-			$requests[ $resp['id'] ]->response->setResponse(json_encode($resp));
+			$requests[ $resp['id'] ]->response->set(json_encode($resp));
 			unset($requests[ $resp['id'] ]);
 		}
 	
