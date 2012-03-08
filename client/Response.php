@@ -66,7 +66,7 @@ class Tivoka_Response
 	 */
 	protected function interpretResponse($resparr) {
 		if($resparr == NULL) {
-			throw new Tivoka_Exception('Inalid response encoding', Tivoka::ERR_INVALID_JSON);
+			throw new Tivoka_Exception('Invalid response encoding', Tivoka::ERR_INVALID_JSON);
 		}
 		
 		//server error?
@@ -104,15 +104,22 @@ class Tivoka_Response
 	*/
 	protected static function interpretResult(array $assoc,$id)
 	{
-		if(isset($assoc['jsonrpc'], $assoc['result']) === FALSE)
-		return FALSE;
-		if($assoc['id'] !== $id && isset($assoc['id']) OR $assoc['jsonrpc'] != '2.0')
-		return FALSE;
-	
-		return array(
+		switch(Tivoka::$version) {
+		case Tivoka::VER_2_0:
+			if(isset($assoc['jsonrpc'], $assoc['result'], $assoc['id']) === FALSE) return FALSE;
+			if($assoc['id'] !== $id || $assoc['jsonrpc'] != '2.0') return FALSE;
+			return array(
+					'id' => $assoc['id'],
+					'result' => $assoc['result']
+			);
+		case Tivoka::VER_1_0:
+			if(isset($assoc['result'], $assoc['id']) === FALSE) return FALSE;
+			if($assoc['id'] !== $id && $assoc['result'] === null) return FALSE;
+			return array(
 				'id' => $assoc['id'],
 				'result' => $assoc['result']
-		);
+			);
+		}
 	}
 	
 	/**
@@ -123,19 +130,24 @@ class Tivoka_Response
 	 */
 	protected static function interpretError(array $assoc, $id)
 	{
-		if(isset($assoc['jsonrpc'], $assoc['error']) == FALSE)
-			return FALSE;
-		
-		if($assoc['id'] != $id && $assoc['id'] != null && isset($assoc['id']) OR $assoc['jsonrpc'] != '2.0')
-			return FALSE;
-		
-		if(isset($assoc['error']['message'], $assoc['error']['code']) === FALSE)
-			return FALSE;
-		
-		return array(
+		switch(Tivoka::$version) {
+		case Tivoka::VER_2_0:
+			if(isset($assoc['jsonrpc'], $assoc['error']) == FALSE) return FALSE;
+			if($assoc['id'] != $id && $assoc['id'] != null && isset($assoc['id']) OR $assoc['jsonrpc'] != '2.0') return FALSE;
+			if(isset($assoc['error']['message'], $assoc['error']['code']) === FALSE) return FALSE;
+			return array(
+					'id' => $assoc['id'],
+					'error' => $assoc['error']
+			);
+		case Tivoka::VER_1_0:
+			if(isset($assoc['error'], $assoc['id']) === FALSE) return FALSE;
+			if($assoc['id'] != $id && $assoc['id'] !== null) return FALSE;
+			if(isset($assoc['error']) === FALSE) return FALSE;
+			return array(
 				'id' => $assoc['id'],
-				'error' => $assoc['error']
-		);
+				'error' => array('data' => $assoc['error'])
+			);
+		}
 	}
 }
 ?>

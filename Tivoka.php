@@ -24,13 +24,19 @@
 */
 abstract class Tivoka
 {
-	const ERR_NO_RESPONSE = 1;
-	const ERR_INVALID_JSON = 2;
-	const ERR_INVALID_RESPONSE = 3;
-	const ERR_CONNECTION_FAILED = 4;
+	const ERR_NO_RESPONSE = 1;      // 000 000 001
+	const ERR_INVALID_JSON = 2;     // 000 000 010
+	const ERR_INVALID_RESPONSE = 3; // 000 000 011
+	const ERR_CONNECTION_FAILED = 4;// 000 000 100
+	const ERR_SPEC_INCOMPATIBLE = 5;// 000 000 101
 	
-	const ERR_INVALID_TARGET = 5;
-	const HIDE_ERRORS = 6;
+	const ERR_INVALID_TARGET = 6;   // 000 000 110
+	const HIDE_ERRORS = 7;          // 000 000 111
+	
+	const VER_1_0 = 8;              // 000 001 000
+	const VER_2_0 = 16;             // 000 010 000
+	
+	public static $version;
 	
 	
 	/**

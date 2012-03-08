@@ -113,11 +113,22 @@ class Tivoka_Server
 	*/
 	public function returnResult($id,$result)
 	{
-		$this->response[] = array(
-					'jsonrpc' => '2.0',
-					'id' => $id,
-					'result' => $result
-		);
+		switch(Tivoka::$version) {
+		case Tivoka::VER_2_0:
+			$this->response[] = array(
+						'jsonrpc' => '2.0',
+						'id' => $id,
+						'result' => $result
+			);
+			break;
+		case Tivoka::VER_1_0:
+			$this->response[] = array(
+								'id' => $id,
+								'result' => $result,
+								'error' => null
+			);
+			break;
+		}
 	}
 	
 	/**
@@ -128,7 +139,7 @@ class Tivoka_Server
 	 * @param mixed $data Additional data
 	 * @access private
 	 */
-	public function returnError($id,$code,$data=null)
+	public function returnError($id, $code, $message='', $data=null)
 	{
 		$msg = array(
 			-32700 => 'Parse error',
@@ -137,14 +148,28 @@ class Tivoka_Server
 			-32602 => 'Invalid params',
 			-32603 => 'Internal error'
 		);
-		$this->response[] = array(
-					'jsonrpc'=>'2.0',
-					'id'=>$id,
-					'error'=> array(
-						'code'=>$code,
-						'message'=>$msg[$code],
-						'data'=>$data
-		));
+		switch(Tivoka::$version) {
+		case Tivoka::VER_2_0:
+			$response = array(
+				'jsonrpc'=>'2.0',
+				'id'=>$id,
+				'error'=> array(
+					'code'=>$code,
+					'message'=>$message,
+					'data'=>$data
+			));
+		case Tivoka::VER_1_0:
+			$response = array(
+				'id'=>$id,
+				'result' => null,
+				'error'=> array(
+					'code'=>$code,
+					'message'=>$message,
+					'data'=>$data
+			));
+		}
+		if($message === '')$response['error']['message'] = $msg[$code];
+		$this->response[] = $response;
 	}
 	
 	/**

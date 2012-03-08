@@ -67,13 +67,26 @@ class Tivoka_Request
 	 * @return mixed Returns the prepared assotiative array to encode
 	 */
 	protected static function prepareRequest($id, $method, $params=null) {
-		$request = array(
-				'jsonrpc' => '2.0',
+		switch(Tivoka::$version) {
+		case Tivoka::VER_2_0:
+			$request = array(
+					'jsonrpc' => '2.0',
+					'method' => $method,
+			);
+			if($id !== null) $request['id'] = $id;
+			if($params !== null) $request['params'] = $params;
+			return $request;
+		case Tivoka::VER_1_0:
+			$request = array(
 				'method' => $method,
-		);
-		if($id !== null) $request['id'] = $id;
-		if($params !== null) $request['params'] = $params;
-		return $request;
+				'id' => $id
+			);
+			if($params !== null) {
+				if((bool)count(array_filter(array_keys($params), 'is_string'))) throw new Tivoka_Exception('JSON-RC 1.0 doesn\'t allow for named parameters');
+				$request['params'] = $params;
+			}
+			return $request;
+		}
 	}
 }
 ?>

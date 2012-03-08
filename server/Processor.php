@@ -121,18 +121,32 @@ class Tivoka_Processor
 	 */
 	public static function interpretRequest(array $assoc)
 	{
-		if(isset($assoc['jsonrpc'], $assoc['id'], $assoc['method']) === FALSE)
-		return FALSE;
-		if($assoc['jsonrpc'] != '2.0')
-		return FALSE;
-	
-		$request = array(
-					'id' =>  &$assoc['id'],
-					'method' => &$assoc['method']
-		);
-		if(isset($assoc['params'])) $request['params'] = &$assoc['params'];
-	
-		return $request;
+		switch(Tivoka::$version) {
+		case Tivoka::VER_2_0:
+			if(isset($assoc['jsonrpc'], $assoc['id'], $assoc['method']) === FALSE) return FALSE;
+			if($assoc['jsonrpc'] != '2.0' || !is_string($assoc['method'])) return FALSE;
+			$request = array(
+						'id' =>  &$assoc['id'],
+						'method' => &$assoc['method']
+			);
+		if(isset($assoc['params'])) {
+				if(!is_array($assoc['params'])) return FALSE;
+				$request['params'] = $assoc['params'];
+			}
+			return $request;
+		case Tivoka::VER_1_0:
+			if(isset($assoc['id'], $assoc['method']) === FALSE) return FALSE;
+			if(!is_string($assoc['method'])) return FALSE;
+			$request = array(
+									'id' =>  &$assoc['id'],
+									'method' => &$assoc['method']
+			);
+			if(isset($assoc['params'])) {
+				if((bool)count(array_filter(array_keys($assoc['params']), 'is_string'))) return FALSE;// if associative
+				$request['params'] = &$assoc['params'];
+			}
+			return $request;
+		}
 	}
 	
 	/**
@@ -145,17 +159,30 @@ class Tivoka_Processor
 	 */
 	public static function interpretNotification(array $assoc)
 	{
-		if(isset($assoc['jsonrpc'], $assoc['method']) === FALSE || isset($assoc['id']) !== FALSE)
-		return FALSE;
-		if($assoc['jsonrpc'] != '2.0')
-		return FALSE;
-	
-		$request = array(
-					'method' => &$assoc['method']
-		);
-		if(isset($assoc['params'])) $request['params'] = $assoc['params'];
-	
-		return $request;
+		switch(Tivoka::$version) {
+		case Tivoka::VER_2_0:
+			if(isset($assoc['jsonrpc'], $assoc['method']) === FALSE || isset($assoc['id']) !== FALSE) return FALSE;
+			if($assoc['jsonrpc'] != '2.0' || !is_string($assoc['method'])) return FALSE;
+			$request = array(
+				'method' => &$assoc['method']
+			);
+			if(isset($assoc['params'])) {
+				if(!is_array($assoc['params'])) return FALSE;
+				$request['params'] = $assoc['params'];
+			}
+			return $request;
+		case Tivoka::VER_1_0:
+			if(isset($assoc['method']) === FALSE || isset($assoc['id']) !== FALSE) return FALSE;
+			if(!is_string($assoc['method'])) return FALSE;
+			$request = array(
+				'method' => &$assoc['method']
+			);
+			if(isset($assoc['params'])) {
+				if((bool)count(array_filter(array_keys($assoc['params']), 'is_string'))) return FALSE;// if associative
+				$request['params'] = $assoc['params'];
+			}
+			return $request;
+		}
 	}
 }
 ?>
