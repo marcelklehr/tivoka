@@ -36,7 +36,7 @@ abstract class Tivoka
 	const VER_1_0 = 8;              // 000 001 000
 	const VER_2_0 = 16;             // 000 010 000
 	
-	public static $version;
+	public static $version = Tivoka::VER_2_0;
 	
 	
 	/**
