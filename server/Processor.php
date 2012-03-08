@@ -91,8 +91,9 @@ class Tivoka_Processor
 	 */
 	public function returnResult($result)
 	{
-		if(self::interpretNotification($this->request) !== FALSE) return;
+		if(self::interpretNotification($this->request) !== FALSE) return TRUE;
 		$this->server->returnResult($this->request['id'],$result);
+		return TRUE;
 	}
 	
 	/**
@@ -103,10 +104,11 @@ class Tivoka_Processor
 	 */
 	public function returnError($code,$data=null)
 	{
-		if(self::interpretNotification($this->request) !== FALSE) return;
+		if(self::interpretNotification($this->request) !== FALSE) return FALSE;
 		
 		$id = (isset($this->request['id']) === FALSE) ? null : $this->request['id'];
 		$this->server->returnError($id,$code,$data);
+		return FAlSE;
 	}
 	
 	/**
