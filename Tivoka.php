@@ -97,5 +97,15 @@ abstract class Tivoka
 	{
 		return new Tivoka_Server($host);
 	}
+	
+	/**
+	 * Creates a client object
+	 * @param string $target the URL of the target server (MUST include http scheme)
+	 * @return Tivoka_Client
+	 */
+	static function createClient($target)
+	{
+		return new Tivoka_Client($target);
+	}
 }
 ?>

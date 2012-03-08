@@ -6,6 +6,7 @@ include dirname(__FILE__).'/client/Connection.php';
 include dirname(__FILE__).'/client/Request.php';
 include dirname(__FILE__).'/client/Notification.php';
 include dirname(__FILE__).'/client/BatchRequest.php';
+include dirname(__FILE__).'/client/Client.php';
 
 include dirname(__FILE__).'/client/Response.php';
 include dirname(__FILE__).'/client/BatchResponse.php';
