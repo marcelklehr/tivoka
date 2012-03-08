@@ -1,40 +1,25 @@
 <?php
 /**
-*	Tivoka - A simple and easy-to-use client and server implementation of JSON-RC
-*	Copyright (C) 2011  Marcel Klehr <m.klehr@gmx.net>
-*
-*	This program is free software; you can redistribute it and/or modify it under the
-*	terms of the GNU General Public License as published by the Free Software Foundation;
-*	either version 3 of the License, or (at your option) any later version.
-*
-*	This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-*	without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-*	See the GNU General Public License for more details.
-*
-*	You should have received a copy of the GNU General Public License along with this program;
-*	if not, see <http://www.gnu.org/licenses/>.
-*
-* @package Tivoka
-* @author Marcel Klehr <mklehr@gmx.net>
-* @copyright (c) 2011, Marcel Klehr
-*/
+ * @package Tivoka
+ * @author Marcel Klehr <mklehr@gmx.net>
+ * @copyright (c) 2011, Marcel Klehr
+ */
 /**
-* Processes a single request on the server
-* @package Tivoka
-*/
+ * Processes a single request on the server
+ * @package Tivoka
+ */
 class Tivoka_Processor
 {
 	
 	/**
-	* @var Tivoka_ServerServer Reference to the parent server object for returning the result/error
-	* @access private
-	*/
+	 * @var Tivoka_Server Reference to the parent server object for returning the result/error
+	 * @access private
+	 */
 	public $server;
 	
 	/**
 	 * @var array The parsed JSON-RPC request
 	 * @see Tivoka_ServerProcessor::__construct()
-	 * @access private
 	 */
 	public $request;
 	
@@ -44,13 +29,11 @@ class Tivoka_Processor
 	public $params;
 	
 	/**
-	 * Initializes a Tivoka_ServerProcessor object
-	 *
+	 * Initializes a Tivoka_Processor object
 	 * @param array $request The parsed JSON-RPC request
-	 * @param Tivoka_ServerServer $server The parent server object
-	 * @access private
+	 * @param Tivoka_Server $server The parent server object
 	 */
-	public function __construct(array $request,Tivoka_Server $server)
+	public function __construct(array $request, Tivoka_Server $server)
 	{
 		$this->server = $server;
 		$this->request = array();
@@ -86,7 +69,6 @@ class Tivoka_Processor
 	
 	/**
 	 * Receives the computed result
-	 *
 	 * @param mixed $result The computed result
 	 */
 	public function returnResult($result)
@@ -102,22 +84,20 @@ class Tivoka_Processor
 	 * @param int $code The specified JSON-RPC error code
 	 * @param mixed $data Additional data
 	 */
-	public function returnError($code,$data=null)
+	public function returnError($code, $message='', $data=null)
 	{
 		if(self::interpretNotification($this->request) !== FALSE) return FALSE;
 		
 		$id = (isset($this->request['id']) === FALSE) ? null : $this->request['id'];
-		$this->server->returnError($id,$code,$data);
+		$this->server->returnError($id, $code, $message, $data);
 		return FAlSE;
 	}
 	
 	/**
 	 * Validates and sanitizes a normal request
-	 *
 	 * @param array $assoc The json-parsed JSON-RPC request
 	 * @static
 	 * @return array Returns tghe sanitized request and if it was invalid, a boolean FALSE is returned
-	 * @access private
 	 */
 	public static function interpretRequest(array $assoc)
 	{
@@ -151,11 +131,9 @@ class Tivoka_Processor
 	
 	/**
 	 * Validates and sanitizes a notification
-	 *
 	 * @param array $assoc The json-parsed JSON-RPC request
 	 * @static
 	 * @return array Returns the sanitized request and if it was invalid, a boolean FALSE is returned
-	 * @access private
 	 */
 	public static function interpretNotification(array $assoc)
 	{

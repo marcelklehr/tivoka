@@ -1,33 +1,19 @@
 <?php
 /**
-*	Tivoka - A simple and easy-to-use client and server implementation of JSON-RC
-*	Copyright (C) 2011  Marcel Klehr <m.klehr@gmx.net>
-*
-*	This program is free software; you can redistribute it and/or modify it under the
-*	terms of the GNU General Public License as published by the Free Software Foundation;
-*	either version 3 of the License, or (at your option) any later version.
-*
-*	This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-*	without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-*	See the GNU General Public License for more details.
-*
-*	You should have received a copy of the GNU General Public License along with this program;
-*	if not, see <http://www.gnu.org/licenses/>.
-*
-* @package Tivoka
-* @author Marcel Klehr <mklehr@gmx.net>
-* @copyright (c) 2011, Marcel Klehr
-*/
+ * @package Tivoka
+ * @author Marcel Klehr <mklehr@gmx.net>
+ * @copyright (c) 2011, Marcel Klehr
+ */
 /**
-* A batch request
-* @package Tivoka
-*/
+ * A batch request
+ * @package Tivoka
+ */
 class Tivoka_BatchRequest extends Tivoka_Request
 {
 	/**
 	 * Constructs a new JSON-RPC batch request
-	 * All values other than Tivoka_ClientRequest will be ignored
-	 * @param array $batch A list of requests to include, each a Tivoka_ClientRequest
+	 * All values of type other than Tivoka_Request will be ignored
+	 * @param array $batch A list of requests to include, each a Tivoka_Request
 	 * @see Tivoka_Client::send()
 	 */
 	public function __construct(array $batch)

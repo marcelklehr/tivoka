@@ -1,27 +1,13 @@
 <?php
 /**
-*	Tivoka - A simple and easy-to-use client and server implementation of JSON-RC
-*	Copyright (C) 2011  Marcel Klehr <m.klehr@gmx.net>
-*
-*	This program is free software; you can redistribute it and/or modify it under the
-*	terms of the GNU General Public License as published by the Free Software Foundation;
-*	either version 3 of the License, or (at your option) any later version.
-*
-*	This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-*	without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-*	See the GNU General Public License for more details.
-*
-*	You should have received a copy of the GNU General Public License along with this program;
-*	if not, see <http://www.gnu.org/licenses/>.
-*
-* @package Tivoka
-* @author Marcel Klehr <mklehr@gmx.net>
-* @copyright (c) 2011, Marcel Klehr
-*/
+ * @package Tivoka
+ * @author Marcel Klehr <mklehr@gmx.net>
+ * @copyright (c) 2011, Marcel Klehr
+ */
 /**
-* The public interface to all tivoka functions
-* @package Tivoka
-*/
+ * The public interface to all tivoka functions
+ * @package Tivoka
+ */
 abstract class Tivoka
 {
 	const ERR_NO_RESPONSE = 1;      // 000 000 001
@@ -61,9 +47,9 @@ abstract class Tivoka
 	/**
 	 * Creates a request
 	 * @throws Tivoka_Exception
-	 * @param mixed $id
-	 * @param string $method
-	 * @param mixed $params
+	 * @param mixed $id The id of the request
+	 * @param string $method The method to invoke
+	 * @param array $params The parameters
 	 * @return Tivoka_Request
 	 */
 	public static function createRequest($id, $method, $params=null) {
@@ -71,17 +57,18 @@ abstract class Tivoka
 	}
 	
 	/**
-	 * create notification
-	 * @param string $method
-	 * @param mixed $params
+	 * Creates a notification
+	 * @throws Tivoka_Exception
+	 * @param string $method The method to invoke
+	 * @param array $params The parameters
 	 */
 	public static function createNotification($method, $params=null) {
 		return new Tivoka_Notification($method, $params);
 	}
 	
 	/**
-	 * create a batch request
-	 * @param mixed $request either an array of requests or a a list of requests
+	 * Creates a batch request
+	 * @param mixed $request either an array of requests or a comma-seperated list of requests
 	 * @throws Tivoka_Exception
 	 * @return Tivoka_BatchRequest
 	 */
@@ -97,6 +84,7 @@ abstract class Tivoka
 	 * Starts processing the HTTP input
 	 * Notice: Calling this method will stop further execution of the script!
 	 * @param object $host An object whose methods will be provided for invokation
+	 * @param integer $hide_errors Optionally pass `Tivoka::HIDE_ERRORS` to hide all errors from the output
 	 * @return Tivoka_Server
 	 */
 	static function createServer($host, $hide_errors=0)
@@ -105,7 +93,7 @@ abstract class Tivoka
 	}
 	
 	/**
-	 * Creates a client object
+	 * Creates a native remote interface to the methods provided by the target server
 	 * @param string $target the URL of the target server (MUST include http scheme)
 	 * @return Tivoka_Client
 	 */

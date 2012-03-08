@@ -1,32 +1,18 @@
 <?php
 /**
-*	Tivoka - A simple and easy-to-use client and server implementation of JSON-RC
-*	Copyright (C) 2011  Marcel Klehr <m.klehr@gmx.net>
-*
-*	This program is free software; you can redistribute it and/or modify it under the
-*	terms of the GNU General Public License as published by the Free Software Foundation;
-*	either version 3 of the License, or (at your option) any later version.
-*
-*	This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-*	without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-*	See the GNU General Public License for more details.
-*
-*	You should have received a copy of the GNU General Public License along with this program;
-*	if not, see <http://www.gnu.org/licenses/>.
-*
-* @package Tivoka
-* @author Marcel Klehr <mklehr@gmx.net>
-* @copyright (c) 2011, Marcel Klehr
-*/
+ * @package Tivoka
+ * @author Marcel Klehr <mklehr@gmx.net>
+ * @copyright (c) 2011, Marcel Klehr
+ */
 /**
-* Processes the  JSON-RPC input
-* @package Tivoka
-*/
+ * Processes the  JSON-RPC input
+ * @package Tivoka
+ */
 class Tivoka_Server
 {
 	/**
 	* @var object The object given to __construct()
-	* @see Tivoka_ServerServer::__construct()
+	* @see Tivoka_Server::__construct()
 	* @access private
 	*/
 	public $host;
@@ -47,7 +33,6 @@ class Tivoka_Server
 	 * Constructss a Server object
 	 * @param object $host An object whose methods will be provided for invokation
 	 * @param bool $hide_errors Pass TRUE for hiding all eventual erros to avoid messing up the response
-	 * @access private
 	 */
 	public function __construct($host, $hide_errors=0) {
 		// disable error reporting?
@@ -100,17 +85,20 @@ class Tivoka_Server
 		$this->respond();
 	}
 	
+	/**
+	 * Starts processing of the passed request
+	 * @param array $request the parsed request
+	 */
 	public function process($request) {
 		new Tivoka_Processor($request, $this);
 	}
 	
 	/**
-	* Receives the computed result
-	*
-	* @param mixed $id The id of the original request
-	* @param mixed $result The computed result
-	* @access private
-	*/
+	 * Receives the computed result
+	 * @param mixed $id The id of the original request
+	 * @param mixed $result The computed result
+	 * @access private
+	 */
 	public function returnResult($id,$result)
 	{
 		switch(Tivoka::$version) {
@@ -133,9 +121,9 @@ class Tivoka_Server
 	
 	/**
 	 * Receives the error from computing the result
-	 *
 	 * @param mixed $id The id of the original request
-	 * @param int $code The specified JSON-RPC error code
+	 * @param integer $code The error code
+	 * @param string $message The error message
 	 * @param mixed $data Additional data
 	 * @access private
 	 */
@@ -195,7 +183,6 @@ class Tivoka_Server
 	
 	/**
 	* Validates a batch request
-	*
 	* @param array $assoc The json-parsed JSON-RPC request
 	* @static
 	* @return array Returns the original request and if it was invalid, a boolean FALSE is returned

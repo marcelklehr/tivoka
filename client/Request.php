@@ -1,27 +1,13 @@
 <?php
 /**
-*	Tivoka - A simple and easy-to-use client and server implementation of JSON-RC
-*	Copyright (C) 2011  Marcel Klehr <m.klehr@gmx.net>
-*
-*	This program is free software; you can redistribute it and/or modify it under the
-*	terms of the GNU General Public License as published by the Free Software Foundation;
-*	either version 3 of the License, or (at your option) any later version.
-*
-*	This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-*	without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-*	See the GNU General Public License for more details.
-*
-*	You should have received a copy of the GNU General Public License along with this program;
-*	if not, see <http://www.gnu.org/licenses/>.
-*
-* @package Tivoka
-* @author Marcel Klehr <mklehr@gmx.net>
-* @copyright (c) 2011, Marcel Klehr
-*/
+ * @package Tivoka
+ * @author Marcel Klehr <mklehr@gmx.net>
+ * @copyright (c) 2011, Marcel Klehr
+ */
 /**
-* A JSON-RPc request
-* @package Tivoka
-*/
+ * A JSON-RPC request
+ * @package Tivoka
+ */
 class Tivoka_Request
 {
 	public $id;
@@ -44,7 +30,7 @@ class Tivoka_Request
 	}
 	
 	/**
-	 * Send this request to a remote server 
+	 * Send this request to a remote server directly
 	 * @param string $target The URL of the remote server
 	 */
 	public function send($target) {
@@ -63,8 +49,8 @@ class Tivoka_Request
 	 * Encodes the request properties
 	 * @param mixed $id The id of the request
 	 * @param string $method The method to be called
-	 * @param mixed $params Additional parameters
-	 * @return mixed Returns the prepared assotiative array to encode
+	 * @param array $params Additional parameters
+	 * @return mixed the prepared assotiative array to encode
 	 */
 	protected static function prepareRequest($id, $method, $params=null) {
 		switch(Tivoka::$version) {
