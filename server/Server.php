@@ -146,6 +146,7 @@ class Tivoka_Server
 					'message'=>$message,
 					'data'=>$data
 			));
+			break;
 		case Tivoka::VER_1_0:
 			$response = array(
 				'id'=>$id,
@@ -155,6 +156,7 @@ class Tivoka_Server
 					'message'=>$message,
 					'data'=>$data
 			));
+			break;
 		}
 		if($message === '')$response['error']['message'] = $msg[$code];
 		$this->response[] = $response;
