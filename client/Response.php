@@ -84,7 +84,7 @@ class Tivoka_Response
 			return;
 		}
 		
-		throw new Tivoka_Exception('Inalid response structure', Tivoka::ERR_INVALID_RESPONSE);
+		throw new Tivoka_Exception('Invalid response structure', Tivoka::ERR_INVALID_RESPONSE);
 	}
 	
 	/**
