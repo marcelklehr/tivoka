@@ -2,20 +2,33 @@
 a leightweight JSON-RPC client and server implementation for PHP 5
 
 The goal of this project is to provide an easy-to-use, specification compatible and object-oriented JSON-RPC implementation for PHP.  
-This version is based on the [JSON-RPC 2.0 specification proposal](https://groups.google.com/group/json-rpc/web/json-rpc-2-0).
-Support for the official JSON-RPC protocol version is planned in near future.
+Tivoka allows you to choose between [JSON-RPC 1.0](http://json-rpc.org/wiki/specification) and [JSON-RPC 2.0](http://jsonrpc.org/specification) specs.
 
- - Learn more about JSON-RPC at <http://jsonrpc.org/>  
- - Download [latest version](https://github.com/marcelklehr/tivoka/tags)  
- - Submit any bugs or suggestions to the [Issue Tracker](http://github.com/marcelklehr/tivoka/issues)
- - Have a look at the [proposal for the 2.0.0 API](https://github.com/marcelklehr/tivoka/wiki/2.0.0-API-proposal)
+ - Have a look at a few [examples](http://marcelklehr.github.com/tivoka/)
+ - Download [latest version](https://github.com/marcelklehr/tivoka/tags)
+ - Submit any bugs, suggestions or questions to the [Issue Tracker](http://github.com/marcelklehr/tivoka/issues)
+ - Learn more about JSON-RPC at <http://jsonrpc.org/>
 
-### Project status ###
-I hardly had time to work on this project during the last year, but got a brain wave just now and will try pushing it to 2.0.0.
-The thing that troubled me the most was that the current API is not very usable (you will agree, i think, especially when looking at the examples below).  
-I am trying to solve this with a completely new API (see [proposal](https://github.com/marcelklehr/tivoka/wiki/2.0.0-API-proposal)), which is already committed but still leaves some work to be done (e.g. some remote interface for native interaction with remote server). Stay tuned!
+## Examples ##
+These are just some quick examples. For more details see the [tivoka website](http://marcelklehr.github.com/tivoka/).
+
+Using the native remote interface
+
+```
+Tivoka::createClient('http://exapmle.com/api')->substract(51, 9);// 42
+```
+
+Creating a server
+
+```
+Tivoka::createServer(array(
+	'substract' => function($req) {
+		$result = $req->params[0] - $request->params[1];
+		return $req->result($result);
+	}
+));
+```
 
 ## License ##
-**GNU General Public License**  
-as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.  
-*See the LICENSE file.*
+**GNU General Public License** - as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.  
+See the `LICENSE` file.
