@@ -52,14 +52,14 @@ class Tivoka_Processor
 	
 		if($this->request === array())
 		{
-			$this->returnError(-32600, $request);
+			$this->error(-32600, $request);
 			return;
 		}
 	
 		//search method...
 		if(!is_callable(array($this->server->host,$this->request['method'])))
 		{
-			$this->returnError(-32601);
+			$this->error(-32601);
 			return;
 		}
 	
