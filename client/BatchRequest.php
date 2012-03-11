@@ -18,7 +18,7 @@ class Tivoka_BatchRequest extends Tivoka_Request
 	 */
 	public function __construct(array $batch)
 	{
-		if(Tivoka::$version == Tivoka::VER_1_0) throw new Tivoka_exception('Batch requests are not supported by JSON-RPC v1.0', Tivoka::ERR_SPEC_INCOMPATIBLE);
+		if(Tivoka::$version == Tivoka::VER_1_0) throw new Tivoka_exception('Batch requests are not supported by JSON-RPC 1.0 spec', Tivoka::ERR_SPEC_INCOMPATIBLE);
 		$this->id = array();
 	
 		//prepare requests...
@@ -34,10 +34,53 @@ class Tivoka_BatchRequest extends Tivoka_Request
 				$this->id[$request->id] = $request;
 			}
 			
-			$this->data[] = $request->data;
+			$this->request[] = $request->request;
 		}
-		
-		$this->response = new Tivoka_BatchResponse($this->id);
+	}
+	
+	/**
+	* Interprets the parsed response
+	* @param array $resparr json data
+	* @return void
+	*/
+	public function interpretResponse($resparr) {
+		//validate
+		if(count($resparr) < 1 || !is_array($resparr)) {
+			throw new Tivoka_Exception('Expected batch response, but none was received', Tivoka::ERR_INVALID_RESPONSE);
+		}
+	
+		$requests = $this->id;
+		$nullresps = array();
+		$responses = array();
+	
+		//split..
+		foreach($resparr as $resp)
+		{
+			if(!is_array($resp)) throw new Tivoka_Exception('Expected batch response, but no array was received', Tivoka::ERR_INVALID_RESPONSE);
+				
+			//is jsonrpc protocol?
+			if(!isset($resp['jsonrpc']) && !isset($resp['id'])) throw new Tivoka_Exception('The received reponse doesn\'t implement the JSON-RPC prototcol.', Tivoka::ERR_INVALID_RESPONSE);
+				
+			//responds to an existing request?
+			if(!array_key_exists($resp['id'], $requests))
+			{
+				if($resp['id'] != null) continue;
+	
+				$nullresps[] = $resp;
+				continue;
+			}
+	
+			//normal response...
+			$requests[ $resp['id'] ]->setResponse(json_encode($resp));
+			unset($requests[ $resp['id'] ]);
+		}
+	
+		//handle id:null responses...
+		foreach($requests as $req)
+		{
+			$resp = array_shift($nullresps);
+			$requests[ $req->id ]->setResponse(json_encode($resp));
+		}
 	}
 }
 ?>

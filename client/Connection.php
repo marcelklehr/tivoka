@@ -22,7 +22,7 @@ class Tivoka_Connection {
 	/**
 	 * Sends a JSON-RPC request
 	 * @param Tivoka_Request $request A Tivoka request
-	 * @return void
+	 * @return Tivoka_Request if sent as a batch request the BatchRequest object will be returned
 	 */
 	public function send($request) {
 		if(func_num_args() > 1 ) $request = func_get_args();
@@ -49,7 +49,8 @@ class Tivoka_Connection {
 			throw new Tivoka_Exception('Connection Failed', Tivoka::ERR_CONNECTION_FAILED);
 		}
 		
-		$request->response->set($response);
+		$request->setResponse($response);
+		return $request;
 	}
 	
 	/**
@@ -61,7 +62,7 @@ class Tivoka_Connection {
 	public function sendRequest($id, $method, $params=null) {
 		$request = Tivoka::createRequest($id, $method, $params);
 		$this->send($request);
-		return $request->response;
+		return $request;
 	}
 	
 	/**
