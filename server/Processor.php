@@ -97,7 +97,7 @@ class Tivoka_Processor
 	 * Validates and sanitizes a normal request
 	 * @param array $assoc The json-parsed JSON-RPC request
 	 * @static
-	 * @return array Returns tghe sanitized request and if it was invalid, a boolean FALSE is returned
+	 * @return array Returns the sanitized request and if it was invalid, a boolean FALSE is returned
 	 */
 	public static function interpretRequest(array $assoc)
 	{
