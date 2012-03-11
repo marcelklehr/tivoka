@@ -40,10 +40,10 @@ class Tivoka_Client {
 		$request = Tivoka::createRequest($this->id++, $method, $args);
 		$this->connection->send($request);
 		
-		if($request->response->isError()) {
-			throw new Tivoka_Exception($request->response->errorMessage, $request->response->error);
+		if($request->isError()) {
+			throw new Tivoka_Exception($request->errorMessage, $request->error);
 		}
-		return $request->response->result;
+		return $request->result;
 	}
 
 }
