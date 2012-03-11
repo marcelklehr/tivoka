@@ -16,24 +16,24 @@ Tivoka::connect($target)->send($request, $greeting);
 /*
  * Display reponse
  */
-if($request->response->isError())
+if($request->isError())
 {
 	// an error occured
-	var_dump($request->response->error);
-	var_dump($request->response->errorMessage);
-	var_dump($request->response->data);
+	var_dump($request->error);
+	var_dump($request->errorMessage);
+	var_dump($request->reponse);
 }
-else var_dump($request->response->result);// the result
+else var_dump($request->result);// the result
 
 	
-if($greeting->response->isError())
+if($greeting->isError())
 {
 	// an error occured
-	var_dump($greeting->response->error);
-	var_dump($greeting->response->errorMessage);
-	var_dump($greeting->response->data);
+	var_dump($greeting->error);
+	var_dump($greeting->errorMessage);
+	var_dump($greeting->response);
 }
-else var_dump($greeting->response->result);// the result
+else var_dump($greeting->result);// the result
 
 ?>
 </pre>
