@@ -9,16 +9,15 @@ $methods = array(
 	
 	'demo.substract' => function($request)
 	{
-		if(!is_array($request->params)) { $request->returnError(-32602); return FALSE;}
+		if(!is_array($request->params)) return $request->returnError(-32602);
 		$tmp = array_keys($request->params);
 		if(	!count($request->params) == 2 || 
 			!is_numeric($request->params[array_pop($tmp)]) ||
 			!is_numeric($request->params[array_pop($tmp)]) )
 		{
-			$request->returnError(-32602);return False;
+			return $request->returnError(-32602);
 		}
-		$request->returnResult(intval($request->params[0]) - intval($request->params[1]));
-		return TRUE;
+		return $request->returnResult(intval($request->params[0]) - intval($request->params[1]));
 	}
 );
 
