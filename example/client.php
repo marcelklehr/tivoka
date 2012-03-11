@@ -22,11 +22,18 @@ if($request->response->isError())
 	var_dump($request->response->error);
 	var_dump($request->response->errorMessage);
 	var_dump($request->response->data);
-}else
-{
-	// the result
-	var_dump($request->response->result);
-	var_dump($greting->response->result);
 }
+else var_dump($request->response->result);// the result
+
+	
+if($greeting->response->isError())
+{
+	// an error occured
+	var_dump($greeting->response->error);
+	var_dump($greeting->response->errorMessage);
+	var_dump($greeting->response->data);
+}
+else var_dump($greeting->response->result);// the result
+
 ?>
 </pre>
