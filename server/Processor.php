@@ -71,7 +71,7 @@ class Tivoka_Processor
 	 * Receives the computed result
 	 * @param mixed $result The computed result
 	 */
-	public function returnResult($result)
+	public function result($result)
 	{
 		if(self::interpretNotification($this->request) !== FALSE) return TRUE;
 		$this->server->returnResult($this->request['id'],$result);
@@ -84,7 +84,7 @@ class Tivoka_Processor
 	 * @param int $code The specified JSON-RPC error code
 	 * @param mixed $data Additional data
 	 */
-	public function returnError($code, $message='', $data=null)
+	public function error($code, $message='', $data=null)
 	{
 		if(self::interpretNotification($this->request) !== FALSE) return FALSE;
 		
