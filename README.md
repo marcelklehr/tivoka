@@ -14,7 +14,7 @@ These are just some quick examples. For more details see the [website](http://ma
 
 Using the native remote interface
 
-```
+```php
 <?php
 Tivoka::createClient('http://exapmle.com/api')->substract(51, 9);// 42
 ?>
@@ -22,7 +22,7 @@ Tivoka::createClient('http://exapmle.com/api')->substract(51, 9);// 42
 
 Creating a server
 
-```
+```php
 <?php
 Tivoka::createServer(array(
 	'substract' => function($req) {
