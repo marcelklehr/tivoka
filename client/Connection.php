@@ -38,7 +38,7 @@ class Tivoka_Connection {
 					'content' => (string) $request,
 					'header' => "Content-Type: application/json\r\n".
 								"Connection: Close\r\n",
-					'method' => 'post',
+					'method' => 'POST',
 					'timeout' => 10.0
 		)
 		));
