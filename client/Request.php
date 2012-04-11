@@ -86,7 +86,8 @@ class Tivoka_Request
 		if(($error = self::interpretError($resparr, $this->id)) !== FALSE) {
 			$this->error        = $error['error']['code'];
 			$this->errorMessage = $error['error']['message'];
-			$this->errorData    = $error['error']['data'];
+			if(isset($error['error']['data']))
+				$this->errorData    = $error['error']['data'];
 			return;
 		}
 	
