@@ -53,6 +53,14 @@ See the `LICENSE` file.
 
 ## Changelog ##
 
+2.0.2
+
+ * Introduced new directory structure
+ * Fixed #10
+ * Some Exception messages changed slightly to be more specific
+
+***
+
 2.0.1
 
  * Patched http method spelling (make uppercase, so all servers accept it)
