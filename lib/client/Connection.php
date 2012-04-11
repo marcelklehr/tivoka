@@ -46,7 +46,7 @@ class Tivoka_Connection {
 		//sending...
 		$response = @file_get_contents($this->target, false, $context);
 		if($response === FALSE) {
-			throw new Tivoka_Exception('Connection Failed', Tivoka::ERR_CONNECTION_FAILED);
+			throw new Tivoka_Exception('Connection to "'.$this->target.'" failed', Tivoka::ERR_CONNECTION_FAILED);
 		}
 		
 		$request->setResponse($response);
