@@ -2,7 +2,7 @@
 include dirname(__FILE__).'/lib/Tivoka.php';
 include dirname(__FILE__).'/lib/Exception.php';
 
-include dirname(__FILE__).'/lib/lib/client/Connection.php';
+include dirname(__FILE__).'/lib/client/Connection.php';
 include dirname(__FILE__).'/lib/client/Request.php';
 include dirname(__FILE__).'/lib/client/Notification.php';
 include dirname(__FILE__).'/lib/client/BatchRequest.php';
