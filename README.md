@@ -53,6 +53,13 @@ See the `LICENSE` file.
 
 ## Changelog ##
 
+2.0.3
+
+ * Added HTTPS support
+ * target scheme is now treated case insensitive
+
+***
+
 2.0.2
 
  * Introduced new directory structure
