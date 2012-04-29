@@ -73,5 +73,14 @@ class Tivoka_Connection {
 	public function sendNotification($method, $params=null) {
 		$this->send(Tivoka::createNotification($method, $params));
 	}
+	
+	/**
+	 * Creates a native remote interface for the target server
+	 * @return Tivoka_NativeInterface
+	 */
+	public function nativeInterface()
+	{
+		return new Tivoka_NativeInterface($this);
+	}
 }
 ?>
