@@ -101,5 +101,23 @@ abstract class Tivoka
 	{
 		return new Tivoka_Client($target);
 	}
+	
+	/**
+	 * Sets the desired JSON-RPC spec version
+	 * @param string $version spec version as a string (using semver notation)
+	 */
+	static function setVersion($version)
+	{
+		switch($version) {
+			case '1.0'
+				self::$version = Tivoka::VER_1_0
+				break;
+			case '2.0'
+				self::$version = Tivoka::VER_2_0
+				break;
+			default:
+				throw new Tivoka_Exception('Unsupported spec version: '+version);
+		}
+	}
 }
 ?>
