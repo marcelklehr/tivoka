@@ -91,15 +91,5 @@ abstract class Tivoka
 	{
 		return new Tivoka_Server($host);
 	}
-	
-	/**
-	 * Creates a native remote interface to the methods provided by the target server
-	 * @param string $target the URL of the target server (MUST include http scheme)
-	 * @return Tivoka_Client
-	 */
-	static function createClient($target)
-	{
-		return new Tivoka_Client($target);
-	}
 }
 ?>
