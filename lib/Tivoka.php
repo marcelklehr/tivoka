@@ -27,20 +27,10 @@ abstract class Tivoka
 	
 	/**
 	 * Initializes a Connection to a remote server
-	 * @param string $target the URL of the target server (MUST include http scheme)
-	 * @throws Tivoka_Exception
+	 * @param string $target the URL of the target server
 	 * @return Tivoka_Connection
 	 */
 	public static function connect($target) {
-		//validate url...
-		if(!filter_var($target, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED))
-		throw new Tivoka_Exception('Valid URL (scheme://domain[/path][/file]) required.', Tivoka::ERR_INVALID_TARGET);
-		
-		//validate scheme...
-		$t = parse_url($target);
-		if($t['scheme'] !== 'http')
-		throw new Tivoka_Exception('Unknown or unsupported scheme given.', Tivoka::ERR_INVALID_TARGET);
-		
 		return new Tivoka_Connection($target);
 	}
 	

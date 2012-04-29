@@ -9,6 +9,8 @@
  * @package Tivoka
  */
 class Tivoka_Connection {
+
+	public $target;
 	
 	/**
 	 * Constructs connection
@@ -16,6 +18,15 @@ class Tivoka_Connection {
 	 * @param string $target URL
 	 */
 	public function __construct($target) {
+		//validate url...
+		if(!filter_var($target, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED))
+			throw new Tivoka_Exception('Valid URL (scheme://domain[/path][/file]) required.', Tivoka::ERR_INVALID_TARGET);
+		
+		//validate scheme...
+		$t = parse_url($target);
+		if(strtolower($t['scheme']) != 'http' && strtolower($t['scheme']) != 'https')
+			throw new Tivoka_Exception('Unknown or unsupported scheme given.', Tivoka::ERR_INVALID_TARGET);
+		
 		$this->target = $target;
 	}
 	

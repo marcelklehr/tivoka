@@ -4,7 +4,7 @@ a leightweight JSON-RPC client and server implementation for PHP 5
 Tivoka is a powerful, specification compatible and object-oriented JSON-RPC implementation for PHP with a simple API.  
 It allows you to choose between [JSON-RPC 1.0](http://json-rpc.org/wiki/specification) and [JSON-RPC 2.0](http://jsonrpc.org/specification) specs.
 
- - Download [latest version](https://github.com/marcelklehr/tivoka/zipball/2.0.2) or install it through PEAR (see below)
+ - Download [latest version](https://github.com/marcelklehr/tivoka/zipball/master) or install it through PEAR (see below)
  - Have a look at the [documentation](https://github.com/marcelklehr/tivoka/wiki)
  - Submit any bugs, suggestions or questions to the [Issue Tracker](http://github.com/marcelklehr/tivoka/issues)
 
@@ -52,6 +52,13 @@ pear install pearhub/tivoka
 See the `LICENSE` file.
 
 ## Changelog ##
+
+2.0.3
+
+ * Added HTTPS support
+ * target scheme is now treated case insensitive
+
+***
 
 2.0.2
 
