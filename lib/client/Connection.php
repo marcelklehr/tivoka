@@ -10,6 +10,8 @@
  */
 class Tivoka_Connection {
 	
+	private $spec = Tivoka::SPEC_2_0;
+	
 	/**
 	 * Constructs connection
 	 * @access private
@@ -18,6 +20,15 @@ class Tivoka_Connection {
 	public function __construct($target) {
 		$this->target = $target;
 	}
+	
+	/**
+	* Sets the spec version to use for this connection
+	* @param string $spec The spec version (e.g.: "2.0")
+	*/
+	public function useSpec($spec) {
+		$this->spec = Tivoka::useSpec($spec);
+	}
+	
 	
 	/**
 	 * Sends a JSON-RPC request
@@ -35,7 +46,7 @@ class Tivoka_Connection {
 		// preparing connection...
 		$context = stream_context_create(array(
 				'http' => array(
-					'content' => (string) $request,
+					'content' => $request->getRequest($this->spec),
 					'header' => "Content-Type: application/json\r\n".
 								"Connection: Close\r\n",
 					'method' => 'POST',

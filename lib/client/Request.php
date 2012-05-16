@@ -11,6 +11,8 @@
 class Tivoka_Request
 {
 	public $id;
+	public $method;
+	public $params;
 	public $request;
 	public $response;
 	
@@ -28,9 +30,17 @@ class Tivoka_Request
 	 */
 	public function __construct($id,$method,$params=null) {
 		$this->id = $id;
+		$this->method = $method;
+		$this->params = $params;
+	}
 	
-		//prepare...
-		$this->request = self::prepareRequest($id, $method, $params);
+	/**
+	 * Get the raw, JSON-encoded request 
+	 * @param int $spec
+	 */
+	public function getRequest($spec) {
+		$this->spec = $spec;
+		return $this->request = json_encode(self::prepareRequest($spec, $this->id, $this->method, $this->params));
 	}
 	
 	/**
@@ -70,20 +80,12 @@ class Tivoka_Request
 	}
 	
 	/**
-	 * Pack the request data with json encoding
-	 * @return string the json encoded request
-	 */
-	public function __toString() {
-		return json_encode($this->request);
-	}
-	
-	/**
 	* Interprets the parsed response
 	* @param array $resparr
 	*/
 	public function interpretResponse($resparr) {
 		//server error?
-		if(($error = self::interpretError($resparr, $this->id)) !== FALSE) {
+		if(($error = self::interpretError($this->spec, $resparr, $this->id)) !== FALSE) {
 			$this->error        = $error['error']['code'];
 			$this->errorMessage = $error['error']['message'];
 			$this->errorData    = (isset($error['error']['data'])) ? $error['error']['data'] : null;
@@ -91,7 +93,7 @@ class Tivoka_Request
 		}
 	
 		//valid result?
-		if(($result = self::interpretResult($resparr, $this->id)) !== FALSE)
+		if(($result = self::interpretResult($this->spec, $resparr, $this->id)) !== FALSE)
 		{
 			$this->result = $result['result'];
 			return;
@@ -115,17 +117,17 @@ class Tivoka_Request
 	 * @param mixed $id The id of the original request
 	 * @return array the parsed JSON object
 	 */
-	protected static function interpretResult(array $assoc, $id)
+	protected static function interpretResult($spec, array $assoc, $id)
 	{
-		switch(Tivoka::$version) {
-			case Tivoka::VER_2_0:
+		switch($spec) {
+			case Tivoka::SPEC_2_0:
 				if(isset($assoc['jsonrpc'], $assoc['result'], $assoc['id']) === FALSE) return FALSE;
 				if($assoc['id'] !== $id || $assoc['jsonrpc'] != '2.0') return FALSE;
 				return array(
 						'id' => $assoc['id'],
 						'result' => $assoc['result']
 				);
-			case Tivoka::VER_1_0:
+			case Tivoka::SPEC_1_0:
 				if(isset($assoc['result'], $assoc['id']) === FALSE) return FALSE;
 				if($assoc['id'] !== $id && $assoc['result'] === null) return FALSE;
 				return array(
@@ -141,10 +143,10 @@ class Tivoka_Request
 	 * @param mixed $id The id of the original request
 	 * @return array parsed JSON object
 	 */
-	protected static function interpretError(array $assoc, $id)
+	protected static function interpretError($spec, array $assoc, $id)
 	{
-		switch(Tivoka::$version) {
-			case Tivoka::VER_2_0:
+		switch($spec) {
+			case Tivoka::SPEC_2_0:
 				if(isset($assoc['jsonrpc'], $assoc['error']) == FALSE) return FALSE;
 				if($assoc['id'] != $id && $assoc['id'] != null && isset($assoc['id']) OR $assoc['jsonrpc'] != '2.0') return FALSE;
 				if(isset($assoc['error']['message'], $assoc['error']['code']) === FALSE) return FALSE;
@@ -152,7 +154,7 @@ class Tivoka_Request
 						'id' => $assoc['id'],
 						'error' => $assoc['error']
 				);
-			case Tivoka::VER_1_0:
+			case Tivoka::SPEC_1_0:
 				if(isset($assoc['error'], $assoc['id']) === FALSE) return FALSE;
 				if($assoc['id'] != $id && $assoc['id'] !== null) return FALSE;
 				if(isset($assoc['error']) === FALSE) return FALSE;
@@ -170,9 +172,9 @@ class Tivoka_Request
 	 * @param array $params Additional parameters
 	 * @return mixed the prepared assotiative array to encode
 	 */
-	protected static function prepareRequest($id, $method, $params=null) {
-		switch(Tivoka::$version) {
-		case Tivoka::VER_2_0:
+	protected static function prepareRequest($spec, $id, $method, $params=null) {
+		switch($spec) {
+		case Tivoka::SPEC_2_0:
 			$request = array(
 					'jsonrpc' => '2.0',
 					'method' => $method,
@@ -180,13 +182,13 @@ class Tivoka_Request
 			if($id !== null) $request['id'] = $id;
 			if($params !== null) $request['params'] = $params;
 			return $request;
-		case Tivoka::VER_1_0:
+		case Tivoka::SPEC_1_0:
 			$request = array(
 				'method' => $method,
 				'id' => $id
 			);
 			if($params !== null) {
-				if((bool)count(array_filter(array_keys($params), 'is_string'))) throw new Tivoka_Exception('JSON-RC 1.0 doesn\'t allow for named parameters');
+				if((bool)count(array_filter(array_keys($params), 'is_string'))) throw new Tivoka_Exception('JSON-RPC 1.0 doesn\'t allow for named parameters');
 				$request['params'] = $params;
 			}
 			return $request;

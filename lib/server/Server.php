@@ -29,21 +29,39 @@ class Tivoka_Server
 	 */
 	private $response;
 	
+	private $spec = Tivoka::SPEC_2_0;
+	
 	/**
 	 * Constructss a Server object
 	 * @param object $host An object whose methods will be provided for invokation
-	 * @param bool $hide_errors Pass TRUE for hiding all eventual erros to avoid messing up the response
 	 */
-	public function __construct($host, $hide_errors=0) {
-		// disable error reporting?
-		if($hide_errors == Tivoka::HIDE_ERRORS) error_reporting(0);// avoids messing up the response
-		
+	public function __construct($host) {
 		if(is_array($host)) {
 			$host = new Tivoka_MethodWrapper($host);
 		}
 		
 		$this->host = $host;
+	}
+	
+	/**
+	* Sets the spec version to use for this connection
+	* @param string $spec The spec version (e.g.: "2.0")
+	*/
+	public function useSpec($spec) {
+		$this->spec = Tivoka::useSpec($spec);
+	}
+	
+	/**
+	 * 
+	 * Enter description here ...
+	 * @param int $hide_errors Pass `Tivoka::HIDE_ERRORS` for hiding all eventual erros to avoid messing up the response
+	 */
+	public function dispatch($hide_errors=0) {
+		// disable error reporting?
+		if($hide_errors == Tivoka::HIDE_ERRORS) error_reporting(0);// avoids messing up the response
+		
 		$this->input = file_get_contents('php://input');
+		
 		$json_errors = array(
 			JSON_ERROR_NONE => '',
 			JSON_ERROR_DEPTH => 'The maximum stack depth has been exceeded',
@@ -101,15 +119,15 @@ class Tivoka_Server
 	 */
 	public function returnResult($id,$result)
 	{
-		switch(Tivoka::$version) {
-		case Tivoka::VER_2_0:
+		switch($this->spec) {
+		case Tivoka::SPEC_2_0:
 			$this->response[] = array(
 						'jsonrpc' => '2.0',
 						'id' => $id,
 						'result' => $result
 			);
 			break;
-		case Tivoka::VER_1_0:
+		case Tivoka::SPEC_1_0:
 			$this->response[] = array(
 								'id' => $id,
 								'result' => $result,
@@ -136,8 +154,8 @@ class Tivoka_Server
 			-32602 => 'Invalid params',
 			-32603 => 'Internal error'
 		);
-		switch(Tivoka::$version) {
-		case Tivoka::VER_2_0:
+		switch($this->spec) {
+		case Tivoka::SPEC_2_0:
 			$response = array(
 				'jsonrpc'=>'2.0',
 				'id'=>$id,
@@ -147,7 +165,7 @@ class Tivoka_Server
 					'data'=>$data
 			));
 			break;
-		case Tivoka::VER_1_0:
+		case Tivoka::SPEC_1_0:
 			$response = array(
 				'id'=>$id,
 				'result' => null,

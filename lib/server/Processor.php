@@ -40,12 +40,12 @@ class Tivoka_Processor
 		$this->params = (isset($request['params']) === FALSE) ? null : $request['params'];
 	
 		//validate...
-		if(($req = self::interpretRequest($request)) !== FALSE)
+		if(($req = self::interpretRequest($server->spec, $request)) !== FALSE)
 		{
 			$this->request = $req;
 		}
 	
-		if(($req = self::interpretNotification($request)) !== FALSE)
+		if(($req = self::interpretNotification($server->spec, $request)) !== FALSE)
 		{
 			$this->request = $req;
 		}
@@ -73,7 +73,7 @@ class Tivoka_Processor
 	 */
 	public function result($result)
 	{
-		if(self::interpretNotification($this->request) !== FALSE) return TRUE;
+		if(self::interpretNotification($this->server->spec, $this->request) !== FALSE) return TRUE;
 		$this->server->returnResult($this->request['id'],$result);
 		return TRUE;
 	}
@@ -86,7 +86,7 @@ class Tivoka_Processor
 	 */
 	public function error($code, $message='', $data=null)
 	{
-		if(self::interpretNotification($this->request) !== FALSE) return FALSE;
+		if(self::interpretNotification($this->server->spec, $this->request) !== FALSE) return FALSE;
 		
 		$id = (isset($this->request['id']) === FALSE) ? null : $this->request['id'];
 		$this->server->returnError($id, $code, $message, $data);
@@ -99,10 +99,10 @@ class Tivoka_Processor
 	 * @static
 	 * @return array Returns the sanitized request and if it was invalid, a boolean FALSE is returned
 	 */
-	public static function interpretRequest(array $assoc)
+	public static function interpretRequest($spec, array $assoc)
 	{
-		switch(Tivoka::$version) {
-		case Tivoka::VER_2_0:
+		switch($spec) {
+		case Tivoka::SPEC_2_0:
 			if(isset($assoc['jsonrpc'], $assoc['id'], $assoc['method']) === FALSE) return FALSE;
 			if($assoc['jsonrpc'] != '2.0' || !is_string($assoc['method'])) return FALSE;
 			$request = array(
@@ -114,7 +114,7 @@ class Tivoka_Processor
 				$request['params'] = $assoc['params'];
 			}
 			return $request;
-		case Tivoka::VER_1_0:
+		case Tivoka::SPEC_1_0:
 			if(isset($assoc['id'], $assoc['method']) === FALSE) return FALSE;
 			if(!is_string($assoc['method'])) return FALSE;
 			$request = array(
@@ -135,10 +135,10 @@ class Tivoka_Processor
 	 * @static
 	 * @return array Returns the sanitized request and if it was invalid, a boolean FALSE is returned
 	 */
-	public static function interpretNotification(array $assoc)
+	public static function interpretNotification($spec, array $assoc)
 	{
-		switch(Tivoka::$version) {
-		case Tivoka::VER_2_0:
+		switch($spec) {
+		case Tivoka::SPEC_2_0:
 			if(isset($assoc['jsonrpc'], $assoc['method']) === FALSE || isset($assoc['id']) !== FALSE) return FALSE;
 			if($assoc['jsonrpc'] != '2.0' || !is_string($assoc['method'])) return FALSE;
 			$request = array(
@@ -149,7 +149,7 @@ class Tivoka_Processor
 				$request['params'] = $assoc['params'];
 			}
 			return $request;
-		case Tivoka::VER_1_0:
+		case Tivoka::SPEC_1_0:
 			if(isset($assoc['method']) === FALSE || isset($assoc['id']) !== FALSE) return FALSE;
 			if(!is_string($assoc['method'])) return FALSE;
 			$request = array(

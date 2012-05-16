@@ -22,8 +22,6 @@ abstract class Tivoka
 	const SPEC_1_0 = 8;             // 000 001 000
 	const SPEC_2_0 = 16;            // 000 010 000
 	
-	public static $version = Tivoka::SPEC_2_0;
-	
 	
 	/**
 	 * Initializes a Connection to a remote server
@@ -103,18 +101,18 @@ abstract class Tivoka
 	}
 	
 	/**
-	 * Sets the desired JSON-RPC spec version
+	 * Evaluates and returns the passed JSON-RPC spec version
+	 * @private
 	 * @param string $version spec version as a string (using semver notation)
 	 */
 	static function useSpec($version)
 	{
 		switch($version) {
 			case '1.0':
-				self::$spec = Tivoka::SPEC_1_0;
+				return Tivoka::SPEC_1_0;
 				break;
 			case '2.0':
-				self::$spec = Tivoka::SPEC_2_0;
-				break;
+				return Tivoka::SPEC_2_0;
 			default:
 				throw new Tivoka_Exception('Unsupported spec version: '+version);
 		}
