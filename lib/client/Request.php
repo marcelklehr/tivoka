@@ -29,7 +29,7 @@ class Tivoka_Request
 		$this->id = Tivoka::uuid();
 	
 		//prepare...
-		$this->request = self::prepareRequest($id, $method, $params);
+		$this->request = self::prepareRequest($this->id, $method, $params);
 	}
 	
 	/**
