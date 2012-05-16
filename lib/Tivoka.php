@@ -91,16 +91,6 @@ abstract class Tivoka
 	}
 	
 	/**
-	 * Creates a native remote interface to the methods provided by the target server
-	 * @param string $target the URL of the target server (MUST include http scheme)
-	 * @return Tivoka_Client
-	 */
-	static function createClient($target)
-	{
-		return new Tivoka_Client($target);
-	}
-	
-	/**
 	 * Evaluates and returns the passed JSON-RPC spec version
 	 * @private
 	 * @param string $version spec version as a string (using semver notation)
