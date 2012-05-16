@@ -29,7 +29,7 @@ class Tivoka_Server
 	 */
 	private $response;
 	
-	private $spec = Tivoka::SPEC_2_0;
+	public $spec = Tivoka::SPEC_2_0;
 	
 	/**
 	 * Constructss a Server object
