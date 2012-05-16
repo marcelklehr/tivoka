@@ -52,7 +52,7 @@ class Tivoka_Processor
 	
 		if($this->request === array())
 		{
-			$this->error(-32600, $request);
+			$this->error(-32600, 'Invalid Request', $request);
 			return;
 		}
 	
