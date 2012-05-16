@@ -23,13 +23,12 @@ class Tivoka_Request
 	
 	/**
 	 * Constructs a new JSON-RPC request object
-	 * @param mixed $id The id of the request
 	 * @param string $method The remote procedure to invoke
 	 * @param mixed $params Additional params for the remote procedure (optional)
 	 * @see Tivoka_Connection::send()
 	 */
-	public function __construct($id,$method,$params=null) {
-		$this->id = $id;
+	public function __construct($method,$params=null) {
+		$this->id = Tivoka::uuid();
 		$this->method = $method;
 		$this->params = $params;
 	}

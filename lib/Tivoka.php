@@ -50,8 +50,8 @@ abstract class Tivoka
 	 * @param array $params The parameters
 	 * @return Tivoka_Request
 	 */
-	public static function createRequest($id, $method, $params=null) {
-		return new Tivoka_Request($id, $method, $params);
+	public static function createRequest($method, $params=null) {
+		return new Tivoka_Request($method, $params);
 	}
 	
 	/**
@@ -106,6 +106,20 @@ abstract class Tivoka
 			default:
 				throw new Tivoka_Exception('Unsupported spec version: '+version);
 		}
+	}
+	
+	/**
+	 * Returns a v4 uuid
+	 */
+	static function uuid()
+	{
+		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+			mt_rand(0, 0xffff), mt_rand(0, 0xffff), // time_low
+			mt_rand(0, 0xffff), // time_mid
+			mt_rand(0, 0x0fff) | 0x4000, // time_hi_and_version
+			mt_rand(0, 0x3fff) | 0x8000, // clk_seq_hi_res/clk_seq_low
+			mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff) // node
+		);
 	}
 }
 ?>
