@@ -19,10 +19,8 @@ abstract class Tivoka
 	const ERR_INVALID_TARGET = 6;   // 000 000 110
 	const HIDE_ERRORS = 7;          // 000 000 111
 	
-	const VER_1_0 = 8;              // 000 001 000
-	const VER_2_0 = 16;             // 000 010 000
-	
-	public static $version = Tivoka::VER_2_0;
+	const SPEC_1_0 = 8;             // 000 001 000
+	const SPEC_2_0 = 16;            // 000 010 000
 	
 	
 	/**
@@ -42,8 +40,8 @@ abstract class Tivoka
 	 * @param array $params The parameters
 	 * @return Tivoka_Request
 	 */
-	public static function createRequest($id, $method, $params=null) {
-		return new Tivoka_Request($id, $method, $params);
+	public static function createRequest($method, $params=null) {
+		return new Tivoka_Request($method, $params);
 	}
 	
 	/**
@@ -83,13 +81,35 @@ abstract class Tivoka
 	}
 	
 	/**
-	 * Creates a native remote interface to the methods provided by the target server
-	 * @param string $target the URL of the target server (MUST include http scheme)
-	 * @return Tivoka_Client
+	 * Evaluates and returns the passed JSON-RPC spec version
+	 * @private
+	 * @param string $version spec version as a string (using semver notation)
 	 */
-	static function createClient($target)
+	static function useSpec($version)
 	{
-		return new Tivoka_Client($target);
+		switch($version) {
+			case '1.0':
+				return Tivoka::SPEC_1_0;
+				break;
+			case '2.0':
+				return Tivoka::SPEC_2_0;
+			default:
+				throw new Tivoka_Exception('Unsupported spec version: '+version);
+		}
+	}
+	
+	/**
+	 * Returns a v4 uuid
+	 */
+	static function uuid()
+	{
+		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+			mt_rand(0, 0xffff), mt_rand(0, 0xffff), // time_low
+			mt_rand(0, 0xffff), // time_mid
+			mt_rand(0, 0x0fff) | 0x4000, // time_hi_and_version
+			mt_rand(0, 0x3fff) | 0x8000, // clk_seq_hi_res/clk_seq_low
+			mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff) // node
+		);
 	}
 }
 ?>

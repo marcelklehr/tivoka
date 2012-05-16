@@ -18,7 +18,6 @@ class Tivoka_BatchRequest extends Tivoka_Request
 	 */
 	public function __construct(array $batch)
 	{
-		if(Tivoka::$version == Tivoka::VER_1_0) throw new Tivoka_exception('Batch requests are not supported by JSON-RPC 1.0 spec', Tivoka::ERR_SPEC_INCOMPATIBLE);
 		$this->id = array();
 	
 		//prepare requests...
@@ -34,8 +33,22 @@ class Tivoka_BatchRequest extends Tivoka_Request
 				$this->id[$request->id] = $request;
 			}
 			
-			$this->request[] = $request->request;
+			$this->requests[] = $request;
 		}
+	}
+	
+	/**
+	* Get the raw, JSON-encoded request
+	* @param int $spec
+	*/
+	public function getRequest($spec) {
+		if($spec == Tivoka::SPEC_1_0) throw new Tivoka_exception('Batch requests are not supported by JSON-RPC 1.0 spec', Tivoka::ERR_SPEC_INCOMPATIBLE);
+		$this->spec = $spec;
+		$request = array();
+		foreach($this->requests as $req) {
+			$request[] = json_decode($req->getRequest($spec), true);
+		}
+		return $this->request = json_encode($request);
 	}
 	
 	/**

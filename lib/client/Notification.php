@@ -19,9 +19,6 @@ class Tivoka_Notification extends Tivoka_Request
 	public function __construct($method, $params=null)
 	{
 		$this->id = null;
-	
-		//prepare...
-		$this->request = self::prepareRequest(null, $method, $params);
 	}
 }
 ?>

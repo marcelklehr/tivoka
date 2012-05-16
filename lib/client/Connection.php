@@ -12,6 +12,8 @@ class Tivoka_Connection {
 
 	public $target;
 	
+	private $spec = Tivoka::SPEC_2_0;
+	
 	/**
 	 * Constructs connection
 	 * @access private
@@ -31,6 +33,16 @@ class Tivoka_Connection {
 	}
 	
 	/**
+	* Sets the spec version to use for this connection
+	* @param string $spec The spec version (e.g.: "2.0")
+	*/
+	public function useSpec($spec) {
+		$this->spec = Tivoka::useSpec($spec);
+		return $this;
+	}
+	
+	
+	/**
 	 * Sends a JSON-RPC request
 	 * @param Tivoka_Request $request A Tivoka request
 	 * @return Tivoka_Request if sent as a batch request the BatchRequest object will be returned
@@ -46,7 +58,7 @@ class Tivoka_Connection {
 		// preparing connection...
 		$context = stream_context_create(array(
 				'http' => array(
-					'content' => (string) $request,
+					'content' => $request->getRequest($this->spec),
 					'header' => "Content-Type: application/json\r\n".
 								"Connection: Close\r\n",
 					'method' => 'POST',
@@ -83,6 +95,15 @@ class Tivoka_Connection {
 	 */
 	public function sendNotification($method, $params=null) {
 		$this->send(Tivoka::createNotification($method, $params));
+	}
+	
+	/**
+	 * Creates a native remote interface for the target server
+	 * @return Tivoka_NativeInterface
+	 */
+	public function nativeInterface()
+	{
+		return new Tivoka_NativeInterface($this);
 	}
 }
 ?>
