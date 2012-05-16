@@ -14,5 +14,5 @@ $methods = array(
 	}
 );
 
-Tivoka::createServer($methods);
+Tivoka::createServer($methods)->dispatch();
 ?>
