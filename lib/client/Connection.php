@@ -27,6 +27,7 @@ class Tivoka_Connection {
 	*/
 	public function useSpec($spec) {
 		$this->spec = Tivoka::useSpec($spec);
+		return $this;
 	}
 	
 	

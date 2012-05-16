@@ -49,6 +49,7 @@ class Tivoka_Server
 	*/
 	public function useSpec($spec) {
 		$this->spec = Tivoka::useSpec($spec);
+		return $this;
 	}
 	
 	/**
