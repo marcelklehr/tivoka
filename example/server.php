@@ -1,6 +1,5 @@
 <?php
 include('../include.php');
-use Tivoka\Server as JsonRpc;
 
 $methods = array(
 	'demo.sayHello' => function($request)
