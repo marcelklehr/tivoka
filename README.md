@@ -1,8 +1,8 @@
 # JSON-RPC done right #
-a leightweight JSON-RPC client and server implementation for PHP 5
+client and server for PHP 5.3
 
-Tivoka is a powerful, specification compatible and object-oriented JSON-RPC implementation for PHP with a simple API.  
-It allows you to choose between [JSON-RPC 1.0](http://json-rpc.org/wiki/specification) and [JSON-RPC 2.0](http://jsonrpc.org/specification) specs.
+Do JSON-RPC. With Tivoka. It's as easy as that!  
+For convenience, you can easily switch between [JSON-RPC 1.0](http://json-rpc.org/wiki/specification) and [JSON-RPC 2.0](http://jsonrpc.org/specification) without having to change your code.
 
  - Download [latest version](https://github.com/marcelklehr/tivoka/zipball/master) or install it through PEAR (see below)
  - Have a look at the [documentation](https://github.com/marcelklehr/tivoka/wiki)
@@ -13,26 +13,24 @@ Learn more about JSON-RPC at <http://jsonrpc.org/>.
 ## Examples ##
 These are just some quick examples. For more details see the [website](http://marcelklehr.github.com/tivoka/).
 
-Using make a request
-
+Do a request
 ```php
 <?php
-$target = 'http://exapmle.com/api';
-$request = Tivoka::connect($target)->sendRequest($id = 42, 'substract', array(51, 9));
+$request = Tivoka\Client::connect('http://exapmle.com/api')->sendRequest('substract', array(51, 9));
 print $request->result;// 42
 ?>
 ```
 
-Creating a server
-
+Create a server
 ```php
 <?php
-Tivoka::createServer(array(
+$methods = array(
 	'substract' => function($req) {
 		$result = $req->params[0] - $request->params[1];
 		return $req->result($result);
 	}
-));
+);
+Tivoka\Server::provide($methods)->dispacht();
 ?>
 ```
 
@@ -45,11 +43,8 @@ pear channel-discover pearhub.org
 pear install pearhub/tivoka
 ```
 
-(*You might have to use `sudo` on a UNIX machine.*)
-
 ## License ##
-**GNU General Public License** - as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.  
-See the `LICENSE` file.
+**MIT License** -- (See the `LICENSE` file)
 
 ## Changelog ##
 

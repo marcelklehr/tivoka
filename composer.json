@@ -1,10 +1,10 @@
 {
     "name": "ticoka/tivoka",
     "type": "library",
-    "description": "The universal JSON-RPC client/server library (supports all spec versions)",
+    "description": "The universal JSON-RPC client/server library. JSON-RPC done right!",
     "keywords": ["json", "rpc", "json-rpc"],
     "homepage": "http://marcelklehr.github.com/tivoka",
-    "license": "GPL 3",
+    "license": "MIT",
     "authors": [
         {
             "name": "Marcel Klehr",
