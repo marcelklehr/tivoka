@@ -6,7 +6,7 @@ For convenience, you can easily switch between [JSON-RPC 1.0](http://json-rpc.or
 
  - Download [latest version](https://github.com/marcelklehr/tivoka/zipball/master) or install it through PEAR (see below)
  - Have a look at the [documentation](https://github.com/marcelklehr/tivoka/wiki)
- - Submit any bugs, suggestions or questions to the [Issue Tracker](http://github.com/marcelklehr/tivoka/issues)
+ - Submit any bugs, suggestions or questions to the [issue tracker](http://github.com/marcelklehr/tivoka/issues)
 
 Learn more about JSON-RPC at <http://jsonrpc.org/>.
 
@@ -16,7 +16,8 @@ These are just some quick examples. For more details see the [website](http://ma
 Do a request
 ```php
 <?php
-$request = Tivoka\Client::connect('http://exapmle.com/api')->sendRequest('substract', array(51, 9));
+$connection = Tivoka\Client::connect('http://exapmle.com/api')
+$request = $connection->sendRequest('substract', array(51, 9));
 print $request->result;// 42
 ?>
 ```
@@ -25,10 +26,10 @@ Create a server
 ```php
 <?php
 $methods = array(
-	'substract' => function($req) {
-		$result = $req->params[0] - $request->params[1];
-		return $req->result($result);
-	}
+    'substract' => function($params) {
+        list($num1, $num2) = $params
+        return $num1 - $num2;
+    }
 );
 Tivoka\Server::provide($methods)->dispacht();
 ?>
@@ -36,12 +37,13 @@ Tivoka\Server::provide($methods)->dispacht();
 
 ## Installing through PEAR
 
-Run the following commands in the console:
+Run the following in your console:
+```sh
+$ pear channel-discover pearhub.org
+$ pear install pearhub/tivoka
+```
 
-```
-pear channel-discover pearhub.org
-pear install pearhub/tivoka
-```
+Now you can include tivoka using `include 'tivoka/include.php'`
 
 ## License ##
 **MIT License** -- (See the `LICENSE` file)
