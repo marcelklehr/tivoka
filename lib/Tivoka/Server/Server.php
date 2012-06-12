@@ -141,7 +141,7 @@ class Server
 	    $server = $this;
 	    $params = (isset($request['params']) === FALSE) ? array() : $request['params'];
 	    $id = (isset($request['id']) === FALSE) ? null : $request['id'];
-	    $isNotific = $this::interpretNotification($this->spec, $request) !== FALSE;
+	    $isNotific = $this::interpretRequest($this->spec, $request) === FALSE;
 	    
 	    // utility closures
 	    $error = function($code, $msg='', $data=null) use ($server, $id, $isNotific) {
