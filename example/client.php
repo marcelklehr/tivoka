@@ -2,11 +2,11 @@
 <?php
 include('../include.php');
 
-$target = 'http://'.$_SERVER['SERVER_NAME'].dirname($_SERVER['SCRIPT_NAME']).'/server.php';
-$request = Tivoka::createRequest('demo.substract', array(43,1));
-$greeting = Tivoka::createRequest('demo.sayHello');
+$request = Tivoka\Client::request('demo.substract', array(43,1));
+$greeting = Tivoka\Client::request('demo.sayHello');
 
-Tivoka::connect($target)->send($request, $greeting);
+$target = 'http://'.$_SERVER['SERVER_NAME'].dirname($_SERVER['SCRIPT_NAME']).'/server.php';
+Tivoka\Client::connect($target)->send($request, $greeting);
 
 
 /*
