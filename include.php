@@ -21,6 +21,5 @@ include $dir.'/Client/BatchRequest.php';
 include $dir.'/Client/NativeInterface.php';
 
 include $dir.'/Server/Server.php';
-include $dir.'/Server/Processor.php';
 include $dir.'/Server/MethodWrapper.php';
 ?>
