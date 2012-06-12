@@ -98,9 +98,10 @@ class BatchRequest extends Request
 		//handle id:null responses...
 		foreach($requests as $req)
 		{
+            if($req instanceof Notification) continue;
 			$resp = array_shift($nullresps);
 			$requests[ $req->id ]->setResponse(json_encode($resp));
-		}
+		}       
 	}
 }
 ?>
