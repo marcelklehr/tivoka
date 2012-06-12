@@ -11,6 +11,8 @@ include $dir.'/Exception/ConnectionException.php';
 include $dir.'/Exception/RemoteProcedureException.php';
 include $dir.'/Exception/SpecException.php';
 include $dir.'/Exception/SyntaxException.php';
+include $dir.'/Exception/ProcedureException.php';
+include $dir.'/Exception/InvalidParamsException.php';
 
 include $dir.'/Client/Connection.php';
 include $dir.'/Client/Request.php';

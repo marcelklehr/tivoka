@@ -41,13 +41,12 @@ class Server
 	 */
 	public $spec = Tivoka::SPEC_2_0;
 	
-	const HIDE_ERRORS = 1;
-	
 	/**
 	 * This is modified by Server::hideErrors()
-	 * @var int
+	 * @var bool
+	 * @access private
 	 */
-	public $hide_errors = 0;
+	public $hide_errors = false;
 	
 	/**
 	 * Constructss a Server object
@@ -80,7 +79,7 @@ class Server
 	 * If invoked, the server will try to hide all PHP errors, to prevent them from obfuscating the output.
 	 */
 	public function hideErrors() {
-		$this->hide_errors = self::HIDE_ERRORS;
+		$this->hide_errors = true;
 		return $this;
 	}
 	
@@ -89,7 +88,7 @@ class Server
 	 */
 	public function dispatch() {
 		// disable error reporting?
-		if($this->hide_errors == self::HIDE_ERRORS) error_reporting(0);// prevents messing up the response
+		if($this->hide_errors) error_reporting(0);// prevents messing up the response
 		
 		$this->input = file_get_contents('php://input');
 		
@@ -135,11 +134,49 @@ class Server
 	}
 	
 	/**
-	 * Starts processing of the passed request
+	 * Processes of the request passed
 	 * @param array $request the parsed request
 	 */
 	public function process($request) {
-		new Processor($request, $this);
+	    $server = $this;
+	    $params = (isset($request['params']) === FALSE) ? array() : $request['params'];
+	    $id = (isset($request['id']) === FALSE) ? null : $request['id'];
+	    $isNotific = $this::interpretNotification($this->spec, $request) !== FALSE;
+	    
+	    // utility closures
+	    $error = function($code, $msg='', $data=null) use ($server, $id, $isNotific) {
+	        if($isNotific) return;
+	        $server->returnError($id, $code, $msg, $data);
+	    };
+	    
+	    $result = function($result) use ($server, $id, $isNotific){
+	        if($isNotific) return;
+	        $server->returnResult($id, $result);
+	    };
+	    
+	    //validate...
+	    if(($req = self::interpretRequest($this->spec, $request)) === FALSE)
+	    {
+            if(($req = self::interpretNotification($this->spec, $request)) === FALSE)
+	        {
+	    	    return $error($id, -32600, 'Invalid Request', $request);
+	    	    
+	        }
+	    }
+	    
+	    //search method...
+	    if(!is_callable(array($this->host, $request['method'])))
+	    {
+	    	return $error(-32601, 'Method not found', $request['method']);
+	    }
+	    
+	    //invoke...
+	    try {
+	    	return $result( $this->host->{$request['method']}($params) );
+	    }catch(Tivoka\Exception\ProcedureException $e) {
+	    	if($e instanceof Tivoka\Exception\InvalidParamsException) return $error(-32602, ($e->getMessage() != "") ? $e->getMessage() : 'Invalid parameters');
+	    	return $error(-32603, ($e->getMessage() != "") ? $e->getMessage() : 'Internal error invoking method');
+	    }
 	}
 	
 	/**
@@ -148,7 +185,7 @@ class Server
 	 * @param mixed $result The computed result
 	 * @access private
 	 */
-	public function returnResult($id,$result)
+	public function returnResult($id, $result)
 	{
 		switch($this->spec) {
 		case Tivoka::SPEC_2_0:
@@ -212,9 +249,9 @@ class Server
 	}
 	
 	/**
-	* Outputs the processed response
-	* @access private
-	*/
+	 * Outputs the processed response
+	 * @access private
+	 */
 	public function respond()
 	{
 		if(!is_array($this->response))//no array
@@ -233,12 +270,82 @@ class Server
 	}
 	
 	/**
-	* Validates a batch request
+	* Validates and sanitizes a normal request
 	* @param array $assoc The json-parsed JSON-RPC request
 	* @static
-	* @return array Returns the original request and if it was invalid, a boolean FALSE is returned
-	* @access private
+	* @return array Returns the sanitized request and if it was invalid, a boolean FALSE is returned
 	*/
+	public static function interpretRequest($spec, array $assoc)
+	{
+		switch($spec) {
+			case Tivoka::SPEC_2_0:
+				if(isset($assoc['jsonrpc'], $assoc['id'], $assoc['method']) === FALSE) return FALSE;
+				if($assoc['jsonrpc'] != '2.0' || !is_string($assoc['method'])) return FALSE;
+				$request = array(
+							'id' =>  &$assoc['id'],
+							'method' => &$assoc['method']
+				);
+				if(isset($assoc['params'])) {
+					if(!is_array($assoc['params'])) return FALSE;
+					$request['params'] = $assoc['params'];
+				}
+				return $request;
+			case Tivoka::SPEC_1_0:
+				if(isset($assoc['id'], $assoc['method']) === FALSE) return FALSE;
+				if(!is_string($assoc['method'])) return FALSE;
+				$request = array(
+										'id' =>  &$assoc['id'],
+										'method' => &$assoc['method']
+				);
+				if(isset($assoc['params'])) {
+					if(!is_array($assoc['params']) || (bool)count(array_filter(array_keys($assoc['params']), 'is_string'))) return FALSE;// if not associative
+					$request['params'] = &$assoc['params'];
+				}
+				return $request;
+		}
+	}
+	
+	/**
+	 * Validates and sanitizes a notification
+	 * @param array $assoc The json-parsed JSON-RPC request
+	 * @static
+	 * @return array Returns the sanitized request and if it was invalid, a boolean FALSE is returned
+	 */
+	public static function interpretNotification($spec, array $assoc)
+	{
+		switch($spec) {
+			case Tivoka::SPEC_2_0:
+				if(isset($assoc['jsonrpc'], $assoc['method']) === FALSE || isset($assoc['id']) !== FALSE) return FALSE;
+				if($assoc['jsonrpc'] != '2.0' || !is_string($assoc['method'])) return FALSE;
+				$request = array(
+					'method' => &$assoc['method']
+				);
+				if(isset($assoc['params'])) {
+					if(!is_array($assoc['params'])) return FALSE;
+					$request['params'] = $assoc['params'];
+				}
+				return $request;
+			case Tivoka::SPEC_1_0:
+				if(isset($assoc['method']) === FALSE || isset($assoc['id']) !== FALSE) return FALSE;
+				if(!is_string($assoc['method'])) return FALSE;
+				$request = array(
+					'method' => &$assoc['method']
+				);
+				if(isset($assoc['params'])) {
+					if(!is_array($assoc['params']) || (bool)count(array_filter(array_keys($assoc['params']), 'is_string'))) return FALSE;// if not associative
+					$request['params'] = $assoc['params'];
+				}
+				return $request;
+		}
+	}
+	
+	/**
+	 * Validates a batch request
+	 * @param array $assoc The json-parsed JSON-RPC request
+	 * @static
+	 * @return array Returns the original request and if it was invalid, a boolean FALSE is returned
+	 * @access private
+	 */
 	public static function interpretBatch(array $assoc)
 	{
 		if(count($assoc) <= 1)

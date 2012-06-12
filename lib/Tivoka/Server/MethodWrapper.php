@@ -55,7 +55,7 @@ class MethodWrapper
 			$args[0]->error(-32601); return;
 		}
 		$prc = $args[0];
-		call_user_func_array($this->methods[$method],array($prc));
+		return call_user_func_array($this->methods[$method],array($prc));
 	}
 }
 ?>
