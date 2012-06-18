@@ -39,23 +39,29 @@ Tivoka\Server::provide($methods)->dispatch();
 
 ### Install composer package
 1. Set up `composer.json`:
+
 ```
 {
   require:{"tivoka/tivoka":"*"}
 }
 ```
+
 2. Run [composer](http://getcomposer.org/doc/00-intro.md#installation):
+
 ```sh
 $ php composer.phar install
 ```
+
 Now, `include 'vendor/autoload.php'`
 
 ### Install through pear
 1. Run the following:
+
 ```sh
 $ pear channel-discover pearhub.org
 $ pear install pearhub/tivoka
 ```
+
 Now, `include 'tivoka/include.php'`
 
 ### Download
