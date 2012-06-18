@@ -1,57 +1,91 @@
 # JSON-RPC done right #
-a leightweight JSON-RPC client and server implementation for PHP 5
+client and server for PHP 5.3+
 
-Tivoka is a powerful, specification compatible and object-oriented JSON-RPC implementation for PHP with a simple API.  
-It allows you to choose between [JSON-RPC 1.0](http://json-rpc.org/wiki/specification) and [JSON-RPC 2.0](http://jsonrpc.org/specification) specs.
-
- - Download [latest version](https://github.com/marcelklehr/tivoka/zipball/master) or install it through PEAR (see below)
- - Have a look at the [documentation](https://github.com/marcelklehr/tivoka/wiki)
- - Submit any bugs, suggestions or questions to the [Issue Tracker](http://github.com/marcelklehr/tivoka/issues)
+Do JSON-RPC. With Tivoka. It's as easy as that!  
+For convenience, you can easily switch between [JSON-RPC 1.0](http://json-rpc.org/wiki/specification) and [JSON-RPC 2.0](http://jsonrpc.org/specification) without having to change your code.
 
 Learn more about JSON-RPC at <http://jsonrpc.org/>.
 
 ## Examples ##
-These are just some quick examples. For more details see the [website](http://marcelklehr.github.com/tivoka/).
+These are just some quick examples. For more details see the [wiki](https://github.com/marcelklehr/tivoka/wiki).
 
-Using make a request
-
+Do a request
 ```php
 <?php
-$target = 'http://exapmle.com/api';
-$request = Tivoka::connect($target)->sendRequest($id = 42, 'substract', array(51, 9));
+$connection = Tivoka\Client::connect('http://exapmle.com/api')
+$request = $connection->sendRequest('substract', array(51, 9));
 print $request->result;// 42
 ?>
 ```
 
-Creating a server
-
+Create a server
 ```php
 <?php
-Tivoka::createServer(array(
-	'substract' => function($req) {
-		$result = $req->params[0] - $request->params[1];
-		return $req->result($result);
-	}
-));
+$methods = array(
+    'substract' => function($params) {
+        list($num1, $num2) = $params
+        return $num1 - $num2;
+    }
+);
+Tivoka\Server::provide($methods)->dispatch();
 ?>
 ```
 
-## Installing through PEAR
+## Links
+ - Have a look at the [documentation](https://github.com/marcelklehr/tivoka/wiki)
+ - Submit any bugs, suggestions or questions to the [issue tracker](http://github.com/marcelklehr/tivoka/issues)
 
-Run the following commands in the console:
+## Installation
+
+### Install composer package
+1. Set up `composer.json`:
 
 ```
-pear channel-discover pearhub.org
-pear install pearhub/tivoka
+{
+  require:{"tivoka/tivoka":"*"}
+}
 ```
 
-(*You might have to use `sudo` on a UNIX machine.*)
+2. Run [composer](http://getcomposer.org/doc/00-intro.md#installation):
+
+```sh
+$ php composer.phar install
+```
+
+Now, `include 'vendor/autoload.php'`
+
+### Install through pear
+1. Run the following:
+
+```sh
+$ pear channel-discover pearhub.org
+$ pear install pearhub/tivoka
+```
+
+Now, `include 'tivoka/include.php'`
+
+### Download
+1. Grab the source using `git clone https://github.com/marcelklehr/tivoka.git`.  
+Or [download](http://github.com/marcelklehr/tivoka/zipball/master) it.
+
+Now, `include 'path/to/tivoka/include.php'`
 
 ## License ##
-**GNU General Public License** - as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.  
-See the `LICENSE` file.
+Copyright 2011-2012 by Marcel Klehr  
+MIT License.
 
 ## Changelog ##
+
+3.0.0
+
+ * use Namespaces (no longer supports php5.2)
+ * new factory classes (per server/client)
+ * Requests no longer require $id argument
+ * Dramatically simplified serverside usage
+ * Fluid spec version setter
+ * Now available as composer package
+
+***
 
 2.0.3
 

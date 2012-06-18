@@ -1,0 +1,22 @@
+{
+    "name": "tivoka/tivoka",
+    "type": "library",
+    "description": "The universal JSON-RPC client/server library. JSON-RPC done right!",
+    "keywords": ["json", "rpc", "json-rpc", "api", "xml-rpc"],
+    "homepage": "http://marcelklehr.github.com/tivoka",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marcel Klehr",
+            "email": "mklehr@gmx.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3"
+    },
+    "autoload": {
+        "psr-0" : {
+            "Tivoka" : "lib/"
+        }
+    }
+}
