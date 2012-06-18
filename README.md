@@ -1,12 +1,8 @@
 # JSON-RPC done right #
-client and server for PHP 5.3
+client and server for PHP 5.3+
 
 Do JSON-RPC. With Tivoka. It's as easy as that!  
 For convenience, you can easily switch between [JSON-RPC 1.0](http://json-rpc.org/wiki/specification) and [JSON-RPC 2.0](http://jsonrpc.org/specification) without having to change your code.
-
- - Download [latest version](https://github.com/marcelklehr/tivoka/zipball/master) or install it through PEAR (see below)
- - Have a look at the [documentation](https://github.com/marcelklehr/tivoka/wiki)
- - Submit any bugs, suggestions or questions to the [issue tracker](http://github.com/marcelklehr/tivoka/issues)
 
 Learn more about JSON-RPC at <http://jsonrpc.org/>.
 
@@ -31,24 +27,59 @@ $methods = array(
         return $num1 - $num2;
     }
 );
-Tivoka\Server::provide($methods)->dispacht();
+Tivoka\Server::provide($methods)->dispatch();
 ?>
 ```
 
-## Installing through PEAR
+## Links
+ - Have a look at the [documentation](https://github.com/marcelklehr/tivoka/wiki)
+ - Submit any bugs, suggestions or questions to the [issue tracker](http://github.com/marcelklehr/tivoka/issues)
 
-Run the following in your console:
+## Installation
+
+### Install composer package
+1. Set up `composer.json`:
+```
+{
+  require:{"tivoka/tivoka":"*"}
+}
+```
+2. Run [composer](http://getcomposer.org/doc/00-intro.md#installation):
+```sh
+$ php composer.phar install
+```
+Now, `include 'vendor/autoload.php'`
+
+### Install through pear
+1. Run the following:
 ```sh
 $ pear channel-discover pearhub.org
 $ pear install pearhub/tivoka
 ```
+Now, `include 'tivoka/include.php'`
 
-Now you can include tivoka using `include 'tivoka/include.php'`
+### Download
+1. Grab the source using `git clone https://github.com/marcelklehr/tivoka.git`.  
+Or [download](http://github.com/marcelklehr/tivoka/zipball/master) it.
+
+Now, `include 'path/to/tivoka/include.php'`
 
 ## License ##
-**MIT License** -- (See the `LICENSE` file)
+Copyright 2011-2012 by Marcel Klehr  
+MIT License.
 
 ## Changelog ##
+
+3.0.0
+
+ * use Namespaces (no longer supports php5.2)
+ * new factory classes (per server/client)
+ * Requests no longer require $id argument
+ * Dramatically simplified serverside usage
+ * Fluid spec version setter
+ * Now available as composer package
+
+***
 
 2.0.3
 
