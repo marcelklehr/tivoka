@@ -13,15 +13,15 @@ namespace Tivoka\Client;
  */
 class Notification extends Request
 {
-	/**
-	 * Constructs a new JSON-RPC notification object
-	 * @param string $method The remote procedure to invoke
-	 * @param mixed $params Additional params for the remote procedure
-	 * @see Tivoka_Connection::send()
-	 */
-	public function __construct($method, $params=null)
-	{
-		$this->id = null;
-	}
+    /**
+     * Constructs a new JSON-RPC notification object
+     * @param string $method The remote procedure to invoke
+     * @param mixed $params Additional params for the remote procedure
+     * @see Tivoka_Connection::send()
+     */
+    public function __construct($method, $params=null)
+    {
+        $this->id = null;
+    }
 }
 ?>
