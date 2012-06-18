@@ -11,7 +11,7 @@ For convenience, you can easily switch between [JSON-RPC 1.0](http://json-rpc.or
 Learn more about JSON-RPC at <http://jsonrpc.org/>.
 
 ## Examples ##
-These are just some quick examples. For more details see the [website](http://marcelklehr.github.com/tivoka/).
+These are just some quick examples. For more details see the [wiki](https://github.com/marcelklehr/tivoka/wiki).
 
 Do a request
 ```php
