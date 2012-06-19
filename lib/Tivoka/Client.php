@@ -92,8 +92,8 @@ abstract class Client
     }
     
     /**
-    * alias of Tivoka\Client::createBatch
-    */
+     * alias of Tivoka\Client::createBatch
+     */
     public static function batch($request) {
         if(func_num_args() > 1 ) $request = func_get_args();
         return self::createBatch($request);
