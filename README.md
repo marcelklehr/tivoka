@@ -75,6 +75,11 @@ Copyright 2011-2012 by Marcel Klehr
 MIT License.
 
 ## Changelog ##
+3.0.1
+
+ * Fix a typo, that used to screw up things when throwing an exception (thanks to gahr)
+
+***
 
 3.0.0
 
