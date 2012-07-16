@@ -99,7 +99,7 @@ class BatchRequest extends Request
         //split..
         foreach($json_struct as $resp)
         {
-            if(!is_array($resp)) throw new Exception\SytnaxException('Expected batch response, but no array was received');
+            if(!is_array($resp)) throw new Exception\SyntaxException('Expected batch response, but no array was received');
                 
             //is jsonrpc protocol?
             if(!isset($resp['jsonrpc']) && !isset($resp['id'])) throw new Exception\SyntaxException('The received reponse doesn\'t implement the JSON-RPC prototcol.');
