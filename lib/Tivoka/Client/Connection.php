@@ -32,6 +32,20 @@ namespace Tivoka\Client;
 use Tivoka\Exception;
 use Tivoka\Tivoka;
 
+
+function startswith($hay, $needle) {
+  return substr($hay, 0, strlen($needle)) === $needle;
+}
+
+function get_header_value_from_headers($headers, $label) {
+   foreach($headers as $line) {
+       if (startswith($line, "$label: "))
+          return substr($line, strlen($label) + 2);
+   }
+   return NULL;
+}
+
+
 /**
  * JSON-RPC connection
  * @package Tivoka
@@ -84,23 +98,28 @@ class Connection {
         if(!($request instanceof Request)) throw new Exception\Exception('Invalid data type to be sent to server');
         
         // preparing connection...
-        $context = stream_context_create(array(
+        $context = array(
                 'http' => array(
                     'content' => $request->getRequest($this->spec),
                     'header' => "Content-Type: application/json\r\n".
                                 "Connection: Close\r\n",
                     'method' => 'POST',
                     'timeout' => 10.0
-        )
-        ));
-    
+                )
+        );
+
+        if (isset($this->cookie))
+            $context["http"]["header"] .= "Cookie: " . $this->cookie;
+
         //sending...
-        $response = @file_get_contents($this->target, false, $context);
+        $response = @file_get_contents($this->target, false, stream_context_create($context));
+        $headers = $http_response_header;
         if($response === FALSE) {
             throw new Exception\ConnectionException('Connection to "'.$this->target.'" failed');
         }
-        
-        $request->setResponse($response);
+        $request->setResponse($response, $headers);
+        $cookie = get_header_value_from_headers($headers, "Set-Cookie");
+        if ($cookie) $this->cookie = $cookie;
         return $request;
     }
     
