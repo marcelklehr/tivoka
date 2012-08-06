@@ -32,6 +32,20 @@ namespace Tivoka\Client;
 use Tivoka\Exception;
 use Tivoka\Tivoka;
 
+
+function startswith($hay, $needle) {
+  return substr($hay, 0, strlen($needle)) === $needle;
+}
+
+function get_header_value_from_headers($headers, $label) {
+   foreach($headers as $line) {
+       if (startswith($line, "$label: "))
+          return substr($line, strlen($label) + 2);
+   }
+   return NULL;
+}
+
+
 /**
  * JSON-RPC connection
  * @package Tivoka
@@ -96,11 +110,13 @@ class Connection {
     
         //sending...
         $response = @file_get_contents($this->target, false, $context);
+        $headers = $http_response_header;
         if($response === FALSE) {
             throw new Exception\ConnectionException('Connection to "'.$this->target.'" failed');
         }
-        
-        $request->setResponse($response);
+        $request->setResponse($response, $headers);
+        $cookie = get_header_value_from_headers($headers, "Set-Cookie");
+        if ($cookie) $this->cookie = $cookie;
         return $request;
     }
     
