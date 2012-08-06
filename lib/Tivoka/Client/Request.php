@@ -84,9 +84,10 @@ class Request
      * @param string $response json data
      * @return void
      */
-    public function setResponse($response) {
+    public function setResponse($response, $headers=NULL) {
         $this->response = $response;
-    
+        $this->responseHeaders = $headers;
+
         //no response?
         if(trim($response) == '') {
             throw new Exception\ConnectionException('No response received');
