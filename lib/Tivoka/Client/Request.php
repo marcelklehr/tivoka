@@ -143,7 +143,8 @@ class Request
     {
         switch($spec) {
             case Tivoka::SPEC_2_0:
-                if(isset($assoc['jsonrpc'], $assoc['result'], $assoc['id']) === FALSE) return FALSE;
+                if(isset($assoc['jsonrpc'], $assoc['id']) === FALSE || 
+                   !array_key_exists('result', $assoc)) return FALSE;
                 if($assoc['id'] !== $id || $assoc['jsonrpc'] != '2.0') return FALSE;
                 return array(
                         'id' => $assoc['id'],
