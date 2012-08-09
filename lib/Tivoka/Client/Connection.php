@@ -96,11 +96,12 @@ class Connection {
     
         //sending...
         $response = @file_get_contents($this->target, false, $context);
+        $raw_headers = $http_response_header;
         if($response === FALSE) {
             throw new Exception\ConnectionException('Connection to "'.$this->target.'" failed');
         }
         
-        $request->setResponse($response);
+        $request->setResponse($response, $raw_headers);
         return $request;
     }
     
