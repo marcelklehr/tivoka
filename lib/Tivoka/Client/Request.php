@@ -99,6 +99,7 @@ class Request
     /**
      * Interprets the response
      * @param string $response json data
+     * @param array $raw_headers array of string coming from $http_response_header magic var
      * @return void
      */
     public function setResponse($response, $raw_headers) {
