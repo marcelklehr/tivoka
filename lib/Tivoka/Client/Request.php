@@ -99,13 +99,10 @@ class Request
     /**
      * Interprets the response
      * @param string $response json data
-     * @param array $raw_headers array of string coming from $http_response_header magic var
      * @return void
      */
-    public function setResponse($response, $raw_headers) {
+    public function setResponse($response) {
         $this->response = $response;
-        $this->responseHeadersRaw = $raw_headers;
-        $this->responseHeaders = self::http_parse_headers($raw_headers);
 
         //no response?
         if(trim($response) == '') {
@@ -121,6 +118,16 @@ class Request
         $this->interpretResponse($resparr);
     }
     
+    /**
+     * Save and parse the HTTP headers
+     * @param array $raw_headers array of string coming from $http_response_header magic var
+     * @return void
+     */
+    public function setHeaders($raw_headers) {
+        $this->responseHeadersRaw = $raw_headers;
+        $this->responseHeaders = self::http_parse_headers($raw_headers);
+    }
+
     /**
      * Interprets the parsed response
      * @param array $json_struct
