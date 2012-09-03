@@ -48,7 +48,10 @@ class Request
     public $error;
     public $errorMessage;
     public $errorData;
-    
+
+    public $responseHeaders;
+    public $responseHeadersRaw;
+
     /**
      * Constructs a new JSON-RPC request object
      * @param string $method The remote procedure to invoke
@@ -78,7 +81,24 @@ class Request
         $connection = new Connection($target);
         $connection->send($this);
     }
-    
+
+    /**
+     * Parses headers as returned by magic variable $http_response_header
+     * @param array $headers array of string coming from $http_response_header
+     * @return array associative array linking a header label with its value
+     */
+    protected static function http_parse_headers($headers) {
+      // rfc2616: The first line of a Response message is the Status-Line
+      $headers = array_slice($headers, 1); // removing status-line
+
+      $header_array = array();
+      foreach($headers as $header) {
+        preg_match('/(?P<label>[^ :]+):(?P<body>(.|\r?\n(?= +))*)$/', $header, $matches);
+        $headers_array[$matches["label"]] = trim($matches["body"]);
+      };
+      return $headers_array;
+    }
+
     /**
      * Interprets the response
      * @param string $response json data
@@ -86,7 +106,7 @@ class Request
      */
     public function setResponse($response) {
         $this->response = $response;
-    
+
         //no response?
         if(trim($response) == '') {
             throw new Exception\ConnectionException('No response received');
@@ -101,6 +121,16 @@ class Request
         $this->interpretResponse($resparr);
     }
     
+    /**
+     * Save and parse the HTTP headers
+     * @param array $raw_headers array of string coming from $http_response_header magic var
+     * @return void
+     */
+    public function setHeaders($raw_headers) {
+        $this->responseHeadersRaw = $raw_headers;
+        $this->responseHeaders = self::http_parse_headers($raw_headers);
+    }
+
     /**
      * Interprets the parsed response
      * @param array $json_struct

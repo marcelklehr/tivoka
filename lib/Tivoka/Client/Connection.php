@@ -39,6 +39,7 @@ use Tivoka\Tivoka;
 class Connection {
 
     public $target;
+    public $headers;
     
     public $spec = Tivoka::SPEC_2_0;
     
@@ -58,6 +59,7 @@ class Connection {
             throw new Exception\Exception('Unknown or unsupported scheme given.');
         
         $this->target = $target;
+        $this->headers = array();
     }
     
     /**
@@ -70,6 +72,15 @@ class Connection {
     }
     
     
+    /**
+     * Sets the HTTP headers to use for upcoming send requests
+     * @param string label of header
+     * @param string value of header
+     */
+    public function setHeader($label, $value) {
+      $this->headers[$label] = $value;
+    }
+
     /**
      * Sends a JSON-RPC request
      * @param Tivoka_Request $request A Tivoka request
@@ -84,23 +95,25 @@ class Connection {
         if(!($request instanceof Request)) throw new Exception\Exception('Invalid data type to be sent to server');
         
         // preparing connection...
-        $context = stream_context_create(array(
+        $context = array(
                 'http' => array(
                     'content' => $request->getRequest($this->spec),
                     'header' => "Content-Type: application/json\r\n".
                                 "Connection: Close\r\n",
                     'method' => 'POST',
                     'timeout' => 10.0
-        )
-        ));
-    
+                )
+        );
+        foreach($this->headers as $label => $value) {
+          $context['http']['header'] .= $label . ": " . $value . "\r\n";
+        }
         //sending...
-        $response = @file_get_contents($this->target, false, $context);
+        $response = @file_get_contents($this->target, false, stream_context_create($context));
         if($response === FALSE) {
             throw new Exception\ConnectionException('Connection to "'.$this->target.'" failed');
         }
-        
         $request->setResponse($response);
+        $request->setHeaders($http_response_header);
         return $request;
     }
     
