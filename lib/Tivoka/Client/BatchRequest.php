@@ -126,5 +126,23 @@ class BatchRequest extends Request
             $requests[ $req->id ]->setResponse(json_encode($resp));
         }       
     }
+
+    /**
+     * Save and parse the HTTP headers
+     * @param array $raw_headers array of string coming from $http_response_header magic var
+     * @return void
+     */
+    public function setHeaders($raw_headers) {
+
+      parent::setHeaders($raw_headers);
+
+      $requests = $this->id;
+      foreach($requests as $req) {
+        $requests[ $req->id ]->responseHeadersRaw = $raw_headers;
+        $requests[ $req->id ]->responseHeaders = $this->responseHeaders;
+      }
+    }
+
+
 }
 ?>

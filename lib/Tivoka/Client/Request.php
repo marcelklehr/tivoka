@@ -48,7 +48,10 @@ class Request
     public $error;
     public $errorMessage;
     public $errorData;
-    
+
+    public $responseHeaders;
+    public $responseHeadersRaw;
+
     /**
      * Constructs a new JSON-RPC request object
      * @param string $method The remote procedure to invoke

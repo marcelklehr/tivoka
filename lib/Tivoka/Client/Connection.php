@@ -112,8 +112,8 @@ class Connection {
         if($response === FALSE) {
             throw new Exception\ConnectionException('Connection to "'.$this->target.'" failed');
         }
-        $request->setHeaders($http_response_header);
         $request->setResponse($response);
+        $request->setHeaders($http_response_header);
         return $request;
     }
     
