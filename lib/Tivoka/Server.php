@@ -38,8 +38,7 @@ abstract class Server
 {
     
     /**
-     * Starts processing the HTTP input
-     * Notice: Calling this method will stop further execution of the script!
+     * Creates a server instance
      * @param object $host An object whose methods will be provided for invokation
      * @return Tivoka_Server
      */

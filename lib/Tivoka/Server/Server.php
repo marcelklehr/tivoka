@@ -157,7 +157,7 @@ class Server
     }
     
     /**
-     * Processes of the request passed
+     * Processes the passed request
      * @param array $request the parsed request
      */
     public function process($request) {
