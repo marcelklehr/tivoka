@@ -45,6 +45,8 @@ class Notification extends Request
     public function __construct($method, $params=null)
     {
         $this->id = null;
+        $this->method = $method;
+        $this->params = $params;
     }
 }
 ?>
