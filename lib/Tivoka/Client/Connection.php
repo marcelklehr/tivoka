@@ -79,6 +79,7 @@ class Connection {
      */
     public function setHeader($label, $value) {
       $this->headers[$label] = $value;
+      return $this;
     }
 
     /**
