@@ -40,6 +40,7 @@ class Connection {
 
     public $target;
     public $headers;
+    private $timeout = 10.0;
     
     public $spec = Tivoka::SPEC_2_0;
     
@@ -83,6 +84,15 @@ class Connection {
     }
 
     /**
+     * Sets read timeout
+     *
+     * @param float $seconds    Timeout in seconds
+     */
+    public function setTimeout($seconds) {
+        $this->timeout = $seconds;
+    }
+
+    /**
      * Sends a JSON-RPC request
      * @param Tivoka_Request $request A Tivoka request
      * @return Tivoka_Request if sent as a batch request the BatchRequest object will be returned
@@ -102,7 +112,7 @@ class Connection {
                     'header' => "Content-Type: application/json\r\n".
                                 "Connection: Close\r\n",
                     'method' => 'POST',
-                    'timeout' => 10.0
+                    'timeout' => $this->timeout,
                 )
         );
         foreach($this->headers as $label => $value) {
