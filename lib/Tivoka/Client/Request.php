@@ -25,12 +25,14 @@
  *
  * @package  Tivoka
  * @author Marcel Klehr <mklehr@gmx.net>
+ * @author Rafał Wrzeszcz <rafal.wrzeszcz@wrzasq.pl>
  * @copyright (c) 2011-2012, Marcel Klehr
  */
 
 namespace Tivoka\Client;
 use Tivoka\Exception;
 use Tivoka\Tivoka;
+use Tivoka\Client\Connection\AbstractConnection;
 
 /**
  * A JSON-RPC request
@@ -75,10 +77,10 @@ class Request
     
     /**
      * Send this request to a remote server directly
-     * @param string $target The URL of the remote server
+     * @param mixed $target Remote end-point definition
      */
     public function sendTo($target) {
-        $connection = new Connection($target);
+        $connection = AbstractConnection::factory($target);
         $connection->send($this);
     }
 
