@@ -94,7 +94,7 @@ class Http extends AbstractConnection {
                     'header' => "Content-Type: application/json\r\n".
                                 "Connection: Close\r\n",
                     'method' => 'POST',
-                    'timeout' => 10.0
+                    'timeout' => $this->timeout
                 )
         );
         foreach($this->headers as $label => $value) {

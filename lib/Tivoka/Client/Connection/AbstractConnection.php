@@ -42,6 +42,18 @@ use Tivoka\Tivoka;
  */
 class AbstractConnection implements ConnectionInterface {
     
+    /**
+     * Initial timeout value.
+     * @var int
+     */
+    const DEFAULT_TIMEOUT = 5;
+    
+    /**
+     * Timeot.
+     * @var int
+     */
+    protected $timeout = self::DEFAULT_TIMEOUT;
+    
     public $spec = Tivoka::SPEC_2_0;
     
     /**
@@ -51,6 +63,18 @@ class AbstractConnection implements ConnectionInterface {
     public function useSpec($spec) {
         $this->spec = Tivoka::validateSpecVersion($spec);
         return $this;
+    }
+    
+    /**
+     * Changes timeout.
+     * @param int $timeout
+     * @return Self reference.
+     */
+    public function setTimeout($timeout)
+    {
+    	$this->timeout = $timeout;
+    
+    	return $this;
     }
 
     /**
