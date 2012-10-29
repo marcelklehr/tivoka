@@ -9,10 +9,19 @@ Learn more about JSON-RPC at <http://jsonrpc.org/>.
 ## Examples ##
 These are just some quick examples.
 
-Do a request
+Do a request through HTTP...
 ```php
 <?php
 $connection = Tivoka\Client::connect('http://exapmle.com/api')
+$request = $connection->sendRequest('substract', array(51, 9));
+print $request->result;// 42
+?>
+```
+
+...or plain TCP
+```php
+<?php
+$connection = Tivoka\Client::connect(array('host' => 'example.com', 'port' => 1234))
 $request = $connection->sendRequest('substract', array(51, 9));
 print $request->result;// 42
 ?>

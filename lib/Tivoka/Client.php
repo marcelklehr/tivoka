@@ -25,6 +25,7 @@
  *
  * @package  Tivoka
  * @author Marcel Klehr <mklehr@gmx.net>
+ * @author Rafał Wrzeszcz <rafal.wrzeszcz@wrzasq.pl>
  * @copyright (c) 2011-2012, Marcel Klehr
  */
 
@@ -39,11 +40,11 @@ abstract class Client
     
     /**
      * Initializes a Connection to a remote server
-     * @param string $target the URL of the target server
-     * @return Tivoka\Client\Connection
+     * @param mixed $target Remote end-point definition
+     * @return Tivoka\Client\Connection\ConnectionInterface
      */
     public static function connect($target) {
-        return new Client\Connection($target);
+        return Client\Connection\AbstractConnection::factory($target);
     }
     
     /**

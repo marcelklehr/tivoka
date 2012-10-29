@@ -25,42 +25,24 @@
  *
  * @package  Tivoka
  * @author Marcel Klehr <mklehr@gmx.net>
+ * @author Rafał Wrzeszcz <rafal.wrzeszcz@wrzasq.pl>
  * @copyright (c) 2011-2012, Marcel Klehr
  */
 
-namespace Tivoka\Client;
+namespace Tivoka\Client\Connection;
 use Tivoka\Exception;
+use Tivoka\NativeInterface;
+use Tivoka\Notification;
+use Tivoka\Request;
 use Tivoka\Tivoka;
 
 /**
  * JSON-RPC connection
  * @package Tivoka
  */
-class Connection {
-
-    public $target;
-    public $headers;
+class AbstractConnection implements ConnectionInterface {
     
     public $spec = Tivoka::SPEC_2_0;
-    
-    /**
-     * Constructs connection
-     * @access private
-     * @param string $target URL
-     */
-    public function __construct($target) {
-        //validate url...
-        if(!filter_var($target, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED))
-            throw new Exception\Exception('Valid URL (scheme://domain[/path][/file]) required.');
-        
-        //validate scheme...
-        $t = parse_url($target);
-        if(strtolower($t['scheme']) != 'http' && strtolower($t['scheme']) != 'https')
-            throw new Exception\Exception('Unknown or unsupported scheme given.');
-        
-        $this->target = $target;
-        $this->headers = array();
-    }
     
     /**
      * Sets the spec version to use for this connection
@@ -70,53 +52,13 @@ class Connection {
         $this->spec = Tivoka::validateSpecVersion($spec);
         return $this;
     }
-    
-    
-    /**
-     * Sets the HTTP headers to use for upcoming send requests
-     * @param string label of header
-     * @param string value of header
-     */
-    public function setHeader($label, $value) {
-      $this->headers[$label] = $value;
-      return $this;
-    }
 
     /**
      * Sends a JSON-RPC request
-     * @param Tivoka_Request $request A Tivoka request
-     * @return Tivoka_Request if sent as a batch request the BatchRequest object will be returned
+     * @param Request $request A Tivoka request
+     * @return Request if sent as a batch request the BatchRequest object will be returned
      */
-    public function send($request) {
-        if(func_num_args() > 1 ) $request = func_get_args();
-        if(is_array($request)) {
-            $request = new BatchRequest($request);
-        }
-        
-        if(!($request instanceof Request)) throw new Exception\Exception('Invalid data type to be sent to server');
-        
-        // preparing connection...
-        $context = array(
-                'http' => array(
-                    'content' => $request->getRequest($this->spec),
-                    'header' => "Content-Type: application/json\r\n".
-                                "Connection: Close\r\n",
-                    'method' => 'POST',
-                    'timeout' => 10.0
-                )
-        );
-        foreach($this->headers as $label => $value) {
-          $context['http']['header'] .= $label . ": " . $value . "\r\n";
-        }
-        //sending...
-        $response = @file_get_contents($this->target, false, stream_context_create($context));
-        if($response === FALSE) {
-            throw new Exception\ConnectionException('Connection to "'.$this->target.'" failed');
-        }
-        $request->setResponse($response);
-        $request->setHeaders($http_response_header);
-        return $request;
-    }
+    abstract public function send(Request $request);
     
     /**
      * Send a request directly
@@ -146,5 +88,20 @@ class Connection {
     {
         return new NativeInterface($this);
     }
+
+    /**
+     * Constructs connection handler.
+     * @param mixed $target Server connection configuration.
+     * @return ConnectionInterface
+     */
+    public static function factory($target)
+    {
+        // TCP conneciton is defined as ['host' => $host, 'port' => $port] definition
+        if (is_array($target) && isset($target['host'], $target['port'])) {
+            return new Tcp($target['host'], $target['port']);
+        } else {
+            // HTTP end-point should be defined just as string
+            return new Http($target);
+        }
+    }
 }
-?>
