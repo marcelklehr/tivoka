@@ -40,6 +40,12 @@ use Tivoka\Request;
  */
 class Tcp extends AbstractConnection {
     /**
+     * Initial timeout value.
+     * @var int
+     */
+    const DEFAULT_TIMEOUT = 5;
+
+    /**
      * Server host.
      * @var string
      */
@@ -56,6 +62,12 @@ class Tcp extends AbstractConnection {
      * @var resource
      */
     protected $socket;
+
+    /**
+     * Timeot.
+     * @var int
+     */
+    protected $timeout = self::DEFAULT_TIMEOUT;
 
     /**
      * Constructs connection.
@@ -84,6 +96,23 @@ class Tcp extends AbstractConnection {
     }
 
     /**
+     * Changes timeout.
+     * @param int $timeout
+     * @return Tcp Self reference.
+     */
+    public function setTimeout($timeout)
+    {
+        $this->timeout = $timeout;
+
+        // change timeout for already initialized connection
+        if (isset($this->socket)) {
+            stream_set_timeout($this->socket, $timeout);
+        }
+
+        return $this;
+    }
+
+    /**
      * Sends a JSON-RPC request over plain TCP.
      * @param Request $request,... A Tivoka request.
      * @return Request|BatchRequest If sent as a batch request the BatchRequest object will be returned.
@@ -92,7 +121,14 @@ class Tcp extends AbstractConnection {
     {
         // connect on first call
         if (!isset($this->socket)) {
-            $this->socket = fsockopen($this->host, $this->port);
+            $this->socket = fsockopen($this->host, $this->port, $errno, $errstr, $this->timeout);
+
+            // check for success
+            if ($this->socket === false) {
+                throw new Exception\ConnectionException('Connection to "' . $this->host . ':' . $this->port . '" failed (errno ' . $errno . '): ' . $errstr);
+            }
+
+            stream_set_timeout($this->socket, $this->timeout);
         }
 
         if (func_num_args() > 1) {
