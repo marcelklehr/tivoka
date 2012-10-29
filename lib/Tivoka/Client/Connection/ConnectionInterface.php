@@ -29,50 +29,45 @@
  * @copyright (c) 2011-2012, Marcel Klehr
  */
 
-namespace Tivoka\Client;
-use Tivoka\Exception;
-use Tivoka\Client\Connection\ConnectionInterface;
+namespace Tivoka\Client\Connection;
+
+use Tivoka\Client\Request;
 
 /**
- * JSON-RPC native remote interface
+ * Connection interface
  * @package Tivoka
  */
-class NativeInterface {
-    
+interface ConnectionInterface {
     /**
-     * Holds the last request
-     * @var Tivoka\Client\Request
+     * Sets the spec version to use for this connection
+     * @param string $spec The spec version (e.g.: "2.0")
      */
-    public $last_request;
-    
-    /**
-     * Holds the connection to the remote server
-     * @var ConnectionInterface
-     */
-    public $connection;
-    
-    /**
-     * Construct a native remote interface
-     * @param ConnectionInterface $connection The connection to use
-     */
-    public function __construct(ConnectionInterface $connection) {
-        $this->connection = $connection;
-    }
-    
+    public function useSpec($spec);
+
     /**
      * Sends a JSON-RPC request
-     * @throws Tivoka\Exception\RemoteProcedureException
-     * @return mixed
+     * @param Request $request A Tivoka request
+     * @return Request if sent as a batch request the BatchRequest object will be returned
      */
-    public function __call($method, $args) {
-        $this->last_request = new Request($method, $args);
-        $this->connection->send($this->last_request);
-        
-        if($this->last_request->isError()) {
-            throw new Exception\RemoteProcedureException($this->last_request->errorMessage, $this->last_request->error);
-        }
-        return $this->last_request->result;
-    }
-
+    public function send(Request $request);
+    
+    /**
+     * Send a request directly
+     * @param string $method
+     * @param array $params
+     */
+    public function sendRequest($method, $params=null);
+    
+    /**
+     * Send a notification directly
+     * @param string $method
+     * @param array $params
+     */
+    public function sendNotification($method, $params=null);
+    
+    /**
+     * Creates a native remote interface for the target server
+     * @return Tivoka\Client\NativeInterface
+     */
+    public function getNativeInterface();
 }
-?>
