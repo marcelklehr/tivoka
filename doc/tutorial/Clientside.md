@@ -1,5 +1,6 @@
-## Sending a request
+# Clientside
 
+## Setting up a connection
 You want to send a JSON-RPC request, right?  
 So, the first question we need to answer to is: Where are we going to send it to?
 
@@ -15,10 +16,19 @@ Now, we simply connect to this URL, using the following method:
 
 ```php
 <?php
-$connection = Tivoka\Client::connect($server);
+$connection = Tivoka\Client::connect($target);
 ?>
 ```
 
+### TCP Connections
+In order to connect to a pure TCP JSON-RPC server, use this:
+```php
+<?php
+$connection = Tivoka\Client:connect(Array('server'=>$server, 'port'=>$port));
+?>
+```
+
+### Connection modifiers
 To set a specific spec version, call `->useSpec()`:
 ```php
 <?php
@@ -26,6 +36,15 @@ $connection->useSpec('1.0');
 ?>
 ```
 The default spec version is `'2.0'`.
+
+Set a connection timeout, using `->setTimeout($timeInSecs)`. The default timeout is `5` seconds.
+```php
+<?php
+$connection->setTimeout(10);
+?>
+```
+
+## Sending a request
 
 Now, we have a connection, we also need a request to send. Let's assume, the server on the other end of the connection implements a method called `distance`, which calculates the distance between two cities.
 
@@ -45,7 +64,10 @@ $connection->send($request);
 ?>
 ```
 
+## Receiving the response
 We will find the result of our request in `$request->result`. And if there was an error, we will find the error code in `$request->error`, the corresponding error message in `$request->errorMessage` and additional error data in `$request->errorData`. We can find out about errors by calling `$request->isError()`.
+
+If you've sent the request using a HTTP connection, you can also access `$request->responseHeaders` (an associative array: `header => value`) and `$request->responseHeadersRaw` (a simple array listing all header lines).
 
 ```php
 <?php
@@ -104,7 +126,7 @@ $connection->send($request);
 ?>
 ```
 
-Now the server knows, that we are no longer in London, but swimming in Lake Titicaca in South America (These are UTM coordiantes).
+Now the server knows, that we are no longer in London, but swimming in Lake Titicaca in South America (these are UTM coordiantes).
 
 ## Short cuts
 The above can be simplified using the short cut method `sendRequest()`, which implicitly creates a request object for us.
