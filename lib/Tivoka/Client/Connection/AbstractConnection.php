@@ -31,16 +31,16 @@
 
 namespace Tivoka\Client\Connection;
 use Tivoka\Exception;
-use Tivoka\NativeInterface;
-use Tivoka\Notification;
-use Tivoka\Request;
+use Tivoka\Client\NativeInterface;
+use Tivoka\Client\Notification;
+use Tivoka\Client\Request;
 use Tivoka\Tivoka;
 
 /**
  * JSON-RPC connection
  * @package Tivoka
  */
-class AbstractConnection implements ConnectionInterface {
+abstract class AbstractConnection implements ConnectionInterface {
     
     /**
      * Initial timeout value.
@@ -76,13 +76,6 @@ class AbstractConnection implements ConnectionInterface {
     
     	return $this;
     }
-
-    /**
-     * Sends a JSON-RPC request
-     * @param Request $request A Tivoka request
-     * @return Request if sent as a batch request the BatchRequest object will be returned
-     */
-    abstract public function send(Request $request);
     
     /**
      * Send a request directly

@@ -30,9 +30,9 @@
  */
 
 namespace Tivoka\Client\Connection;
-use Tivoka\BatchRequest;
+use Tivoka\Client\BatchRequest;
 use Tivoka\Exception;
-use Tivoka\Request;
+use Tivoka\Client\Request;
 
 /**
  * Raw TCP connection
@@ -107,7 +107,7 @@ class Tcp extends AbstractConnection {
      * @param Request $request,... A Tivoka request.
      * @return Request|BatchRequest If sent as a batch request the BatchRequest object will be returned.
      */
-    public function send($request)
+    public function send(Request $request)
     {
         // connect on first call
         if (!isset($this->socket)) {

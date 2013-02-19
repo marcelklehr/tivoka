@@ -14,7 +14,10 @@ include $dir.'/Exception/SyntaxException.php';
 include $dir.'/Exception/ProcedureException.php';
 include $dir.'/Exception/InvalidParamsException.php';
 
-include $dir.'/Client/Connection.php';
+include $dir.'/Client/Connection/ConnectionInterface.php';
+include $dir.'/Client/Connection/AbstractConnection.php';
+include $dir.'/Client/Connection/Http.php';
+include $dir.'/Client/Connection/Tcp.php';
 include $dir.'/Client/Request.php';
 include $dir.'/Client/Notification.php';
 include $dir.'/Client/BatchRequest.php';

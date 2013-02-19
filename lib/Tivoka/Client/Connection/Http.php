@@ -30,9 +30,9 @@
  */
 
 namespace Tivoka\Client\Connection;
-use Tivoka\BatchRequest;
+use Tivoka\Client\BatchRequest;
 use Tivoka\Exception;
-use Tivoka\Request;
+use Tivoka\Client\Request;
 
 /**
  * HTTP connection
