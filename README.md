@@ -83,6 +83,11 @@ Copyright 2011-2012 by Marcel Klehr
 MIT License.
 
 ## Changelog ##
+3.2.0
+
+ * Feature: Plain TCP connections (revamped a lot of our internals along the way! thanks go out to @rafalwrzeszcz)
+ * Feature: Configurable connection timeout
+
 3.1.0
 
  * Fix #27: json-rpc response[result] may be `null` (thanks to vaab)
