@@ -29,6 +29,9 @@
  */
 
 namespace Tivoka\Server;
+use Tivoka\Encoder\EncoderInterface;
+use Tivoka\Encoder\JsonEncoder;
+use Tivoka\Encoder\Exception\EncoderException;
 use Tivoka\Exception;
 use Tivoka\Tivoka;
 
@@ -70,12 +73,22 @@ class Server
      * @access private
      */
     public $hide_errors = false;
+
+    /**
+     * JSON encoding handler.
+     *
+     * @var EncoderInterface
+     */
+    protected $encoder;
     
     /**
      * Constructss a Server object
-     * @param object $host An object whose methods will be provided for invokation
+     * @param object|array $host An object whose methods will be provided for invokation
+     * @param EncoderInterface $encoder JSON serializatoin handler.
      */
-    public function __construct($host) {
+    public function __construct($host, EncoderInterface $encoder = null) {
+        $this->encoder = $encoder ?: new JsonEncoder();
+
         if(is_array($host)) {
             $methods = $host;
             $host = new MethodWrapper();
@@ -115,13 +128,6 @@ class Server
         
         $this->input = file_get_contents('php://input');
         
-        $json_errors = array(
-            JSON_ERROR_NONE => '',
-            JSON_ERROR_DEPTH => 'The maximum stack depth has been exceeded',
-            JSON_ERROR_CTRL_CHAR => 'Control character error, possibly incorrectly encoded',
-            JSON_ERROR_SYNTAX => 'Syntax error'
-        );
-        
         // set header if not already sent...
         if(headers_sent() === FALSE) header('Content-type: application/json');
         
@@ -134,10 +140,10 @@ class Server
         }
         
         // decode request...
-        $this->input = json_decode($this->input,true);
-        if($this->input === NULL)
-        {
-            $this->returnError(null,-32700, 'JSON parse error: '.$json_errors[json_last_error()] );
+        try {
+            $this->input = $this->encoder->decode($this->input);
+        } catch (EncoderException $error) {
+            $this->returnError(null, -32700, $error->getMessage());
             $this->respond();
         }
         
@@ -162,8 +168,8 @@ class Server
      */
     public function process($request) {
         $server = $this;
-        $params = (isset($request['params']) === FALSE) ? array() : $request['params'];
-        $id = (isset($request['id']) === FALSE) ? null : $request['id'];
+        $params = isset($request['params']) ? $request['params'] : array();
+        $id = isset($request['id']) ? $request['id'] : null;
         $isNotific = $this::interpretRequest($this->spec, $request) === FALSE;
         
         // utility closures
@@ -283,10 +289,10 @@ class Server
         $count = count($this->response);
         
         if($count == 1)//single request
-            die(json_encode($this->response[0]));
+            die($this->encoder->encode($this->response[0]));
     
         if($count > 1)//batch request
-            die(json_encode($this->response));
+            die($this->encoder->encode($this->response));
     
         if($count < 1)//no response
             exit;

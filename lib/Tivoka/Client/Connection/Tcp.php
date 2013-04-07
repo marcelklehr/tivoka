@@ -1,7 +1,7 @@
 <?php
 /**
  * Tivoka - JSON-RPC done right!
- * Copyright (c) 2011-2012 by Marcel Klehr <mklehr@gmx.net>
+ * Copyright (c) 2011-2013 by Marcel Klehr <mklehr@gmx.net>
  *
  * MIT LICENSE
  *
@@ -26,11 +26,12 @@
  * @package  Tivoka
  * @author Marcel Klehr <mklehr@gmx.net>
  * @author Rafał Wrzeszcz <rafal.wrzeszcz@wrzasq.pl>
- * @copyright (c) 2011-2012, Marcel Klehr
+ * @copyright (c) 2011-2013, Marcel Klehr
  */
 
 namespace Tivoka\Client\Connection;
 use Tivoka\Client\BatchRequest;
+use Tivoka\Encoder\EncoderInterface;
 use Tivoka\Exception;
 use Tivoka\Client\Request;
 
@@ -63,8 +64,9 @@ class Tcp extends AbstractConnection {
      * Constructs connection.
      * @param string $host Server host.
      * @param int $port Server port.
+     * @param EncoderInterface $encoder JSON encoder/decoder.
      */
-    public function __construct($host, $port)
+    public function __construct($host, $port, EncoderInterface $encoder = null)
     {
         //validate url...
         if (!is_numeric($port)) {
@@ -73,6 +75,8 @@ class Tcp extends AbstractConnection {
 
         $this->host = $host;
         $this->port = $port;
+
+        parent::__construct($encoder);
     }
 
     /**
@@ -133,7 +137,7 @@ class Tcp extends AbstractConnection {
         }
 
         // sending request
-        fwrite($this->socket, $request->getRequest($this->spec));
+        fwrite($this->socket, $request->getRequest($this->spec, $this->encoder));
         fwrite($this->socket, "\n");
         fflush($this->socket);
 
@@ -144,7 +148,7 @@ class Tcp extends AbstractConnection {
             throw new Exception\ConnectionException('Connection to "' . $this->host . ':' . $this->port . '" failed');
         }
 
-        $request->setResponse($response);
+        $request->setResponse($response, $this->encoder);
         return $request;
     }
 }
