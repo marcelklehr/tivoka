@@ -1,7 +1,7 @@
 <?php
 /**
  * Tivoka - JSON-RPC done right!
- * Copyright (c) 2011-2012 by Marcel Klehr <mklehr@gmx.net>
+ * Copyright (c) 2011-2013 by Marcel Klehr <mklehr@gmx.net>
  *
  * MIT LICENSE
  *
@@ -26,11 +26,12 @@
  * @package  Tivoka
  * @author Marcel Klehr <mklehr@gmx.net>
  * @author Rafał Wrzeszcz <rafal.wrzeszcz@wrzasq.pl>
- * @copyright (c) 2011-2012, Marcel Klehr
+ * @copyright (c) 2011-2013, Marcel Klehr
  */
 
 namespace Tivoka\Client\Connection;
 use Tivoka\Client\BatchRequest;
+use Tivoka\Encoder\EncoderInterface;
 use Tivoka\Exception;
 use Tivoka\Client\Request;
 
@@ -47,8 +48,9 @@ class Http extends AbstractConnection {
      * Constructs connection
      * @access private
      * @param string $target URL
+     * @param EncoderInterface $encoder JSON encoder/decoder.
      */
-    public function __construct($target) {
+    public function __construct($target, EncoderInterface $encoder = null) {
         //validate url...
         if (!filter_var($target, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
             throw new Exception\Exception('Valid URL (scheme://domain[/path][/file]) required.');
@@ -61,6 +63,8 @@ class Http extends AbstractConnection {
         }
 
         $this->target = $target;
+
+        parent::__construct($encoder);
     }
 
     /**
@@ -90,7 +94,7 @@ class Http extends AbstractConnection {
         // preparing connection...
         $context = array(
                 'http' => array(
-                    'content' => $request->getRequest($this->spec),
+                    'content' => $request->getRequest($this->spec, $this->encoder),
                     'header' => "Content-Type: application/json\r\n".
                                 "Connection: Close\r\n",
                     'method' => 'POST',
@@ -105,7 +109,7 @@ class Http extends AbstractConnection {
         if($response === FALSE) {
             throw new Exception\ConnectionException('Connection to "'.$this->target.'" failed');
         }
-        $request->setResponse($response);
+        $request->setResponse($response, $this->encoder);
         $request->setHeaders($http_response_header);
         return $request;
     }
