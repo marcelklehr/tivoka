@@ -44,6 +44,13 @@ $connection->setTimeout(10);
 ?>
 ```
 
+In addition to that HTTP connections allow you to set the request header.
+```php
+<?php
+$connection->setHeader('User-Agent', 'Tivoka/3.x');
+?>
+```
+
 ## Sending a request
 
 Now, we have a connection, we also need a request to send. Let's assume, the server on the other end of the connection implements a method called `distance`, which calculates the distance between two cities.
