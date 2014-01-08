@@ -1,7 +1,7 @@
 <?php
 /**
  * Tivoka - JSON-RPC done right!
- * Copyright (c) 2011-2012 by Marcel Klehr <mklehr@gmx.net>
+ * Copyright (c) 2011-2013 by Marcel Klehr <mklehr@gmx.net>
  *
  * MIT LICENSE
  *
@@ -26,10 +26,12 @@
  * @package  Tivoka
  * @author Marcel Klehr <mklehr@gmx.net>
  * @author Rafał Wrzeszcz <rafal.wrzeszcz@wrzasq.pl>
- * @copyright (c) 2011-2012, Marcel Klehr
+ * @copyright (c) 2011-2013, Marcel Klehr
  */
 
 namespace Tivoka\Client;
+
+use Tivoka\Encoder\EncoderInterface;
 use Tivoka\Exception;
 use Tivoka\Tivoka;
 use Tivoka\Client\Connection\AbstractConnection;
@@ -69,10 +71,12 @@ class Request
     /**
      * Get the raw, JSON-encoded request 
      * @param int $spec
+     * @param EncoderInterface $encoder JSON encoder.
+     * @return string JSON-encoded encoded request.
      */
-    public function getRequest($spec) {
+    public function getRequest($spec, EncoderInterface $encoder) {
         $this->spec = $spec;
-        return $this->request = json_encode(self::prepareRequest($spec, $this->id, $this->method, $this->params));
+        return $this->request = $encoder->encode(self::prepareRequest($spec, $this->id, $this->method, $this->params));
     }
     
     /**
@@ -104,9 +108,10 @@ class Request
     /**
      * Interprets the response
      * @param string $response json data
+     * @param EncoderInterface $encoder JSON encoder.
      * @return void
      */
-    public function setResponse($response) {
+    public function setResponse($response, EncoderInterface $encoder) {
         $this->response = $response;
 
         //no response?
@@ -115,12 +120,12 @@ class Request
         }
     
         //decode
-        $resparr = json_decode($response,true);
+        $resparr = $encoder->decode($response);
         if($resparr == NULL) {
             throw new Exception\SyntaxException('Invalid response encoding');
         }
         
-        $this->interpretResponse($resparr);
+        $this->interpretResponse($resparr, $encoder);
     }
     
     /**
@@ -136,8 +141,9 @@ class Request
     /**
      * Interprets the parsed response
      * @param array $json_struct
+     * @param EncoderInterface $encoder JSON encoder.
      */
-    public function interpretResponse($json_struct) {
+    public function interpretResponse($json_struct, EncoderInterface $encoder) {
         //server error?
         if(($error = self::interpretError($this->spec, $json_struct, $this->id)) !== FALSE) {
             $this->error        = $error['error']['code'];

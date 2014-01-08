@@ -1,7 +1,7 @@
 <?php
 /**
  * Tivoka - JSON-RPC done right!
- * Copyright (c) 2011-2012 by Marcel Klehr <mklehr@gmx.net>
+ * Copyright (c) 2011-2013 by Marcel Klehr <mklehr@gmx.net>
  *
  * MIT LICENSE
  *
@@ -26,12 +26,13 @@
  * @package  Tivoka
  * @author Marcel Klehr <mklehr@gmx.net>
  * @author Rafał Wrzeszcz <rafal.wrzeszcz@wrzasq.pl>
- * @copyright (c) 2011-2012, Marcel Klehr
+ * @copyright (c) 2011-2013, Marcel Klehr
  */
 
 namespace Tivoka\Client\Connection;
 
 use Tivoka\Client\Request;
+use Tivoka\Encoder\EncoderInterface;
 
 /**
  * Connection interface
@@ -70,4 +71,11 @@ interface ConnectionInterface {
      * @return Tivoka\Client\NativeInterface
      */
     public function getNativeInterface();
+
+    /**
+     * Sets JSON encoder for this connection.
+     * @param EncoderInterface $encoder JSON encoder/decoder.
+     * @return ConnectionInterface Self instance.
+     */
+    public function setEncoder(EncoderInterface $encoder);
 }

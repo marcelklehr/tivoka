@@ -1,7 +1,7 @@
 <?php
 /**
  * Tivoka - JSON-RPC done right!
- * Copyright (c) 2011-2012 by Marcel Klehr <mklehr@gmx.net>
+ * Copyright (c) 2011-2013 by Marcel Klehr <mklehr@gmx.net>
  *
  * MIT LICENSE
  *
@@ -26,7 +26,7 @@
  * @package  Tivoka
  * @author Marcel Klehr <mklehr@gmx.net>
  * @author Rafał Wrzeszcz <rafal.wrzeszcz@wrzasq.pl>
- * @copyright (c) 2011-2012, Marcel Klehr
+ * @copyright (c) 2011-2013, Marcel Klehr
  */
 
 namespace Tivoka\Client\Connection;
@@ -34,6 +34,8 @@ use Tivoka\Exception;
 use Tivoka\Client\NativeInterface;
 use Tivoka\Client\Notification;
 use Tivoka\Client\Request;
+use Tivoka\Encoder\EncoderInterface;
+use Tivoka\Encoder\JsonEncoder;
 use Tivoka\Tivoka;
 
 /**
@@ -42,7 +44,7 @@ use Tivoka\Tivoka;
  */
 abstract class AbstractConnection implements ConnectionInterface {
     
-    /**
+    /*
      * Initial timeout value.
      * @var int
      */
@@ -55,7 +57,22 @@ abstract class AbstractConnection implements ConnectionInterface {
     protected $timeout = self::DEFAULT_TIMEOUT;
     
     public $spec = Tivoka::SPEC_2_0;
-    
+
+    /**
+     * JSON encoder/decoder.
+     * @var EncoderInterface
+     */
+    protected $encoder;
+
+    /**
+     * Initializes encoder instance.
+     * @param EncoderInterface $encoder JSON encoder/decoder.
+     */
+    public function __construct(EncoderInterface $encoder = null)
+    {
+        $this->encoder = $encoder ?: new JsonEncoder();
+    }
+
     /**
      * Sets the spec version to use for this connection
      * @param string $spec The spec version (e.g.: "2.0")
@@ -107,18 +124,31 @@ abstract class AbstractConnection implements ConnectionInterface {
     }
 
     /**
+     * Sets JSON encoder for this connection.
+     * @param EncoderInterface $encoder JSON encoder/decoder.
+     * @return ConnectionInterface Self instance.
+     */
+    public function setEncoder(EncoderInterface $encoder)
+    {
+        $this->encoder = $encoder;
+
+        return $this;
+    }
+
+    /**
      * Constructs connection handler.
      * @param mixed $target Server connection configuration.
+     * @param EncoderInterface $encoder JSON encoder/decoder.
      * @return ConnectionInterface
      */
-    public static function factory($target)
+    public static function factory($target, EncoderInterface $encoder = null)
     {
         // TCP conneciton is defined as ['host' => $host, 'port' => $port] definition
         if (is_array($target) && isset($target['host'], $target['port'])) {
-            return new Tcp($target['host'], $target['port']);
+            return new Tcp($target['host'], $target['port'], $encoder);
         } else {
             // HTTP end-point should be defined just as string
-            return new Http($target);
+            return new Http($target, $encoder);
         }
     }
 }

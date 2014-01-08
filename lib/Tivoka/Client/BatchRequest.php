@@ -1,7 +1,7 @@
 <?php
 /**
  * Tivoka - JSON-RPC done right!
- * Copyright (c) 2011-2012 by Marcel Klehr <mklehr@gmx.net>
+ * Copyright (c) 2011-2013 by Marcel Klehr <mklehr@gmx.net>
  *
  * MIT LICENSE
  *
@@ -25,11 +25,14 @@
  *
  * @package  Tivoka
  * @author Marcel Klehr <mklehr@gmx.net>
- * @copyright (c) 2011-2012, Marcel Klehr
+ * @author Rafał Wrzeszcz <rafal.wrzeszcz@wrzasq.pl>
+ * @copyright (c) 2011-2013, Marcel Klehr
  */
 
 
 namespace Tivoka\Client;
+
+use Tivoka\Encoder\EncoderInterface;
 use Tivoka\Exception;
 use Tivoka\Tivoka;
 
@@ -69,24 +72,26 @@ class BatchRequest extends Request
     /**
      * Get the raw, JSON-encoded request
      * @param int $spec
-     * @return string the JSON encoded request
+     * @param EncoderInterface $encoder JSON encoder.
+     * @return string JSON-encoded encoded request.
      */
-    public function getRequest($spec) {
+    public function getRequest($spec, EncoderInterface $encoder) {
         if($spec == Tivoka::SPEC_1_0) throw new Exception\SpecException('Batch requests are not supported by JSON-RPC 1.0 spec');
         $this->spec = $spec;
         $request = array();
         foreach($this->requests as $req) {
-            $request[] = json_decode($req->getRequest($spec), true);
+            $request[] = $encoder->decode($req->getRequest($spec, $encoder));
         }
-        return $this->request = json_encode($request);
+        return $this->request = $encoder->encode($request);
     }
     
     /**
      * Interprets the parsed response
      * @param array $json_struct json data
+     * @param EncoderInterface $encoder JSON encoder.
      * @return void
      */
-    public function interpretResponse($json_struct) {
+    public function interpretResponse($json_struct, EncoderInterface $encoder) {
         //validate
         if(count($json_struct) < 1 || !is_array($json_struct)) {
             throw new Exception\SyntaxException('Expected batch response, but none was received');
@@ -114,7 +119,7 @@ class BatchRequest extends Request
             }
     
             //normal response...
-            $requests[ $resp['id'] ]->setResponse(json_encode($resp));
+            $requests[ $resp['id'] ]->setResponse($encoder->encode($resp), $encoder);
             unset($requests[ $resp['id'] ]);
         }
     
@@ -123,7 +128,7 @@ class BatchRequest extends Request
         {
             if($req instanceof Notification) continue;
             $resp = array_shift($nullresps);
-            $requests[ $req->id ]->setResponse(json_encode($resp));
+            $requests[ $req->id ]->setResponse($encoder->encode($resp), $encoder);
         }       
     }
 

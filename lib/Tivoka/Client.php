@@ -1,7 +1,7 @@
 <?php
 /**
  * Tivoka - JSON-RPC done right!
- * Copyright (c) 2011-2012 by Marcel Klehr <mklehr@gmx.net>
+ * Copyright (c) 2011-2013 by Marcel Klehr <mklehr@gmx.net>
  *
  * MIT LICENSE
  *
@@ -26,10 +26,12 @@
  * @package  Tivoka
  * @author Marcel Klehr <mklehr@gmx.net>
  * @author Rafał Wrzeszcz <rafal.wrzeszcz@wrzasq.pl>
- * @copyright (c) 2011-2012, Marcel Klehr
+ * @copyright (c) 2011-2013, Marcel Klehr
  */
 
 namespace Tivoka;
+
+use Tivoka\Encoder\EncoderInterface;
 
 /**
  * The public interface to all tivoka functions
@@ -41,10 +43,11 @@ abstract class Client
     /**
      * Initializes a Connection to a remote server
      * @param mixed $target Remote end-point definition
+     * @param EncoderInterface $encoder JSON encoder/decoder.
      * @return Tivoka\Client\Connection\ConnectionInterface
      */
-    public static function connect($target) {
-        return Client\Connection\AbstractConnection::factory($target);
+    public static function connect($target, EncoderInterface $encoder = null) {
+        return Client\Connection\AbstractConnection::factory($target, $encoder);
     }
     
     /**
