@@ -61,16 +61,6 @@ $ php composer.phar install
 
 Now, `include 'vendor/autoload.php'`
 
-### Install through pear
-1. Run the following:
-
-```sh
-$ pear channel-discover pearhub.org
-$ pear install pearhub/tivoka
-```
-
-Now, `include 'tivoka/include.php'`
-
 ### Download
 1. Grab the source using 
   * `git clone https://github.com/marcelklehr/tivoka.git` or
