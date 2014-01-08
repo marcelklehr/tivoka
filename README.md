@@ -73,6 +73,10 @@ Copyright 2011-2012 by Marcel Klehr
 MIT License.
 
 ## Changelog ##
+3.2.1
+
+ * Fix #41: Fix Exception catcher in Tivoka\Server\Server::process (thanks to @ikulis)
+
 3.2.0
 
  * Feature: Plain TCP connections (revamped a lot of our internals along the way! thanks go out to @rafalwrzeszcz)
@@ -80,14 +84,14 @@ MIT License.
 
 3.1.0
 
- * Fix #27: json-rpc response[result] may be `null` (thanks to vaab)
- * Feature: Allow setting of request headers and expose response headers (thanks to vaab)
+ * Fix #27: json-rpc response[result] may be `null` (thanks to @vaab)
+ * Feature: Allow setting of request headers and expose response headers (thanks to @vaab)
  * Fix bug with client-side notifications
  * Add docs in `doc/`
 
 3.0.1
 
- * Fix a typo, that used to screw up things when throwing an exception (thanks to gahr)
+ * Fix a typo, that used to screw up things when throwing an exception (thanks to @gahr)
 
 
 3.0.0
