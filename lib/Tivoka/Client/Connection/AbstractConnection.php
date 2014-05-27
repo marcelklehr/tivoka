@@ -41,21 +41,21 @@ use Tivoka\Tivoka;
  * @package Tivoka
  */
 abstract class AbstractConnection implements ConnectionInterface {
-    
+
     /**
      * Initial timeout value.
      * @var int
      */
     const DEFAULT_TIMEOUT = 5;
-    
+
     /**
      * Timeot.
      * @var int
      */
     protected $timeout = self::DEFAULT_TIMEOUT;
-    
+
     public $spec = Tivoka::SPEC_2_0;
-    
+
     /**
      * Sets the spec version to use for this connection
      * @param string $spec The spec version (e.g.: "2.0")
@@ -64,7 +64,7 @@ abstract class AbstractConnection implements ConnectionInterface {
         $this->spec = Tivoka::validateSpecVersion($spec);
         return $this;
     }
-    
+
     /**
      * Changes timeout.
      * @param int $timeout
@@ -73,10 +73,10 @@ abstract class AbstractConnection implements ConnectionInterface {
     public function setTimeout($timeout)
     {
     	$this->timeout = $timeout;
-    
+
     	return $this;
     }
-    
+
     /**
      * Send a request directly
      * @param string $method
@@ -87,7 +87,7 @@ abstract class AbstractConnection implements ConnectionInterface {
         $this->send($request);
         return $request;
     }
-    
+
     /**
      * Send a notification directly
      * @param string $method
@@ -96,7 +96,7 @@ abstract class AbstractConnection implements ConnectionInterface {
     public function sendNotification($method, $params=null) {
         $this->send(new Notification($method, $params));
     }
-    
+
     /**
      * Creates a native remote interface for the target server
      * @return Tivoka\Client\NativeInterface
@@ -116,6 +116,9 @@ abstract class AbstractConnection implements ConnectionInterface {
         // TCP conneciton is defined as ['host' => $host, 'port' => $port] definition
         if (is_array($target) && isset($target['host'], $target['port'])) {
             return new Tcp($target['host'], $target['port']);
+        } elseif (is_string($target) && preg_match('/^wss?:\/\//', $target)) {
+            // WebSocket URL starts with ws:// or wss://
+            return new WebSocket($target);
         } else {
             // HTTP end-point should be defined just as string
             return new Http($target);
