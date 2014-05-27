@@ -12,7 +12,7 @@ These are just some quick examples.
 Do a request through HTTP...
 ```php
 <?php
-$connection = Tivoka\Client::connect('http://exapmle.com/api')
+$connection = Tivoka\Client::connect('http://example.com/api')
 $request = $connection->sendRequest('substract', array(51, 9));
 print $request->result;// 42
 ?>
@@ -30,7 +30,7 @@ print $request->result;// 42
 ...or WebSocket
 ```php
 <?php
-$connection = Tivoka\Client::connect('ws://exapmle.com/api')
+$connection = Tivoka\Client::connect('ws://example.com/api')
 $request = $connection->sendRequest('substract', array(51, 9));
 print $request->result;// 42
 ?>
