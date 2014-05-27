@@ -217,7 +217,7 @@ class WebSocket extends AbstractConnection {
         $frame = '';
         $payloadLength = strlen($payload);
 
-        switch($type) {
+        switch ($type) {
             case 'text':  $frameHead[0] = 129; break;
             case 'close': $frameHead[0] = 136; break;
             case 'ping':  $frameHead[0] = 137; break;
@@ -286,7 +286,7 @@ class WebSocket extends AbstractConnection {
         $isMasked = ($secondByteBinary[0] == '1') ? true : false;
         $payloadLength = ord($data[1]) & 127;
 
-        switch($opcode) {
+        switch ($opcode) {
             case 1:  $decodedData['type'] = 'text';   break;
             case 2:  $decodedData['type'] = 'binary'; break;
             case 8:  $decodedData['type'] = 'close';  break;
@@ -304,7 +304,7 @@ class WebSocket extends AbstractConnection {
                 = bindec(sprintf('%08b', ord($data[2])) . sprintf('%08b', ord($data[3])))
                 + $payloadOffset;
         }
-        elseif($payloadLength === 127) {
+        elseif ($payloadLength === 127) {
             $mask = substr($data, 10, 4);
             $payloadOffset = 14;
             $tmp = '';
@@ -321,7 +321,7 @@ class WebSocket extends AbstractConnection {
         if ($isMasked === true) {
             for ($i = $payloadOffset; $i < $dataLength; $i++) {
                 $j = $i - $payloadOffset;
-                if(isset($data[$i])) $unmaskedPayload .= $data[$i] ^ $mask[$j % 4];
+                if (isset($data[$i])) $unmaskedPayload .= $data[$i] ^ $mask[$j % 4];
             }
             $decodedData['payload'] = $unmaskedPayload;
         }
