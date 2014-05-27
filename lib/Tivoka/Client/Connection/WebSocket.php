@@ -165,6 +165,8 @@ class WebSocket extends AbstractConnection {
 
     /**
      * Reads data from socket until there is no more to read.
+     *
+     * @return string Read text.
      */
     private function receiveData() {
         $response = '';
@@ -174,15 +176,16 @@ class WebSocket extends AbstractConnection {
         } while (!feof($this->socket) && $metadata['unread_bytes'] > 0);
 
         $result = $this->_hybi10Decode($response);
-        if (!is_array($result)) return false;
 
         if ($result['type'] === 'text') return $result['payload'];
 
-        // Unexpected type.
-        return false;
+        throw new Exception\Exception('Unexpected type in response: ' . $result['type']);
     }
 
-
+    /**
+     * Generate a random string for WebSocket key.
+     * @return string Random string
+     */
     private function _generateRandomString($length = 16) {
         $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"§$%&/()=[]{}';
         $useChars = array();
@@ -200,6 +203,15 @@ class WebSocket extends AbstractConnection {
         return $randomString;
     }
 
+    /**
+     * Encode text to hybi10 for WebSocket.
+     *
+     * @param string  $payload  Text to encode.
+     * @param string  $type     Frame type, text/close/ping/pong.
+     * @param boolean $masked
+     *
+     * @return string Encoded frame
+     */
     private function _hybi10Encode($payload, $type = 'text', $masked = true) {
         $frameHead = array();
         $frame = '';
@@ -223,11 +235,7 @@ class WebSocket extends AbstractConnection {
             for ($i = 0; $i < 8; $i++) $frameHead[$i+2] = bindec($payloadLengthBin[$i]);
 
             // most significant bit MUST be 0 (close connection if frame too big)
-            if ($frameHead[2] > 127) {
-                throw new Exception\Exception("Frame too big.");
-                fclose($this->socket);
-                return false;
-            }
+            if ($frameHead[2] > 127) throw new Exception\Exception("Frame too big.");
         }
         elseif ($payloadLength > 125) {
             $payloadLengthBin = str_split(sprintf('%016b', $payloadLength), 8);
@@ -260,6 +268,11 @@ class WebSocket extends AbstractConnection {
         return $frame;
     }
 
+    /**
+     * Decodes hybi10 frame.
+     *
+     * @return array Associative array with 'type' and 'payload'.
+     */
     private static function _hybi10Decode($data) {
         $payloadLength = '';
         $mask = '';
@@ -281,8 +294,7 @@ class WebSocket extends AbstractConnection {
             case 10: $decodedData['type'] = 'pong';   break;
 
             default:
-                return false;
-                break;
+                throw new Exception\Exception("Bad type in hybi10Decode: $opcode");
         }
 
         if ($payloadLength === 126) {
