@@ -1,7 +1,7 @@
 # JSON-RPC done right #
 client and server for PHP 5.3+
 
-Do JSON-RPC. With Tivoka. It's as easy as that!  
+Do JSON-RPC. With Tivoka. It's as easy as that!
 For convenience, you can easily switch between [JSON-RPC 1.0](http://json-rpc.org/wiki/specification) and [JSON-RPC 2.0](http://jsonrpc.org/specification) without having to change your code.
 
 Learn more about JSON-RPC at <http://jsonrpc.org/>.
@@ -22,6 +22,15 @@ print $request->result;// 42
 ```php
 <?php
 $connection = Tivoka\Client::connect(array('host' => 'example.com', 'port' => 1234))
+$request = $connection->sendRequest('substract', array(51, 9));
+print $request->result;// 42
+?>
+```
+
+...or WebSocket
+```php
+<?php
+$connection = Tivoka\Client::connect('ws://exapmle.com/api')
 $request = $connection->sendRequest('substract', array(51, 9));
 print $request->result;// 42
 ?>
@@ -62,14 +71,14 @@ $ php composer.phar install
 Now, `include 'vendor/autoload.php'`
 
 ### Download
-1. Grab the source using 
+1. Grab the source using
   * `git clone https://github.com/marcelklehr/tivoka.git` or
   * [download](http://github.com/marcelklehr/tivoka/zipball/master) it
 
 Now, `include 'path/to/tivoka/include.php'`
 
 ## License ##
-Copyright 2011-2012 by Marcel Klehr  
+Copyright 2011-2012 by Marcel Klehr
 MIT License.
 
 ## Changelog ##
@@ -129,4 +138,4 @@ MIT License.
  * removed Response Class
  * Added aa number of shortcuts
  * Implemented native remote interface
- 
+
