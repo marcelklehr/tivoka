@@ -5,60 +5,30 @@ use Tivoka\Client\BatchRequest;
 use Tivoka\Exception;
 use Tivoka\Client\Request;
 
+use WebSocket\Client;
+
 /**
  * WebSocket connection
  * @package Tivoka
  *
  * @author Fredrik Liljegren <fredrik.liljegren@textalk.se>
  *
- * Much here is just a modified version of the Tivoka\Client\Connection\Tcp class.
- *
- * The WebSocket handling code (connect, hybi10Encode/Decode) is taken mostly from
- * https://github.com/lemmingzshadow/php-websocket/blob/master/client/lib/class.websocket_client.php
- * Author: Simon Samtleben <web@lemmingzshadow.net>
- * License: DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+ * The WebSocket itself is handled by textalk/websocket package.
  */
 class WebSocket extends AbstractConnection {
     protected $url, ///< Given URL
-        $host,      ///< Host, from URL
-        $port,      ///< Port, from URL
-        $path,      ///< Path, from URL
-        $query,     ///< Query, from URL
-        $fragment,  ///< Fragment, from URL
-        $socket;    ///< The TCP socket
+        $ws_client; ///< The WebSocket\Client instance
 
     /**
      * Constructs connection.
+     *
      * @param string $host Server host.
      * @param int $port Server port.
      */
     public function __construct($url)
     {
-        $url_parts = parse_url($url);
-
-        //validate url...
-        if (!in_array($url_parts['scheme'], array('ws', 'wss'))) {
-            throw new Exception\Exception('Not a valid WebSocket url: "' . $url . '".');
-        }
-
-        $this->url      = $url;
-        $this->scheme   = $url_parts['scheme'];
-        $this->host     = $url_parts['host'];
-        $this->port     = isset($url_parts['port']) ?
-            $url_parts['port'] : ($this->scheme === 'wss' ? 443 : 80);
-        $this->path     = $url_parts['path'];
-        $this->query    = isset($url_parts['query'])    ? $url_parts['query'] : '';
-        $this->fragment = isset($url_parts['fragment']) ? $url_parts['fragment'] : '';
-    }
-
-    /**
-     * Closes connection on finalization.
-     */
-    public function __destruct()
-    {
-        if ($this->socket) {
-            fclose($this->socket);
-        }
+        $this->url       = $url;
+        $this->ws_client = new Client($url, array('timeout' => $this->timeout));
     }
 
     /**
@@ -68,14 +38,8 @@ class WebSocket extends AbstractConnection {
      */
     public function setTimeout($timeout)
     {
-        $this->timeout = $timeout;
-
-        // change timeout for already initialized connection
-        if (isset($this->socket)) {
-            stream_set_timeout($this->socket, $timeout);
-        }
-
-        return $this;
+        $this->ws_client->setTimeout($timeout);
+        return parent::setTimeout($timeout);
     }
 
     /**
@@ -85,7 +49,6 @@ class WebSocket extends AbstractConnection {
      */
     public function send(Request $request)
     {
-        if (!isset($this->socket)) $this->connect(); // connect on first call
         if (func_num_args() > 1)   $request = func_get_args();
         if (is_array($request))    $request = new BatchRequest($request);
 
@@ -94,242 +57,17 @@ class WebSocket extends AbstractConnection {
         }
 
         // sending request
-        $res = fwrite(
-            $this->socket, $this->_hybi10Encode($request->getRequest($this->spec), 'text', true)
-        );
-        if ($res === 0 || $res === false) {
-            throw new Exception\ConnectionException('Connection to "' . $this->url . '" failed.');
-        }
+        $this->ws_client->send($request->getRequest($this->spec), 'text', true);
 
         // read server respons
-        $response = $this->receiveData();
-        if ($response === false) {
-            throw new Exception\ConnectionException('Connection to "' . $this->url . '" failed.');
-        }
+        $response = $this->ws_client->receive();
 
+        if (($opcode = $this->ws_client->getLastOpcode()) !== 'text') {
+            throw new Exception\ConnectionException(
+                "Received non-text frame of type '$opcode' with text: " . $response
+            );
+        }
         $request->setResponse($response);
         return $request;
-    }
-
-    /**
-     * WebSocket handshake; consists of a HTTP call with an upgrade request.
-     */
-    private function connect()
-    {
-        $path_with_query = $this->path;
-        if (!empty($this->query))    $path_with_query .= '?' . $this->query;
-        if (!empty($this->fragment)) $path_with_query .= '#' . $this->fragment;
-
-        $key     = base64_encode($this->_generateRandomString());
-        $header  = "GET " . $path_with_query . " HTTP/1.1\r\n";
-        $header .= "Origin: null\r\n";
-        $header .= "Host: " . $this->host . "\r\n";
-        $header .= "Sec-WebSocket-Key: " . $key . "\r\n";
-        $header .= "User-Agent: twapi-php\r\n";
-        $header .= "Upgrade: websocket\r\n";
-        $header .= "Connection: Upgrade\r\n";
-        $header .= "Sec-WebSocket-Version: 8\r\n\r\n";
-
-        $host = ($this->scheme === 'wss' ? 'ssl' : 'tcp') . '://' . $this->host;
-        $this->socket = fsockopen($host, $this->port, $errno, $errstr, $this->timeout);
-
-        if ($this->socket === false) {
-            throw new Exception\ConnectionException(
-                "Could not open socket to \"$host:$this->port\": $errstr ($errno)."
-            );
-        }
-
-        stream_set_timeout($this->socket, $this->timeout);
-        fwrite($this->socket, $header);
-
-        $response = '';
-        do {
-            $response .= fgets($this->socket);
-            $metadata = stream_get_meta_data($this->socket);
-        } while (!feof($this->socket) && $metadata['unread_bytes'] > 0);
-
-        if (!preg_match('#Sec-WebSocket-Accept:\s(.*)$#mUi', $response, $matches)) {
-            throw new Exception\ConnectionException(
-                'Connection to "' . $this->url . '" failed: Server sent invalid upgrade response.'
-            );
-        }
-
-        $keyAccept = trim($matches[1]);
-        $expectedResonse
-            = base64_encode(pack('H*', sha1($key . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
-
-        if ($keyAccept !== $expectedResonse) {
-            throw new Exception\ConnectionException('Server sent bad upgrade response.');
-        }
-    }
-
-    /**
-     * Reads data from socket until there is no more to read.
-     *
-     * @return string Read text.
-     */
-    private function receiveData() {
-        $response = '';
-        do {
-            $response .= fread($this->socket, 2048);
-            $metadata = stream_get_meta_data($this->socket);
-        } while (!feof($this->socket) && $metadata['unread_bytes'] > 0);
-
-        $result = $this->_hybi10Decode($response);
-
-        if ($result['type'] === 'text') return $result['payload'];
-
-        throw new Exception\Exception('Unexpected type in response: ' . $result['type']);
-    }
-
-    /**
-     * Generate a random string for WebSocket key.
-     * @return string Random string
-     */
-    private function _generateRandomString($length = 16) {
-        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"§$%&/()=[]{}';
-        $useChars = array();
-        // select some random chars:
-        for ($i = 0; $i < $length; $i++) {
-            $useChars[] = $characters[mt_rand(0, strlen($characters)-1)];
-        }
-
-        // Add numbers
-        array_push($useChars, rand(0,9), rand(0,9), rand(0,9));
-
-        shuffle($useChars);
-        $randomString = trim(implode('', $useChars));
-        $randomString = substr($randomString, 0, $length);
-        return $randomString;
-    }
-
-    /**
-     * Encode text to hybi10 for WebSocket.
-     *
-     * @param string  $payload  Text to encode.
-     * @param string  $type     Frame type, text/close/ping/pong.
-     * @param boolean $masked
-     *
-     * @return string Encoded frame
-     */
-    private function _hybi10Encode($payload, $type = 'text', $masked = true) {
-        $frameHead = array();
-        $frame = '';
-        $payloadLength = strlen($payload);
-
-        switch ($type) {
-            case 'text':  $frameHead[0] = 129; break;
-            case 'close': $frameHead[0] = 136; break;
-            case 'ping':  $frameHead[0] = 137; break;
-            case 'pong':  $frameHead[0] = 138; break;
-            default:
-                /// @todo Use specific exception
-                throw new Exception\Exception("Bad type in hybi10Encode: $type");
-        }
-
-        // set mask and payload length (using 1, 3 or 9 bytes)
-        if ($payloadLength > 65535) {
-            $payloadLengthBin = str_split(sprintf('%064b', $payloadLength), 8);
-            $frameHead[1] = ($masked === true) ? 255 : 127;
-
-            for ($i = 0; $i < 8; $i++) $frameHead[$i+2] = bindec($payloadLengthBin[$i]);
-
-            // most significant bit MUST be 0 (close connection if frame too big)
-            if ($frameHead[2] > 127) throw new Exception\Exception("Frame too big.");
-        }
-        elseif ($payloadLength > 125) {
-            $payloadLengthBin = str_split(sprintf('%016b', $payloadLength), 8);
-            $frameHead[1] = ($masked === true) ? 254 : 126;
-            $frameHead[2] = bindec($payloadLengthBin[0]);
-            $frameHead[3] = bindec($payloadLengthBin[1]);
-        }
-        else {
-            $frameHead[1] = ($masked === true) ? $payloadLength + 128 : $payloadLength;
-        }
-
-        // convert frame-head to string:
-        foreach (array_keys($frameHead) as $i) $frameHead[$i] = chr($frameHead[$i]);
-
-        if ($masked === true) {
-            // generate a random mask:
-            $mask = array();
-            for ($i = 0; $i < 4; $i++) $mask[$i] = chr(rand(0, 255));
-
-            $frameHead = array_merge($frameHead, $mask);
-        }
-        $frame = implode('', $frameHead);
-
-        // append payload to frame:
-        $framePayload = array();
-        for ($i = 0; $i < $payloadLength; $i++) {
-            $frame .= ($masked === true) ? $payload[$i] ^ $mask[$i % 4] : $payload[$i];
-        }
-
-        return $frame;
-    }
-
-    /**
-     * Decodes hybi10 frame.
-     *
-     * @return array Associative array with 'type' and 'payload'.
-     */
-    private static function _hybi10Decode($data) {
-        $payloadLength = '';
-        $mask = '';
-        $unmaskedPayload = '';
-        $decodedData = array();
-
-        // estimate frame type:
-        $firstByteBinary = sprintf('%08b', ord($data[0]));
-        $secondByteBinary = sprintf('%08b', ord($data[1]));
-        $opcode = bindec(substr($firstByteBinary, 4, 4));
-        $isMasked = ($secondByteBinary[0] == '1') ? true : false;
-        $payloadLength = ord($data[1]) & 127;
-
-        switch ($opcode) {
-            case 1:  $decodedData['type'] = 'text';   break;
-            case 2:  $decodedData['type'] = 'binary'; break;
-            case 8:  $decodedData['type'] = 'close';  break;
-            case 9:  $decodedData['type'] = 'ping';   break;
-            case 10: $decodedData['type'] = 'pong';   break;
-
-            default:
-                throw new Exception\Exception("Bad type in hybi10Decode: $opcode");
-        }
-
-        if ($payloadLength === 126) {
-            $mask = substr($data, 4, 4);
-            $payloadOffset = 8;
-            $dataLength
-                = bindec(sprintf('%08b', ord($data[2])) . sprintf('%08b', ord($data[3])))
-                + $payloadOffset;
-        }
-        elseif ($payloadLength === 127) {
-            $mask = substr($data, 10, 4);
-            $payloadOffset = 14;
-            $tmp = '';
-            for ($i = 0; $i < 8; $i++) $tmp .= sprintf('%08b', ord($data[$i+2]));
-            $dataLength = bindec($tmp) + $payloadOffset;
-            unset($tmp);
-        }
-        else {
-            $mask = substr($data, 2, 4);
-            $payloadOffset = 6;
-            $dataLength = $payloadLength + $payloadOffset;
-        }
-
-        if ($isMasked === true) {
-            for ($i = $payloadOffset; $i < $dataLength; $i++) {
-                $j = $i - $payloadOffset;
-                if (isset($data[$i])) $unmaskedPayload .= $data[$i] ^ $mask[$j % 4];
-            }
-            $decodedData['payload'] = $unmaskedPayload;
-        }
-        else {
-            $payloadOffset = $payloadOffset - 4;
-            $decodedData['payload'] = substr($data, $payloadOffset);
-        }
-
-        return $decodedData;
     }
 }
