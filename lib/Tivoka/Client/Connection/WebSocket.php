@@ -70,4 +70,12 @@ class WebSocket extends AbstractConnection {
         $request->setResponse($response);
         return $request;
     }
+
+    /**
+     * @return The websocket URI used.
+     */
+    public function getUri()
+    {
+        return $this->url;
+    }
 }
