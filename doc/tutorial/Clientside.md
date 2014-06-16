@@ -20,6 +20,13 @@ $connection = Tivoka\Client::connect($target);
 ?>
 ```
 
+### WebSocket Connections
+If the URL happens to be a WebSocket URL (starting with ws or wss), a (persistant) WebSocket connection is made:
+```php
+$target = 'ws://example.com/api/json-rpc';
+```
+Note: This requires the dependencies from composer.json to be installed.
+
 ### TCP Connections
 In order to connect to a pure TCP JSON-RPC server, use this:
 ```php
