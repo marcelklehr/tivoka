@@ -1,13 +1,11 @@
-# JSON-RPC done right #
-client and server for PHP 5.3+
+# Tivoka
+[JSON-RPC](http://jsonrpc.org/) client and server for PHP 5.3+
 
-Do JSON-RPC. With Tivoka. It's as easy as that!
-For convenience, you can easily switch between [JSON-RPC 1.0](http://json-rpc.org/wiki/specification) and [JSON-RPC 2.0](http://jsonrpc.org/specification) without having to change your code.
-
-Learn more about JSON-RPC at <http://jsonrpc.org/>.
+* Easily switch between the [v1.0](http://json-rpc.org/wiki/specification) and [v2.0](http://jsonrpc.org/specification) specs
+* HTTP, TCP and Websocket transports available
 
 ## Examples ##
-These are just some quick examples.
+These are just some quick examples. Check out the docs in [`/doc/`](https://github.com/marcelklehr/tivoka/tree/develop/doc).
 
 Do a request through HTTP...
 ```php
@@ -82,6 +80,10 @@ Copyright 2011-2012 by Marcel Klehr
 MIT License.
 
 ## Changelog ##
+3.3.0
+
+ * Add websocket transport (thanks to @fiddur)
+
 3.2.1
 
  * Fix #41: Fix Exception catcher in Tivoka\Server\Server::process (thanks to @ikulis)
