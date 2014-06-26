@@ -68,13 +68,6 @@ $ php composer.phar install
 
 Now, `include 'vendor/autoload.php'`
 
-### Download
-1. Grab the source using
-  * `git clone https://github.com/marcelklehr/tivoka.git` or
-  * [download](http://github.com/marcelklehr/tivoka/zipball/master) it
-
-Now, `include 'path/to/tivoka/include.php'`
-
 ## License ##
 Copyright 2011-2012 by Marcel Klehr
 MIT License.
