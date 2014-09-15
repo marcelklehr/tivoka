@@ -34,7 +34,7 @@ namespace Tivoka;
  * The public interface on the server-side 
  * @package Tivoka
  */
-abstract class Server
+class Server
 {
     
     /**

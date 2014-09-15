@@ -34,7 +34,7 @@ namespace Tivoka;
  * The public interface to all tivoka functions
  * @package Tivoka
  */
-abstract class Tivoka
+class Tivoka
 {
     const SPEC_1_0 = 8;             // 000 001 000
     const SPEC_2_0 = 16;            // 000 010 000
