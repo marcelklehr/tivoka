@@ -180,8 +180,8 @@ $connection->send($request1, $request2, $request3);
 In some cases you will find, that you have an array of requests, passed by some other part of your code, that you want to send. Here you go:
 ```php
 <?php
-$array = array($request1, $request2, $request3);
-$connection->send($array);
+$batch = new Tivoka\Client\BatchRequest(array($request1, $request2, $request3));
+$connection->send($batch);
 ?>
 ```
 
