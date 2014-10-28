@@ -24,11 +24,19 @@ class WebSocket extends AbstractConnection {
      *
      * @param string $host Server host.
      * @param int $port Server port.
+     * @param array $options
+     *   Associative array containing:
+     *   - headers:  Request headers to add/override.
+     *   - timeout:  Socket connect and wait timeout in seconds.
      */
-    public function __construct($url)
+    public function __construct($url, $options = array())
     {
         $this->url       = $url;
-        $this->ws_client = new Client($url, array('timeout' => $this->timeout));
+
+        if (isset($options['timeout'])) $this->timeout = $options['timeout'];
+        else $options['timeout'] = $this->timeout;
+
+        $this->ws_client = new Client($url, $options);
     }
 
     /**
