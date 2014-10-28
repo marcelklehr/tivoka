@@ -20,6 +20,13 @@ $connection = Tivoka\Client::connect($target);
 ?>
 ```
 
+### WebSocket Connections
+If the URL happens to be a WebSocket URL (starting with ws or wss), a (persistant) WebSocket connection is made:
+```php
+$target = 'ws://example.com/api/json-rpc';
+```
+Note: This requires the dependencies from composer.json to be installed.
+
 ### TCP Connections
 In order to connect to a pure TCP JSON-RPC server, use this:
 ```php
@@ -173,8 +180,8 @@ $connection->send($request1, $request2, $request3);
 In some cases you will find, that you have an array of requests, passed by some other part of your code, that you want to send. Here you go:
 ```php
 <?php
-$array = array($request1, $request2, $request3);
-$connection->send($array);
+$batch = new Tivoka\Client\BatchRequest(array($request1, $request2, $request3));
+$connection->send($batch);
 ?>
 ```
 
