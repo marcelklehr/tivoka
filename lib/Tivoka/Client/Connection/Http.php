@@ -87,26 +87,57 @@ class Http extends AbstractConnection {
         
         if(!($request instanceof Request)) throw new Exception\Exception('Invalid data type to be sent to server');
         
-        // preparing connection...
-        $context = array(
-                'http' => array(
-                    'content' => $request->getRequest($this->spec),
-                    'header' => "Content-Type: application/json\r\n".
-                                "Connection: Close\r\n",
-                    'method' => 'POST',
-                    'timeout' => $this->timeout
-                )
-        );
-        foreach($this->headers as $label => $value) {
-          $context['http']['header'] .= $label . ": " . $value . "\r\n";
+        if (extension_loaded('curl')) {
+            $headers = array(
+                'Content-Type: application/json',
+                'Connection: Close'
+            );
+            foreach($this->headers as $label => $value) {
+                $headers[] = $label . ": " . $value . "\r\n";
+            }
+            $response_headers = array();
+            $headerFunction = function($ch, $header) use (&$response_headers) {
+                $header2 = rtrim($header, "\r\n");
+                if ($header2 != '') {
+                    $response_headers[] = $header2;
+                }
+                return strlen($header); // Use original header length!
+            };
+            $ch = curl_init($this->target);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $request->getRequest($this->spec));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_HEADERFUNCTION, $headerFunction);
+            $response = @curl_exec($ch);
+            curl_close($ch);
+        } elseif (ini_get('allow_url_fopen')) {
+            // preparing connection...
+            $context = array(
+                    'http' => array(
+                        'content' => $request->getRequest($this->spec),
+                        'header' => "Content-Type: application/json\r\n".
+                                    "Connection: Close\r\n",
+                        'method' => 'POST',
+                        'timeout' => $this->timeout
+                    )
+            );
+            foreach($this->headers as $label => $value) {
+            $context['http']['header'] .= $label . ": " . $value . "\r\n";
+            }
+            //sending...
+            $response = @file_get_contents($this->target, false, stream_context_create($context));
+            $response_headers = $http_response_header;
+        } else {
+            throw new Exception\ConnectionException('Install cURL extension or enable allow_url_fopen');
         }
-        //sending...
-        $response = @file_get_contents($this->target, false, stream_context_create($context));
         if($response === FALSE) {
             throw new Exception\ConnectionException('Connection to "'.$this->target.'" failed');
         }
         $request->setResponse($response);
-        $request->setHeaders($http_response_header);
+        $request->setHeaders($response_headers);
         return $request;
     }
 }
