@@ -73,6 +73,10 @@ Copyright 2011-2012 by Marcel Klehr
 MIT License.
 
 ## Changelog ##
+3.4.1
+
+ * Http: Use cURL if available (thanks to @hschletz)
+
 3.4.0
 
  * Adding options to set/override request headers in WebSocket (thanks to @fiddur)
