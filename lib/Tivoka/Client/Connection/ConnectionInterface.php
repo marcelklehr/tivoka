@@ -45,6 +45,12 @@ interface ConnectionInterface {
     public function useSpec($spec);
 
     /**
+     * Sets any backend-specific options for this connection
+     * @param string $options The backend-specific options.
+     */
+    public function setOptions($options);
+
+    /**
      * Sends a JSON-RPC request
      * @param Request $request A Tivoka request
      * @return Request if sent as a batch request the BatchRequest object will be returned
