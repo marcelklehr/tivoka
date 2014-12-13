@@ -42,7 +42,6 @@ class Http extends AbstractConnection {
 
     public $target;
     public $headers = array();
-    public $options = array();
 
     /**
      * Constructs connection
@@ -62,16 +61,6 @@ class Http extends AbstractConnection {
         }
 
         $this->target = $target;
-    }
-
-    /**
-     * Changes connection options.
-     * @param array $options
-     * @return Self reference.
-     */
-    public function setOptions($options) {
-        $this->options = $options;
-        return $this;
     }
 
     /**
