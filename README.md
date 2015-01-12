@@ -73,6 +73,10 @@ Copyright 2011-2012 by Marcel Klehr
 MIT License.
 
 ## Changelog ##
+3.4.2
+
+ * Fix HTTP via curl: Don't add a trailing newline for http headers (thanks to @oskarcafe)
+
 3.4.1
 
  * Http: Use cURL if available (thanks to @hschletz)
