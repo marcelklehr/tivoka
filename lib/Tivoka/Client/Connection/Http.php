@@ -93,7 +93,7 @@ class Http extends AbstractConnection {
                 'Connection: Close'
             );
             foreach($this->headers as $label => $value) {
-                $headers[] = $label . ": " . $value . "\r\n";
+                $headers[] = $label . ": " . $value;
             }
             $response_headers = array();
             $headerFunction = function($ch, $header) use (&$response_headers) {
