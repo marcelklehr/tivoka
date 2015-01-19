@@ -111,6 +111,9 @@ class Http extends AbstractConnection {
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($ch, CURLOPT_HEADERFUNCTION, $headerFunction);
+            if (isset($this->options['ssl_verify_peer'])) {
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->options['ssl_verify_peer']);
+            }
             $response = @curl_exec($ch);
             curl_close($ch);
         } elseif (ini_get('allow_url_fopen')) {
@@ -124,6 +127,9 @@ class Http extends AbstractConnection {
                         'timeout' => $this->timeout
                     )
             );
+            if (isset($this->options['ssl_verify_peer'])) {
+                $context['ssl']['verify_peer'] = $this->options['ssl_verify_peer'];
+            }
             foreach($this->headers as $label => $value) {
             $context['http']['header'] .= $label . ": " . $value . "\r\n";
             }
