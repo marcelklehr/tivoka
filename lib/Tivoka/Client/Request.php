@@ -188,8 +188,10 @@ class Request
                         'result' => $assoc['result']
                 );
             case Tivoka::SPEC_1_0:
-                if(isset($assoc['result'], $assoc['id']) === FALSE) return FALSE;
-                if($assoc['id'] !== $id && $assoc['result'] === null) return FALSE;
+                if(!array_key_exists('result', $assoc))
+                    return FALSE;
+                if(!isset($assoc['id']) || $assoc['id'] !== $id)
+                     return FALSE;
                 return array(
                     'id' => $assoc['id'],
                     'result' => $assoc['result']
