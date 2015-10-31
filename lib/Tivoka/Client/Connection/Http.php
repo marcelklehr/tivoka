@@ -80,6 +80,7 @@ class Http extends AbstractConnection {
             curl_setopt($this->ch, CURLOPT_POST, true);
             curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);
             curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($this->ch, CURLOPT_COOKIEFILE, true);
         }
     }
 
