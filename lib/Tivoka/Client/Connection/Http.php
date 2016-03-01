@@ -64,19 +64,11 @@ class Http extends AbstractConnection {
 
         $this->target = $target;
 
-        // create cURL handle
+        // Create cURL handle only once here, and use this single handle for all requests. This
+        // way, the cookies set will be kept in memory and reused for subsequent requests.
         if (extension_loaded('curl')) {
-            $headers = array(
-                'Content-Type: application/json',
-                'Connection: Close'
-            );
-            foreach($this->headers as $label => $value) {
-                $headers[] = $label . ": " . $value;
-            }
-
             $this->ch = curl_init($this->target);
             curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($this->ch, CURLOPT_HTTPHEADER, $headers);
             curl_setopt($this->ch, CURLOPT_POST, true);
             curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);
             curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
@@ -109,6 +101,13 @@ class Http extends AbstractConnection {
         if(!($request instanceof Request)) throw new Exception\Exception('Invalid data type to be sent to server');
         
         if (!is_null($this->ch)) {
+            $headers = array(
+                'Content-Type: application/json',
+                'Connection: Close'
+            );
+            foreach($this->headers as $label => $value) {
+                $headers[] = $label . ": " . $value;
+            }
             $response_headers = array();
             $headerFunction = function($ch, $header) use (&$response_headers) {
                 $header2 = rtrim($header, "\r\n");
@@ -117,6 +116,7 @@ class Http extends AbstractConnection {
                 }
                 return strlen($header); // Use original header length!
             };
+            curl_setopt($this->ch, CURLOPT_HTTPHEADER, $headers);
             curl_setopt($this->ch, CURLOPT_POSTFIELDS, $request->getRequest($this->spec));
             curl_setopt($this->ch, CURLOPT_HEADERFUNCTION, $headerFunction);
             $response = @curl_exec($this->ch);
