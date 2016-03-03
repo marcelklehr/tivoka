@@ -43,6 +43,8 @@ class Http extends AbstractConnection {
     public $target;
     public $headers = array();
 
+    private $ch;
+
     /**
      * Constructs connection
      * @access private
@@ -61,6 +63,22 @@ class Http extends AbstractConnection {
         }
 
         $this->target = $target;
+
+        // Create cURL handle only once here, and use this single handle for all requests. This
+        // way, the cookies set will be kept in memory and reused for subsequent requests.
+        if (extension_loaded('curl')) {
+            $this->ch = curl_init($this->target);
+            curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($this->ch, CURLOPT_POST, true);
+            curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($this->ch, CURLOPT_COOKIEFILE, true);
+        }
+    }
+
+    public function __destruct() {
+      if(!is_null($this->ch)) {
+        curl_close($this->ch);
+      }
     }
 
     /**
@@ -87,7 +105,7 @@ class Http extends AbstractConnection {
         
         if(!($request instanceof Request)) throw new Exception\Exception('Invalid data type to be sent to server');
         
-        if (extension_loaded('curl')) {
+        if (!is_null($this->ch)) {
             $headers = array(
                 'Content-Type: application/json',
                 'Connection: Close'
@@ -103,19 +121,14 @@ class Http extends AbstractConnection {
                 }
                 return strlen($header); // Use original header length!
             };
-            $ch = curl_init($this->target);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $request->getRequest($this->spec));
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_HEADERFUNCTION, $headerFunction);
             if (isset($this->options['ssl_verify_peer'])) {
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->options['ssl_verify_peer']);
             }
-            $response = @curl_exec($ch);
-            curl_close($ch);
+            curl_setopt($this->ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($this->ch, CURLOPT_POSTFIELDS, $request->getRequest($this->spec));
+            curl_setopt($this->ch, CURLOPT_HEADERFUNCTION, $headerFunction);
+            $response = @curl_exec($this->ch);
         } elseif (ini_get('allow_url_fopen')) {
             // preparing connection...
             $context = array(
