@@ -73,6 +73,10 @@ Copyright 2011-2012 by Marcel Klehr
 MIT License.
 
 ## Changelog ##
+3.5.0
+
+ * Add support for cookies if curl is installed (thanks to @oxan)
+
 3.4.2
 
  * Fix HTTP via curl: Don't add a trailing newline for http headers (thanks to @oskarcafe)
