@@ -58,6 +58,13 @@ $connection->setHeader('User-Agent', 'Tivoka/3.x');
 ?>
 ```
 
+Additionally, you can also enable curl's SSL peer validation.
+```php
+<?php
+$connection->setOptions(array('ssl_verify_peer' => true));
+?>
+```
+
 ## Sending a request
 
 Now, we have a connection, we also need a request to send. Let's assume, the server on the other end of the connection implements a method called `distance`, which calculates the distance between two cities.
