@@ -73,6 +73,10 @@ Copyright 2011-2012 by Marcel Klehr
 MIT License.
 
 ## Changelog ##
+3.5.1
+
+ * Fix Http Connection
+
 3.5.0
 
  * Add support for cookies if curl is installed (thanks to @oxan)
