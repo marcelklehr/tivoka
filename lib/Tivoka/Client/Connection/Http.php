@@ -121,9 +121,9 @@ class Http extends AbstractConnection {
                 }
                 return strlen($header); // Use original header length!
             };
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);
+            curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);
             if (isset($this->options['ssl_verify_peer'])) {
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->options['ssl_verify_peer']);
+                curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, $this->options['ssl_verify_peer']);
             }
             curl_setopt($this->ch, CURLOPT_HTTPHEADER, $headers);
             curl_setopt($this->ch, CURLOPT_POSTFIELDS, $request->getRequest($this->spec));
