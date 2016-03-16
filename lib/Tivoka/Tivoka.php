@@ -44,7 +44,7 @@ abstract class Tivoka
      * @private
      * @param string $version spec version as a string (using semver notation)
      */
-    static function validateSpecVersion($version)
+    public static function validateSpecVersion($version)
     {
         switch($version) {
             case '1.0':
