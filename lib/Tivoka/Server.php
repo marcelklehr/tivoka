@@ -40,7 +40,7 @@ abstract class Server
     /**
      * Creates a server instance
      * @param object $host An object whose methods will be provided for invokation
-     * @return Tivoka_Server
+     * @return Server\Server
      */
     public static function provide($host)
     {

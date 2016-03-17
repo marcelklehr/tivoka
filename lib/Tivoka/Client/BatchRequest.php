@@ -68,8 +68,11 @@ class BatchRequest extends Request
     
     /**
      * Get the raw, JSON-encoded request
+     *
      * @param int $spec
+     *
      * @return string the JSON encoded request
+     * @throws Exception\SpecException
      */
     public function getRequest($spec) {
         if($spec == Tivoka::SPEC_1_0) throw new Exception\SpecException('Batch requests are not supported by JSON-RPC 1.0 spec');
@@ -83,8 +86,11 @@ class BatchRequest extends Request
     
     /**
      * Interprets the parsed response
+     *
      * @param array $json_struct json data
+     *
      * @return void
+     * @throws Exception\SyntaxException
      */
     public function interpretResponse($json_struct) {
         //validate

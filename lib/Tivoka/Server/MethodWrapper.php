@@ -71,6 +71,10 @@ class MethodWrapper
 
     /**
      * Invokes the requested method
+     *
+     * @param string $method
+     * @param array $args
+     * @return mixed|void
      */
     public function __call($method,$args)
     {

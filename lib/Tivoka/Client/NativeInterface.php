@@ -41,7 +41,7 @@ class NativeInterface {
     
     /**
      * Holds the last request
-     * @var Tivoka\Client\Request
+     * @var Request
      */
     public $last_request;
     
@@ -61,7 +61,7 @@ class NativeInterface {
     
     /**
      * Sends a JSON-RPC request
-     * @throws Tivoka\Exception\RemoteProcedureException
+     * @throws Exception\RemoteProcedureException
      * @return mixed
      */
     public function __call($method, $args) {

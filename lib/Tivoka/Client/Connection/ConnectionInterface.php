@@ -32,6 +32,7 @@
 namespace Tivoka\Client\Connection;
 
 use Tivoka\Client\Request;
+use Tivoka\Client\NativeInterface;
 
 /**
  * Connection interface
@@ -73,7 +74,7 @@ interface ConnectionInterface {
     
     /**
      * Creates a native remote interface for the target server
-     * @return Tivoka\Client\NativeInterface
+     * @return NativeInterface
      */
     public function getNativeInterface();
 }

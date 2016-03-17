@@ -41,7 +41,7 @@ abstract class Client
     /**
      * Initializes a Connection to a remote server
      * @param mixed $target Remote end-point definition
-     * @return Tivoka\Client\Connection\ConnectionInterface
+     * @return Client\Connection\ConnectionInterface
      */
     public static function connect($target) {
         return Client\Connection\AbstractConnection::factory($target);
@@ -51,7 +51,7 @@ abstract class Client
      * Creates a request
      * @param string $method The method to invoke
      * @param array $params The parameters
-     * @return Tivoka\Client\Request
+     * @return Client\Request
      */
     public static function createRequest($method, $params=null) {
         return new Client\Request($method, $params);
@@ -59,22 +59,32 @@ abstract class Client
     
     /**
      * alias of Tivoka\Client::createRequest
+     * @see Client::createRequest
      */
     public static function request($method, $params=null) {
         return self::createRequest($method, $params);
     }
-    
+
     /**
      * Creates a notification
+     *
      * @param string $method The method to invoke
      * @param array $params The parameters
+     *
+     * @return Client\Notification
      */
     public static function createNotification($method, $params=null) {
         return new Client\Notification($method, $params);
     }
-    
+
     /**
      * alias of Tivoka\Client::createNotification
+     * @see Client::createNotification
+
+     * @param string $method The method to invoke
+     * @param array $params The parameters
+     *
+     * @return Client\Notification
      */
     public static function notification($method, $params=null) {
         return self::createNotification($method, $params);
@@ -83,17 +93,24 @@ abstract class Client
     /**
      * Creates a batch request
      * @param mixed $request either an array of requests or a comma-seperated list of requests
-     * @throws Tivoka\Exception\Exception
-     * @return Tivoka\Client\BatchRequest
+     *
+     * @return Client\BatchRequest
+     * @throws Exception\Exception
      */
     public static function createBatch($request) {
         if(func_num_args() > 1 ) $request = func_get_args();
         if(!is_array($request)) throw new Exception\Exception('Object of invalid data type passed to Tivoka::createBatch.');
         return new Client\BatchRequest($request);
     }
-    
+
     /**
      * alias of Tivoka\Client::createBatch
+     * @see Client::createBatch
+     *
+     * @param mixed $request either an array of requests or a comma-seperated list of requests
+     *
+     * @return Client\BatchRequest
+     * @throws Exception\Exception
      */
     public static function batch($request) {
         if(func_num_args() > 1 ) $request = func_get_args();
