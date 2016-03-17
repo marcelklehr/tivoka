@@ -81,7 +81,7 @@ class Server
             $host = new MethodWrapper();
             foreach($methods as $name => $method)
             {
-                if($host->register($name, $method)) continue;
+                if($host->___register($name, $method)) continue;
                 throw new Exception\Exception('Given value for "'.$name.'" is no valid callback.');
             }
         }
