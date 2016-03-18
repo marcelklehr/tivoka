@@ -41,8 +41,9 @@ class Server
     /**
     * @var object The object given to __construct()
     * @see Tivoka\Server\Server::__construct()
+    * @access private
     */
-    protected $host;
+    public $host;
     
     /**
      * @var array The parsed json input as an associative array
@@ -57,14 +58,16 @@ class Server
     /**
      * The spec version the serve will use
      * @var int
+     * @access private
      */
-    protected $spec = Tivoka::SPEC_2_0;
+    public $spec = Tivoka::SPEC_2_0;
     
     /**
      * This is modified by Server::hideErrors()
      * @var bool
+     * @access private
      */
-    protected $hide_errors = false;
+    public $hide_errors = false;
     
     /**
      * Constructss a Server object
@@ -202,8 +205,9 @@ class Server
      * Receives the computed result
      * @param mixed $id The id of the original request
      * @param mixed $result The computed result
+     * @access private
      */
-    protected function returnResult($id, $result)
+    public function returnResult($id, $result)
     {
         switch($this->spec) {
         case Tivoka::SPEC_2_0:
@@ -229,8 +233,9 @@ class Server
      * @param integer $code The error code
      * @param string $message The error message
      * @param mixed $data Additional data
+     * @access private
      */
-    protected function returnError($id, $code, $message='', $data=null)
+    public function returnError($id, $code, $message='', $data=null)
     {
         $msg = array(
             -32700 => 'Parse error',
@@ -267,8 +272,9 @@ class Server
     
     /**
      * Outputs the processed response
+     * @access private
      */
-    protected function respond()
+    public function respond()
     {
         if(!is_array($this->response))//no array
             exit;
@@ -291,7 +297,7 @@ class Server
     * @static
     * @return array Returns the sanitized request and if it was invalid, a boolean FALSE is returned
     */
-    protected static function interpretRequest($spec, array $assoc)
+    public static function interpretRequest($spec, array $assoc)
     {
         switch($spec) {
             case Tivoka::SPEC_2_0:
@@ -327,7 +333,7 @@ class Server
      * @static
      * @return array Returns the sanitized request and if it was invalid, a boolean FALSE is returned
      */
-    protected static function interpretNotification($spec, array $assoc)
+    public static function interpretNotification($spec, array $assoc)
     {
         switch($spec) {
             case Tivoka::SPEC_2_0:
@@ -360,8 +366,9 @@ class Server
      * @param array $assoc The json-parsed JSON-RPC request
      * @static
      * @return array Returns the original request and if it was invalid, a boolean FALSE is returned
+     * @access private
      */
-    protected static function interpretBatch(array $assoc)
+    public static function interpretBatch(array $assoc)
     {
         if(count($assoc) <= 1)
         return FALSE;

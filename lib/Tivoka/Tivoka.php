@@ -41,6 +41,7 @@ abstract class Tivoka
     
     /**
      * Evaluates and returns the passed JSON-RPC spec version
+     * @private
      * @param string $version spec version as a string (using semver notation)
      */
     public static function validateSpecVersion($version)
