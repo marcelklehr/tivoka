@@ -3,3 +3,7 @@
 .buildpath
 .project
 .settings/org.eclipse.php.core.prefs
+
+# Composer
+/vendor
+/composer.lock

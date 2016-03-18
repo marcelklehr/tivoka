@@ -103,8 +103,12 @@ class Request
 
     /**
      * Interprets the response
+     *
      * @param string $response json data
+     *
      * @return void
+     * @throws Exception\ConnectionException
+     * @throws Exception\SyntaxException
      */
     public function setResponse($response) {
         $this->response = $response;
@@ -135,7 +139,10 @@ class Request
 
     /**
      * Interprets the parsed response
+     *
      * @param array $json_struct
+     *
+     * @throws Exception\SyntaxException
      */
     public function interpretResponse($json_struct) {
         //server error?
@@ -222,10 +229,13 @@ class Request
     
     /**
      * Encodes the request properties
+     * 
      * @param mixed $id The id of the request
      * @param string $method The method to be called
      * @param array $params Additional parameters
+     *
      * @return mixed the prepared assotiative array to encode
+     * @throws Exception\SpecException
      */
     protected static function prepareRequest($spec, $id, $method, $params=null) {
         switch($spec) {
@@ -253,7 +263,7 @@ class Request
     /**
     * @return string A v4 uuid
     */
-    static function uuid()
+    public static function uuid()
     {
         return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
         mt_rand(0, 0xffff), mt_rand(0, 0xffff), // time_low

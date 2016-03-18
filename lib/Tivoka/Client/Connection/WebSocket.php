@@ -52,8 +52,11 @@ class WebSocket extends AbstractConnection {
 
     /**
      * Sends a JSON-RPC request over plain WebSocket.
+     *
      * @param Request $request,... A Tivoka request.
+     *
      * @return Request|BatchRequest If sent as a batch request the BatchRequest object will be returned.
+     * @throws Exception\Exception
      */
     public function send(Request $request)
     {
@@ -80,7 +83,7 @@ class WebSocket extends AbstractConnection {
     }
 
     /**
-     * @return The websocket URI used.
+     * @return string The websocket URI used.
      */
     public function getUri()
     {

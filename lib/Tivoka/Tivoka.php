@@ -38,13 +38,17 @@ abstract class Tivoka
 {
     const SPEC_1_0 = 8;             // 000 001 000
     const SPEC_2_0 = 16;            // 000 010 000
-    
+
     /**
      * Evaluates and returns the passed JSON-RPC spec version
      * @private
+     *
      * @param string $version spec version as a string (using semver notation)
+     *
+     * @return int
+     * @throws Exception\SpecException
      */
-    static function validateSpecVersion($version)
+    public static function validateSpecVersion($version)
     {
         switch($version) {
             case '1.0':
