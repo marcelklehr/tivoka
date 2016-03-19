@@ -29,6 +29,7 @@
  */
 
 namespace Tivoka\Server;
+
 use Tivoka\Exception;
 
 /**
@@ -40,49 +41,54 @@ class MethodWrapper
     /**
      * @var array The list of callbacks
      */
-    private $___methods;
+    private $methods = array();
 
     /**
      * Registers a server method
      *
      * @param string $name The name of the method to provide (already existing methods with the same name will be overridden)
-     * @param callback $method The callback
+     * @param callable|array $method The callback
      * @returns bool FALSE if no valid callback has been given
      */
-    public function ___register($name, $method)
+    public function register($name, $method)
     {
-        if(!is_callable($method)) return FALSE;
+        if (!is_callable($method)) {
+            return FALSE;
+        }
 
-        $this->___methods[$name] = $method;
+        $this->methods[$name] = $method;
+
         return TRUE;
     }
 
     /**
-     * Returns TRUE if the method with the given name is registered and a valid callback
+     * Returns TRUE if the method with the given name is registered
      *
-     * @param callback $method The name of the method to check
+     * @param string $method The name of the method to check
+     *
      * @returns bool
      */
-    public function ___exist($method)
+    public function exist($method)
     {
-        if(!is_array($this->___methods))return FALSE;
-        if(is_callable($this->___methods[$method]))return TRUE;
+        return isset($this->methods[$method]);
     }
 
     /**
      * Invokes the requested method
      *
      * @param string $method
-     * @param array $args
-     * @return mixed|void
+     * @param array $params
+     *
+     * @return mixed
+     * @throws Exception\ProcedureException
      */
-    public function __call($method,$args)
+    public function call($method, array $params = array())
     {
-        if(!$this->___exist($method)){
-            $args[0]->error(-32601); return;
+        if (!$this->exist($method)) {
+            throw new Exception\ProcedureException('Method not found', -32601);
         }
-        $prc = $args[0];
-        return call_user_func_array($this->___methods[$method],array($prc));
+
+        return call_user_func($this->methods[$method], $params);
     }
 }
 ?>

@@ -39,7 +39,7 @@ use Tivoka\Tivoka;
 class Server
 {
     /**
-    * @var object The object given to __construct()
+    * @var MethodWrapper The object given to __construct()
     * @see Tivoka\Server\Server::__construct()
     * @access private
     */
@@ -71,22 +71,25 @@ class Server
     
     /**
      * Construct a Server object
-     * @param object $host An object whose methods will be provided for invokation
+     * @param MethodWrapper|array $host An object whose methods will be provided for invocation
      *
      * @throws Exception\Exception
      */
-    public function __construct($host) {
-        if(is_array($host)) {
-            $methods = $host;
-            $host = new MethodWrapper();
-            foreach($methods as $name => $method)
-            {
-                if($host->___register($name, $method)) continue;
-                throw new Exception\Exception('Given value for "'.$name.'" is no valid callback.');
+    public function __construct($host)
+    {
+        if ($host instanceof MethodWrapper) {
+            $this->host = $host;
+        } else {
+            $this->host = new MethodWrapper();
+
+            if (is_array($host)) {
+                foreach($host as $name => $method) {
+                    if (!$this->host->register($name, $method)) {
+                        throw new Exception\Exception('Given value for "'.$name.'" is no valid callback.');
+                    }
+                }
             }
         }
-        
-        $this->host = $host;
     }
     
     /**
@@ -192,16 +195,14 @@ class Server
             }
         }
         
-        //search method...
-        if(!is_callable(array($this->host, $request['method'])))
-        {
-            return $error(-32601, 'Method not found', $request['method']);
-        }
-        
         //invoke...
         try {
-            return $result( $this->host->{$request['method']}($params) );
+            return $result( $this->host->call($request['method'], $params) );
         }catch(\Tivoka\Exception\ProcedureException $e) {
+            if ($e->getCode() === -32601) {
+                return $error(-32601, $e->getMessage());
+            }
+
             if($e instanceof \Tivoka\Exception\InvalidParamsException)
                 return $error(-32602, ($e->getMessage() != "") ? $e->getMessage() : 'Invalid parameters');
             return $error(-32603, ($e->getMessage() != "") ? $e->getMessage() : 'Internal error invoking method');
