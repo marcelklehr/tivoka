@@ -11,13 +11,17 @@
             "email": "mklehr@gmx.net"
         }
     ],
+    "require-dev": {
+        "phpunit/phpunit": "4.8.*"
+    },
     "require": {
         "php": ">=5.3",
         "textalk/websocket": "1.0.*"
     },
     "autoload": {
         "psr-0" : {
-            "Tivoka" : "lib/"
+            "Tivoka" : "lib/",
+            "tests": "tests/"
         }
     }
 }
