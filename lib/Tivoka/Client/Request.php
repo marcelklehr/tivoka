@@ -226,7 +226,7 @@ class Request
                         'data' => $assoc['error'],
                         'code' => null,
                         'message' => $assoc['error']
-                  )
+                    )
                 );
         }
     }
