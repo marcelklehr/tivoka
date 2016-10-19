@@ -224,7 +224,7 @@ class Request
                     'id' => $assoc['id'],
                     'error' => array(
                         'data' => $assoc['error'],
-                        'code' => null,
+                        'code' => $assoc['error'],
                         'message' => $assoc['error']
                     )
                 );
