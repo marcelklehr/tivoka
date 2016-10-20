@@ -49,6 +49,8 @@ class Http extends AbstractConnection {
      * Constructs connection
      * @access private
      * @param string $target URL
+     *
+     * @throws Exception\Exception
      */
     public function __construct($target) {
         //validate url...
@@ -83,8 +85,8 @@ class Http extends AbstractConnection {
 
     /**
      * Sets the HTTP headers to use for upcoming send requests
-     * @param string label of header
-     * @param string value of header
+     * @param string $label label of header
+     * @param string $value value of header
      * @return Http Self instance
      */
     public function setHeader($label, $value) {
@@ -94,8 +96,11 @@ class Http extends AbstractConnection {
 
     /**
      * Sends a JSON-RPC request
+     * 
      * @param Request $request A Tivoka request
+     *
      * @return Request if sent as a batch request the BatchRequest object will be returned
+     * @throws Exception\Exception
      */
     public function send(Request $request) {
         if(func_num_args() > 1 ) $request = func_get_args();

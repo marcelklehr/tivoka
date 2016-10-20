@@ -47,15 +47,13 @@ class Server
     
     /**
      * @var array The parsed json input as an associative array
-     * @access private
      */
-    private $input;
+    protected $input;
     
     /**
      * @var array A list of associative response arrays to json_encode
-     * @access private
      */
-    private $response;
+    protected $response;
     
     /**
      * The spec version the serve will use
@@ -72,8 +70,10 @@ class Server
     public $hide_errors = false;
     
     /**
-     * Constructss a Server object
+     * Construct a Server object
      * @param object $host An object whose methods will be provided for invokation
+     *
+     * @throws Exception\Exception
      */
     public function __construct($host) {
         if(is_array($host)) {
@@ -81,7 +81,7 @@ class Server
             $host = new MethodWrapper();
             foreach($methods as $name => $method)
             {
-                if($host->register($name, $method)) continue;
+                if($host->___register($name, $method)) continue;
                 throw new Exception\Exception('Given value for "'.$name.'" is no valid callback.');
             }
         }
@@ -92,6 +92,9 @@ class Server
     /**
      * Sets the spec version to use for this server
      * @param string $spec The spec version (e.g.: "2.0")
+     *
+     * @return $this
+     * @throws Exception\SpecException
      */
     public function useSpec($spec) {
         $this->spec = Tivoka::validateSpecVersion($spec);
@@ -100,6 +103,8 @@ class Server
     
     /**
      * If invoked, the server will try to hide all PHP errors, to prevent them from obfuscating the output.
+     *
+     * @return $this
      */
     public function hideErrors() {
         $this->hide_errors = true;

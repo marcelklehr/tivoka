@@ -64,7 +64,10 @@ abstract class AbstractConnection implements ConnectionInterface {
 
     /**
      * Sets the spec version to use for this connection
+     *
      * @param string $spec The spec version (e.g.: "2.0")
+     *
+     * @return $this
      */
     public function useSpec($spec) {
         $this->spec = Tivoka::validateSpecVersion($spec);
@@ -74,7 +77,7 @@ abstract class AbstractConnection implements ConnectionInterface {
     /**
      * Changes connection options.
      * @param array $options
-     * @return Self reference.
+     * @return $this Self reference.
      */
     public function setOptions($options) {
         $this->options = $options;
@@ -84,7 +87,7 @@ abstract class AbstractConnection implements ConnectionInterface {
     /**
      * Changes timeout.
      * @param int $timeout
-     * @return Self reference.
+     * @return $this Self reference.
      */
     public function setTimeout($timeout)
     {
@@ -95,8 +98,11 @@ abstract class AbstractConnection implements ConnectionInterface {
 
     /**
      * Send a request directly
+     *
      * @param string $method
      * @param array $params
+     *
+     * @return Request
      */
     public function sendRequest($method, $params=null) {
         $request = new Request($method, $params);
@@ -115,7 +121,7 @@ abstract class AbstractConnection implements ConnectionInterface {
 
     /**
      * Creates a native remote interface for the target server
-     * @return Tivoka\Client\NativeInterface
+     * @return NativeInterface
      */
     public function getNativeInterface()
     {

@@ -63,6 +63,8 @@ class Tcp extends AbstractConnection {
      * Constructs connection.
      * @param string $host Server host.
      * @param int $port Server port.
+     *
+     * @throws Exception\Exception
      */
     public function __construct($host, $port)
     {
@@ -104,8 +106,12 @@ class Tcp extends AbstractConnection {
 
     /**
      * Sends a JSON-RPC request over plain TCP.
+     *
      * @param Request $request,... A Tivoka request.
+     *
      * @return Request|BatchRequest If sent as a batch request the BatchRequest object will be returned.
+     * @throws Exception\ConnectionException
+     * @throws Exception\Exception
      */
     public function send(Request $request)
     {
