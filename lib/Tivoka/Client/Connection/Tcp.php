@@ -142,6 +142,10 @@ class Tcp extends AbstractConnection {
         fwrite($this->socket, $request->getRequest($this->spec));
         fwrite($this->socket, "\n");
         fflush($this->socket);
+        
+        if(!$request->id) { //IF NOTIFICATION - RESPONSE IS NOT NEEDED! (Works, because Notification dont have id)
+            return false;
+        }
 
         // read server respons
         $response = fgets($this->socket);
