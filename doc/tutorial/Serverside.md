@@ -72,7 +72,7 @@ If you want to issue an error from within your remote method, you can throw `Tiv
 use Tivoka\Exception\ProcedureException;
 function($params) {
   $dist = calc_distance($params[0], $params[1]);
-  if($dist === false) throw ProcedureException('An Error occurred while calculating the distance.');
+  if($dist === false) throw new ProcedureException('An Error occurred while calculating the distance.');
   return $dist;
 }
 ?>
