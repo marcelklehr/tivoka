@@ -147,8 +147,13 @@ class Request
     public function interpretResponse($json_struct) {
         //server error?
         if(($error = self::interpretError($this->spec, $json_struct, $this->id)) !== FALSE) {
-            $this->error        = $error['error']['code'];
-            $this->errorMessage = $error['error']['message'];
+            if($this->spec == Tivoka::SPEC_1_0) {
+                $this->error        = (isset($error['error']['code'])) ? $error['error']['code'] : 'error';
+                $this->errorMessage = (isset($error['error']['message'])) ? $error['error']['message'] : 'no message provided; see errorData';
+            } else {
+                $this->error        = $error['error']['code'];
+                $this->errorMessage = $error['error']['message'];
+            }
             $this->errorData    = (isset($error['error']['data'])) ? $error['error']['data'] : null;
             return;
         }
@@ -190,8 +195,10 @@ class Request
                         'result' => $assoc['result']
                 );
             case Tivoka::SPEC_1_0:
-                if(isset($assoc['result'], $assoc['id']) === FALSE) return FALSE;
-                if($assoc['id'] !== $id && $assoc['result'] === null) return FALSE;
+                if(!array_key_exists('result', $assoc))
+                    return FALSE;
+                if(!isset($assoc['id']) || $assoc['id'] !== $id)
+                     return FALSE;
                 return array(
                     'id' => $assoc['id'],
                     'result' => $assoc['result']
