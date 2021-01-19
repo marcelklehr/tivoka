@@ -13,7 +13,9 @@
     ],
     "require": {
         "php": ">=5.3",
-        "textalk/websocket": "1.0.*"
+        "textalk/websocket": "1.0.*",
+        "ext-json": "*",
+        "ext-mbstring": "*"
     },
     "autoload": {
         "psr-0" : {
